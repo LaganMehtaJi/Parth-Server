@@ -1,0 +1,28 @@
+{
+  "name": "parth-server",
+  "version": "1.0.0",
+  "description": "\"Parth - Server",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LaganMehtaJi/Parth-Server.git"
+  },
+  "keywords": [
+    "PARTH"
+  ],
+  "author": "Lagan Mehta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LaganMehtaJi/Parth-Server/issues"
+  },
+  "homepage": "https://github.com/LaganMehtaJi/Parth-Server#readme",
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.4"
+  }
+}
