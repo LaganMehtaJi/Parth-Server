@@ -1,17 +1,13 @@
-import express from "express";
-import dotenv from "dotenv";
-import ConnectDb from "./config/db.js";
-import Resume from "./routes/resume/resume.routes.js";
-const app = express();
-dotenv.config();
-app.use(express.json());
-app.use("/resume",Resume);
+import express, { urlencoded } from'express';
+ import router from './routes/resume/resume.routes.js';
 
-ConnectDb();
-app.listen(process.env.PORT,(err)=>{
-    if(err){
-        console.log(`Server not Started ${err}`)
-    }else{
-        console.log(`Server Start ${process.env.PORT}`);
-    }
-})
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+
+
+app.use('/', router);
+
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});

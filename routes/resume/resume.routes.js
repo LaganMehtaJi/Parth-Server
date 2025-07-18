@@ -1,8 +1,9 @@
-import express from "express";
-import {SpacificRsume} from "../../controller/resume/resume.controller.js"
+import express from 'express';
+import  EjsUpload  from '../../controller/resume/resume.controller.js';
+import upload from '../../config/multerConfig.js';
+
 const router = express.Router();
 
-router.get("/:id/:color",SpacificRsume);
-
+router.post('/resume', upload.single('ejsFile'), EjsUpload);
 
 export default router;
