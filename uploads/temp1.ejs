@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= name %>'s Resume</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f4f4;
+    }
+    .resume {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #333;
+    }
+    p {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="resume">
+    <h1><%= name %></h1>
+    <p><strong>Email:</strong> <%= email %></p>
+    <p><strong>Phone:</strong> <%= phone %></p>
+
+    <h2>Education</h2>
+    <p><%= education %></p>
+
+    <h2>Skills</h2>
+    <ul>
+      <% skills.forEach(skill => { %>
+        <li><%= skill %></li>
+      <% }); %>
+    </ul>
+
+    <h2>Experience</h2>
+    <p><%= experience %></p>
+  </div>
+</body>
+</html>
