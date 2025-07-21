@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FiUser, FiBriefcase, FiFileText, FiDownload, 
+import {
+  FiUser, FiBriefcase, FiFileText, FiDownload,
   FiLogIn, FiLogOut, FiEdit, FiHome, FiAward,
   FiMail, FiLayers, FiCheckCircle, FiArrowDown
 } from 'react-icons/fi';
@@ -10,6 +10,8 @@ const ParthPlacement = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+
 
   // Sample data
   const services = [
@@ -36,89 +38,84 @@ const ParthPlacement = () => {
   };
 
   return (
-    <div className="relative">
+    <div className='justify-center'>
       {/* Gradient Navbar (Fixed) */}
-      <motion.nav 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: 'spring' }}
-        className="fixed w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg z-50"
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-2 cursor-pointer"
-              onClick={() => scrollTo('hero')}
-            >
-              <FiBriefcase className="h-6 w-6" />
-              <span className="text-xl font-bold">Parth Placement</span>
-            </motion.div>
 
-            <div className="hidden md:flex space-x-8">
-              {['services', 'features', 'templates', 'contact'].map((item) => (
+      <div className="max-w-7xl mx-auto px-6 py-4 justify-center">
+        <div className="flex justify-between items-center">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => scrollTo('hero')}
+          >
+            <img src="/images/logo.png" alt="Logo" class='h-8 w-auto md:h-12 lg:h-16' />
+            <span className="text-xl font-serif text-violet-950 ">PARTH</span>
+          </motion.div>
+
+          <div className="hidden md:flex space-x-8">
+            {['services', 'features', 'templates', 'contact'].map((item) => (
+              <motion.button
+                key={item}
+                whileHover={{ y: -2 }}
+                className={`capitalize ${activeSection === item ? 'font-bold border-b-2 border-white' : ''}`}
+                onClick={() => scrollTo(item)}
+              >
+                {item}
+              </motion.button>
+            ))}
+          </div>
+
+          <div className="relative">
+            {user ? (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => setUser(null)}
+              >
+                <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-blue-600">
+                  <FiUser />
+                </div>
+                <span>Logout</span>
+              </motion.div>
+            ) : (
+              <>
                 <motion.button
-                  key={item}
-                  whileHover={{ y: -2 }}
-                  className={`capitalize ${activeSection === item ? 'font-bold border-b-2 border-white' : ''}`}
-                  onClick={() => scrollTo(item)}
-                >
-                  {item}
-                </motion.button>
-              ))}
-            </div>
-
-            <div className="relative">
-              {user ? (
-                <motion.div 
                   whileHover={{ scale: 1.05 }}
-                  className="flex items-center space-x-2 cursor-pointer"
-                  onClick={() => setUser(null)}
+                  onClick={() => setIsLoginOpen(!isLoginOpen)}
+                  className="flex items-center px-4 py-2 bg-black bg-opacity-20 rounded-lg text-white"
                 >
-                  <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-blue-600">
-                    <FiUser />
-                  </div>
-                  <span>Logout</span>
-                </motion.div>
-              ) : (
-                <>
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    onClick={() => setIsLoginOpen(!isLoginOpen)}
-                    className="flex items-center px-4 py-2 bg-black bg-opacity-20 rounded-lg"
+                  Login
+                </motion.button>
+
+                {isLoginOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg text-gray-800"
                   >
-                    <FiLogIn className="mr-2" /> Login
-                  </motion.button>
-                  
-                  {isLoginOpen && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg text-gray-800"
-                    >
-                      {['Student', 'Admin', 'Recruiter'].map((role) => (
-                        <motion.button
-                          key={role}
-                          whileHover={{ x: 5 }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
-                          onClick={() => handleLogin(role.toLowerCase())}
-                        >
-                          <FiUser className="mr-2" /> {role}
-                        </motion.button>
-                      ))}
-                    </motion.div>
-                  )}
-                </>
-              )}
-            </div>
+                    {['Student', 'Admin', 'Recruiter'].map((role) => (
+                      <motion.button
+                        key={role}
+                        whileHover={{ x: 5 }}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
+                        onClick={() => handleLogin(role.toLowerCase())}
+                      >
+                        <FiUser className="mr-2" /> {role}
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </>
+            )}
           </div>
         </div>
-      </motion.nav>
+      </div>
+
 
       {/* Hero Section */}
-      <section 
-        id="hero" 
-        className="min-h-screen pt-32 pb-20 px-6 flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50"
+      <section
+        id="hero"
+        className="min-h-screen pt-32 pb-20 px-6 flex items-center justify-center bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100"
       >
         <div className="max-w-6xl mx-auto text-center">
           <motion.div
@@ -126,35 +123,36 @@ const ParthPlacement = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
+
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Parth Placement
+              <span className=" bg-violet-950 bg-clip-text text-transparent font-bold text-[80px],center">
+                PARTH
+                a solution to all your requirements.
               </span>
-              <br />
-              <span className="text-gray-800">Your Career Success Platform</span>
             </h1>
-            
+
+
+
+
+
             <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">
-              Comprehensive placement solution with resume building, job applications, and portfolio hosting.
+              <br></br>
+              Verify Profiles | Build Resumes | Host Portfolios | Sort Candidates<br></br>
+              and much more....
+
             </p>
-            
+
             <div className="flex flex-wrap justify-center gap-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg"
-                onClick={() => scrollTo('services')}
+                className="px-8 py-3 bg-black text-white rounded-sm shadow-lg"
+              // onClick={() => scrollTo('services')}
               >
-                Explore Services
+                Get Started
               </motion.button>
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 border-2 border-blue-600 text-blue-600 rounded-full"
-              >
-                Watch Demo
-              </motion.button>
+
+
             </div>
           </motion.div>
 
@@ -289,40 +287,16 @@ const ParthPlacement = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold mb-6"
-          >
-            Ready to Boost Your Career?
-          </motion.h2>
-          
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            viewport={{ once: true }}
-            className="text-xl mb-10 max-w-2xl mx-auto"
-          >
-            Join thousands of students who found their dream jobs through our platform.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <button className="px-8 py-3 bg-white text-blue-600 rounded-full font-bold shadow-lg hover:bg-gray-100 transition-colors">
-              Get Started Now
-            </button>
-          </motion.div>
-        </div>
-      </section>
+      {[
+        'images/company1.png',
+        'images/company2.png',
+        'images/company3.png',
+        'images/company4.png'
+      ].map((item)=>(
+       <>WORK TO BE DONE </>
+      ))
 
+    }
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-6">
         <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
@@ -334,13 +308,13 @@ const ParthPlacement = () => {
               Your complete career solution platform for students and recruiters.
             </p>
           </div>
-          
+
           <div>
             <h4 className="font-bold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               {['Home', 'Services', 'Features', 'Templates'].map((item) => (
                 <li key={item}>
-                  <button 
+                  <button
                     onClick={() => scrollTo(item.toLowerCase())}
                     className="text-gray-400 hover:text-white"
                   >
@@ -350,7 +324,7 @@ const ParthPlacement = () => {
               ))}
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-bold mb-4">Support</h4>
             <ul className="space-y-2 text-gray-400">
@@ -360,22 +334,20 @@ const ParthPlacement = () => {
               <li>Terms of Service</li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-bold mb-4">Newsletter</h4>
             <div className="flex">
-              <input 
-                type="email" 
-                placeholder="Your email" 
+              <input
+                type="email"
+                placeholder="Your email"
                 className="px-4 py-2 rounded-l-lg text-gray-800 flex-grow"
               />
-              <button className="bg-blue-600 px-4 py-2 rounded-r-lg">
-                Subscribe
-              </button>
+
             </div>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
           <p>© {new Date().getFullYear()} Parth Placement. All rights reserved.</p>
         </div>
