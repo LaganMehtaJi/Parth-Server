@@ -7,6 +7,7 @@ const profile = {
   location: "Jagadhri, Haryana, India",
   image: "/chahat.jpg",
   coverImage: "/maimt-background.jpg", 
+  description:"Aspiring Software developer",
   verified: true,
   field: "BCA || MCA",
   College: "MAIMT",
@@ -63,7 +64,7 @@ const Profilesection = () => {
   </h2>
 </div>
           <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">{profile.title}</p>
-          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">{profile.field}</p>
+          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left"><strong>{profile.description}</strong></p>
           <p className="text-xs text-gray-500 mt-1 flex items-center justify-left">
             <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
