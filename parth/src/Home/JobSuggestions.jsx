@@ -12,6 +12,7 @@ const JobSuggestions = () => {
       earlyApplicant: true,
       reviewing: true,
       easyApply: true,
+       logo: "/images/creativestudio-logo.png", 
       description:
         "We are looking for a skilled Frontend Developer to build amazing web experiences.",
       responsibilities: [
@@ -30,6 +31,7 @@ const JobSuggestions = () => {
       earlyApplicant: true,
       reviewing: false,
       easyApply: true,
+    logo: "/images/creativestudio-logo.png", 
       description:
         "Join our design team to craft visually appealing and user-friendly products.",
       responsibilities: [
@@ -47,6 +49,43 @@ const JobSuggestions = () => {
       earlyApplicant: true,
       reviewing: false,
       easyApply: true,
+      description:
+        "Join our design team to craft visually appealing and user-friendly products.",
+      responsibilities: [
+        "Create wireframes and prototypes",
+        "Conduct user research",
+        "Collaborate with developers"
+      ],
+      requirements: ["1+ years of UI/UX design", "Figma, Adobe XD"],
+      resources: ["https://uxdesign.cc", "https://www.figma.com/resources/"]
+    },{
+      title: "UI/UX Designer",
+      company: "CreativeStudio",
+      location: "Delhi, India",
+      promoted: true,
+      earlyApplicant: true,
+      reviewing: false,
+      easyApply: true,
+    logo: "/images/creativestudio-logo.png", 
+      description:
+        "Join our design team to craft visually appealing and user-friendly products.",
+      responsibilities: [
+        "Create wireframes and prototypes",
+        "Conduct user research",
+        "Collaborate with developers"
+      ],
+      requirements: ["1+ years of UI/UX design", "Figma, Adobe XD"],
+      resources: ["https://uxdesign.cc", "https://www.figma.com/resources/"]
+    },
+    {
+      title: "UI/UX Designer",
+      company: "CreativeStudio",
+      location: "Delhi, India",
+      promoted: true,
+      earlyApplicant: true,
+      reviewing: false,
+      easyApply: true,
+    logo: "/images/creativestudio-logo.png", 
       description:
         "Join our design team to craft visually appealing and user-friendly products.",
       responsibilities: [
@@ -80,9 +119,10 @@ const JobSuggestions = () => {
             key={index}
             className="bg-gray-50 rounded-md p-4 shadow-sm transition-all duration-300"
           >
-            <h3 className="text-blue-700 font-medium text-sm hover:underline cursor-pointer">
-              {job.title}
-            </h3>
+            <h1 className="flex items-center gap-2 text-blue-700 font-medium text-lg hover:underline cursor-pointer">
+  <img src="/Tech.png" alt="Company Logo" className="w-8 h-8 object-contain" />
+  {job.title}
+</h1>
             <p className="text-sm text-gray-700">{job.company}</p>
             <p className="text-xs text-gray-500">{job.location}</p>
             <p className="text-xs text-gray-500">{job.description}</p>
@@ -148,7 +188,8 @@ const JobSuggestions = () => {
             <div className="flex gap-4 mt-4">
               {job.easyApply && (
                 <button className="flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
-                   Easy Apply
+                     {/* <img src="/logoBlack.png" alt="Logo" className="w-4 h-4" /> */}
+                   I'm Intersted
                 </button>
               )}
               <button
