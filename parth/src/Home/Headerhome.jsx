@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   AiFillHome,
   AiFillBell,
@@ -11,14 +12,15 @@ import { MdEmail } from 'react-icons/md';
 const Headerhome = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState('Home');
   const dropdownRef = useRef(null);
 
   const navItems = [
-    { label: 'Home', icon: <AiFillHome size={24} />, active: true },
-    { label: 'Email', icon: <MdEmail size={24} /> },
-    { label: 'Jobs', icon: <MdWork size={24} /> },
-    { label: 'Messaging', icon: <AiOutlineMessage size={24} /> },
-    { label: 'Notifications', icon: <AiFillBell size={24} /> },
+    { label: 'Home', icon: <AiFillHome size={24} />, path: '/home' },
+    { label: 'Email', icon: <MdEmail size={24} />, path: '/email' },
+    { label: 'Jobs', icon: <MdWork size={24} />, path: '/jobs' },
+    { label: 'Messaging', icon: <AiOutlineMessage size={24} />, path: '/messaging' },
+    { label: 'Notifications', icon: <AiFillBell size={24} />, path: '/notifications' },
   ];
 
   useEffect(() => {
@@ -38,14 +40,14 @@ const Headerhome = () => {
           {/* Left section - Logo and search */}
           <div className="flex items-center space-x-2 md:space-x-4 flex-1">
             {/* Logo */}
-            <div className="flex items-center">
+            <Link to="/home" className="flex items-center">
               <img 
                 src="/logoBlack.png" 
                 alt="Logo" 
                 className="w-8 h-8" 
               />
               <span className="ml-1 font-bold hidden sm:inline">PARTH</span>
-            </div>
+            </Link>
 
             {/* Search - Desktop */}
             <div className="relative hidden md:flex items-center flex-1 max-w-md">
@@ -91,22 +93,24 @@ const Headerhome = () => {
           <div className="flex items-center">
             {/* Navigation icons */}
             <nav className="flex space-x-1 sm:space-x-2 md:space-x-4">
-              {navItems.map(({ label, icon, active }) => (
-                <button
+              {navItems.map(({ label, icon, path }) => (
+                <Link
+                  to={path}
                   key={label}
                   className={`relative flex flex-col items-center p-2 rounded-md hover:bg-gray-100 transition-colors ${
-                    active ? 'font-medium text-black' : 'font-normal text-gray-600'
+                    activeNav === label ? 'font-medium text-black' : 'font-normal text-gray-600'
                   }`}
                   aria-label={label}
+                  onClick={() => setActiveNav(label)}
                 >
                   <div className="relative">
                     {icon}
                   </div>
                   <span className="text-xs mt-1 hidden sm:inline">{label}</span>
-                  {active && (
+                  {activeNav === label && (
                     <div className="absolute bottom-0 w-4/5 h-0.5 bg-black hidden sm:block"></div>
                   )}
-                </button>
+                </Link>
               ))}
             </nav>
 
@@ -127,24 +131,27 @@ const Headerhome = () => {
               {/* Dropdown menu */}
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-md z-50">
-                  <a
-                    href="#profile"
+                  <Link
+                    to="/profile"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
                   >
                     View Portfolio
-                  </a>
-                  <a
-                    href="#settings"
+                  </Link>
+                  <Link
+                    to="/resume"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
                   >
                     View Resume
-                  </a>
-                  <a
-                    href="#logout"
+                  </Link>
+                  <Link
+                    to="/logout"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
                   >
                     Sign Out
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
