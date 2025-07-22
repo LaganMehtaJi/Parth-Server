@@ -5,6 +5,7 @@ import Home from "../src/Home/index.jsx";
 import Form from "../src/Form/index.jsx";
 import Admin from "../src/adminDashboard/admin.jsx";
 import Email from './Home/Email.jsx';
+import JobsCards from './Home/JobCards.jsx';
 function App() {
 
 
@@ -14,6 +15,7 @@ function App() {
     <Route path='/' element={<Hero/>} />
     <Route path='/home' element={<Home/>} />
     <Route path='/email'element={<Email/>}/>
+    <Route path="/jobs"element={<JobsCards/>}/>
      <Route path='/form' element={<Form/>} />
       <Route path='/admin' element={<Admin/>} />
    </Routes>

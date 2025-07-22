@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { BsReply, BsForward } from 'react-icons/bs';
 import Headerhome from './Headerhome';
 import Profilesection from './Profilesection';
 
-const dummyEmails = [
+const initialEmails = [
   {
     id: 1,
     to: 'admin@example.com',
@@ -46,45 +44,99 @@ const Email = () => {
   const [emails, setEmails] = useState([]);
   const [page, setPage] = useState(1);
   const perPage = 5;
+  const [showCompose, setShowCompose] = useState(false);
+  const [formData, setFormData] = useState({ to: '', subject: '', body: '' });
 
   useEffect(() => {
-    setEmails(dummyEmails);
+    setEmails(initialEmails);
   }, []);
 
   const paginatedEmails = emails.slice((page - 1) * perPage, page * perPage);
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    const newEmail = {
+      id: emails.length + 1,
+      ...formData,
+      date: new Date().toLocaleString(),
+    };
+    setEmails([newEmail, ...emails]);
+    setFormData({ to: '', subject: '', body: '' });
+    setShowCompose(false);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <Headerhome />
       <div className="flex gap-6 px-4 mt-4">
-        {/* Profile Section */}
         <div className="w-full max-w-xs sticky top-20 self-start">
           <Profilesection />
         </div>
-
-        {/* Outbox Section */}
         <div className="p-6 w-full max-w-3xl">
-          {/* Compose Button Only */}
           <div className="flex justify-end mb-4">
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              onClick={() => alert("Compose form will open here")}
+              onClick={() => setShowCompose(!showCompose)}
             >
-              Compose
+              {showCompose ? 'Close' : 'Compose'}
             </button>
           </div>
-
+          {showCompose && (
+            <div className="bg-white p-6 rounded-xl shadow mb-6">
+              <h3 className="text-lg font-bold mb-4">New Email</h3>
+              <form onSubmit={handleSend} className="space-y-4">
+                <input
+                  type="email"
+                  name="to"
+                  placeholder="To"
+                  value={formData.to}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  name="subject"
+                  placeholder="Subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+                <textarea
+                  name="body"
+                  placeholder="Message"
+                  value={formData.body}
+                  onChange={handleChange}
+                  rows={5}
+                  className="w-full border px-3 py-2 rounded resize-none"
+                  required
+                ></textarea>
+                <button
+                  type="submit"
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                >
+                  Send
+                </button>
+              </form>
+            </div>
+          )}
           <h2 className="text-xl font-bold mb-4 border-b pb-2">Outbox</h2>
-
           {paginatedEmails.length === 0 ? (
             <p className="text-gray-500">No sent emails.</p>
           ) : (
-            paginatedEmails.map(email => (
+            paginatedEmails.map((email) => (
               <div key={email.id} className="bg-white shadow-md rounded-xl p-4 mb-4">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-semibold text-gray-800">{email.to}</h3>
                 </div>
-                <p className="text-gray-700 text-sm mb-2"><strong>Subject:</strong> {email.subject}</p>
+                <p className="text-gray-700 text-sm mb-2">
+                  <strong>Subject:</strong> {email.subject}
+                </p>
                 <p className="text-gray-600 text-sm">{email.body}</p>
                 <p className="text-xs text-gray-400 mt-2 text-right">{email.date}</p>
               </div>
