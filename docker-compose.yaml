@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+   web:
+    container_name: parth-backend
+    image: parth-backend
+    build:
+     context: ./parth-server
+    ports:
+     - "3000:3000"
+  
+   web2:
+    container_name: Parth-frontend
+    image: parth-frontend
+    build: 
+      context: ./parth
+    ports:
+     - "5173:5173"
