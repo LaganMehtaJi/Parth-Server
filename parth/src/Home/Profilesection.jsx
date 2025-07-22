@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { BsPatchCheckFill } from "react-icons/bs";
 
 const profile = {
   name: "Chahat Sharma",
   title: "Student at MAIMT",
   location: "Jagadhri, Haryana, India",
-  image: "/logoBlack.png",
-  coverImage: "/maimt-background.jpg", // Add a cover image path
+  image: "/chahat.jpg",
+  coverImage: "/maimt-background.jpg", 
   verified: true,
   field: "BCA || MCA",
   College: "MAIMT",
@@ -29,32 +30,41 @@ const Profilesection = () => {
   return (
     <div className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 transform transition-all duration-300 hover:shadow-xl">
       {/* Cover Photo */}
-<div className="h-24 bg-sky-300 relative">        
-    <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <span className="text-2xl font-bold text-white">{profile.College}</span>
-        </div>
-      </div>
+<div className="h-24 bg-gradient-to-r from-sky-400 to-blue-500 relative rounded-t-lg shadow-md">
+<div className="h-24 flex items-center px-6 bg-blue">
+  <img
+    src="/maimtlogo.jpg"
+    alt="MAIMT Logo"
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+</div>
+
+</div>
       
       {/* Profile Photo and Basic Info */}
       <div className="px-4 pb-4 relative">
-        <div className="flex justify-center -mt-12 mb-3 relative">
+        <div className="flex justify-start -mt-12 mb-3 relative">
           <div className="relative group">
             <img
               src={profile.image}
               alt="Profile"
               className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-blue-400 transition-all duration-300"></div>
-<div className="absolute -bottom-2 -right-2 bg-sky-300 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-              {profile.College}
-            </div>
           </div>
         </div>
         
         <div className="text-center">
-          <h2 className="text-xl font-bold text-gray-800">{profile.name}</h2>
-          <p className="text-sm text-gray-600 mt-1">{profile.title}</p>
-          <p className="text-xs text-gray-500 mt-1 flex items-center justify-center">
+         <div className="flex justify-left items-center">
+  <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+    {profile.name}
+    {profile.verified && (
+      <BsPatchCheckFill className="text-blue-500 w-4 h-4" title="Verified" />
+    )}
+  </h2>
+</div>
+          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">{profile.title}</p>
+          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">{profile.field}</p>
+          <p className="text-xs text-gray-500 mt-1 flex items-center justify-left">
             <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
