@@ -6,6 +6,8 @@ import Form from "../src/Form/index.jsx";
 import Admin from "../src/adminDashboard/admin.jsx";
 import Email from './Home/Email.jsx';
 import JobsCards from './Home/JobCards.jsx';
+import Message from './Home/Message.jsx';
+import Notifications from './Home/Notifications.jsx';
 function App() {
 
 
@@ -18,6 +20,8 @@ function App() {
     <Route path="/jobs"element={<JobsCards/>}/>
      <Route path='/form' element={<Form/>} />
       <Route path='/admin' element={<Admin/>} />
+       <Route path='/messaging' element={<Message/>} />
+       <Route path="/notifications"element={<Notifications/>}/>
    </Routes>
     </>
   )
