@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Swiper, SwiperSlide } from 'swiper/react';
+
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination, Autoplay } from 'swiper/modules';
+
 
 
 import {
@@ -14,6 +14,8 @@ import {
 import Footer from './Footer';
 import Marquee from './Marquee';
 import HowItStarts from './HowItStarts';
+import Services from './Services';
+import OurTeam from './OurTeam';
 
 const ParthPlacement = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -24,15 +26,7 @@ const ParthPlacement = () => {
 
 
   // Sample data
-  const services = [
-    { icon: <FiFileText />, title: "Resume Builder", desc: "Create professional resumes with our templates", color: "bg-blue-100", textColor: "text-blue-400" },
-
-    { icon: <FiUser />, title: "Portfolio Hosting", desc: "Showcase your projects beautifully", color: "bg-green-100", textColor: "text-green-600" },
-    { icon: <FiEdit />, title: "Edit Profile", desc: "Update profile information as you grow" },
-    { icon: <FiDownload />, title: "Download Resumes", desc: "Multiple format options available" },
-    { icon: <FiCheckCircle />, title: "Verify Profiles", desc: "List authentic candidates " },
-    { icon: <FiMail />, title: "Job Alerts", desc: "Get notified about new opportunities" }
-  ];
+  
 
   const features = [
     { icon: <FiEdit />, title: "Edit Profile", desc: "Update profile information as you grow" },
@@ -41,31 +35,7 @@ const ParthPlacement = () => {
     { icon: <FiMail />, title: "Job Alerts", desc: "Get notified about new opportunities" },
   ];
 
-  const Team = [
-    {
-      name: "Aryan",
-      desc: "Acharya Pankaj orchestrated success in their webinar funnel growth with Adymize's magic touch",
-      image: "images/aryan.png",
-      badge: "30% MORE UPSALES & 50% MORE PROFIT"
-    },
-    {
-      name: "Ananya Sharma",
-      desc: "Adymize helped scale my personal brand with optimized content funnels.",
-      image: "images/aryan.png",
-      badge: "BRAND GROWTH 2X"
-    },
-    {
-      name: "Dr. Rajat Mehra",
-      desc: "Our online appointments increased by 3x after partnering with Adymize.",
-      image: "images/aryan.png",
-      badge: "3X ONLINE BOOKINGS"
-    }
-  ];
-
-
-
-
-
+  
 
   const handleLogin = (role) => {
     setUser({ name: 'Demo User', role });
@@ -79,11 +49,11 @@ const ParthPlacement = () => {
 
   return (
     <>
-      <div className='w-full h-screen'>
+      <div className='w-full h-screen bg-cover bg-center'>
         <div className='px-6'>
           <div className='justify-center'>
             {/* Gradient Navbar (Fixed) */}
-
+            
             <nav className='sticky top-0 z-50 bg-white shadow-lg px-6 py-3 h-20 mt-4 w-full'>
 
               <div className="max-w-7xl mx-auto px-10 h-full flex items-center justify-between gap-16">
@@ -159,7 +129,7 @@ const ParthPlacement = () => {
             {/* Hero Section */}
             <section
               id="hero"
-              className="min-h-screen pt-32 pb-20 px-6 flex items-center justify-center bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100"
+              className="min-h-screen pt-32 pb-20 px-6 flex items-center justify-center bg-gradient-to-r from-indigo-50 via-violet-200 to-indig-50"
             >
               <div className="max-w-6xl mx-auto text-center">
                 <motion.div
@@ -171,26 +141,20 @@ const ParthPlacement = () => {
                   {/*Tag line*/}
                   <h1 className="text-center px-4 sm:px-6 max-w-4xl mx-auto">
                     <span className="
-    bg-gradient-to-r 
-    from-indigo-700 via-violet-500 to-purple-600
+    bg-gradient-to-b 
+    from-indigo-900 via-violet-600 to-blue-900
     bg-clip-text text-transparent 
-    font-bold font-sans
-    text-5xl sm:text-6xl md:text-7xl lg:text-8xl
+    font-bold text-5xl sm:text-2xl md:text-4xl lg:text-7xl
     leading-tight md:leading-snug
     tracking-tight
     drop-shadow-md
     animate-gradient-shift
     bg-[length:200%_200%]
   ">
-                      PARTH,a solution for all your requirements<span className="hidden sm:inline"> — </span><br className="sm:hidden" />
+                      PARTH,a solution for all your requirements.
 
                     </span>
                   </h1>
-
-
-
-
-
                   <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">
                     <br></br>
                     Verify Profiles | Build Resumes | Host Portfolios | Sort Candidates<br></br>
@@ -232,89 +196,13 @@ const ParthPlacement = () => {
             </section>
 
             {/* Services Section */}
-            <section id="services" className="py-20 px-6 bg-white">
-              <div className="max-w-6xl mx-auto">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  className="text-center mb-16"
-                >
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Services</h2>
-                  <div className="w-50 h-1  bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto"></div>
-                </motion.div>
-
-                <div className="grid md:grid-cols-3 gap-8">
-                  {services.map((service, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      whileHover={{ y: -10 }}
-                      className={`p-8 rounded-xl shadow-md hover:shadow-lg transition-all ${service.color}`}
-                    >
-                      <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 ${service.textColor} text-2xl`}>
-                        {service.icon}
-                      </div>
-                      <h3 className="text-xl font-bold mb-3">{service.title}</h3>
-                      <p className="text-gray-600">{service.desc}</p>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </section>
+              <Services/>
             {/*How it start? */}
              <HowItStarts/>
             
 
             {/* Team members section */}
-            <section className="py-12">
-              {/* Centered Heading Section */}
-              <div className="text-center mb-10">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Team</h2>
-                <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto"></div>
-
-
-                {/* Swiper Container */}
-                <div className="w-full py-10 bg-gray-50">
-                  <Swiper
-                    modules={[Pagination, Autoplay]}
-                    pagination={{ clickable: true }}
-                    autoplay={{ delay: 5000 }}
-                    loop={true}
-                    spaceBetween={30}
-                    slidesPerView={1}
-                    className="max-w-6xl mx-auto"
-                  >
-                    {Team.map((item, i) => (
-                      <SwiperSlide key={i}>
-                        <div className="flex flex-col md:flex-row items-center bg-white shadow-lg rounded-2xl overflow-hidden p-6 md:p-10">
-                          {/* Left Image */}
-                          <div className="w-full md:w-1/2 mb-6 md:mb-0 flex justify-center">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="max-h-[300px] object-contain"
-                            />
-                          </div>
-
-                          {/* Right Text */}
-                          <div className="w-full md:w-1/2 text-center md:text-left">
-                            <div className="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded mb-4 uppercase tracking-wider">
-                              {item.badge}
-                            </div>
-                            <p className="text-2xl font-semibold text-gray-900 mb-3">{item.desc}</p>
-                            <p className="text-gray-700 font-medium">{item.name}</p>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </div>
-              </div>
-            </section>
+             <OurTeam/>
             {/*Marquee*/}
             <Marquee/>
 
