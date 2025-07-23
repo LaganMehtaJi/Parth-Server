@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import StudentCard from './StudentCard/index.jsx';
+import CompanyCard from './CompanyCard/index.jsx';
+import Comm from './Communications/index.jsx';
+import Anayltics from "./Anayltics/index.jsx";
+import ListComponent from "./List/index.jsx";
 import { 
   FiHome, 
   FiUsers, 
@@ -26,12 +31,7 @@ const AdminDashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Sample data
-  const students = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', department: 'Computer Science', status: 'Verified' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', department: 'Electrical', status: 'Pending' },
-    { id: 3, name: 'Alex Johnson', email: 'alex@example.com', department: 'Mechanical', status: 'Verified' },
-    { id: 4, name: 'Sarah Williams', email: 'sarah@example.com', department: 'Civil', status: 'Rejected' },
-  ];
+ 
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -106,10 +106,10 @@ const AdminDashboard = () => {
           />
           <NavItem 
             icon={<FiFileText className="w-5 h-5" />} 
-            text="Reports" 
-            active={activeTab === 'reports'}
+            text="List" 
+            active={activeTab === 'List'}
             onClick={() => {
-              setActiveTab('reports');
+              setActiveTab('List');
               setMobileMenuOpen(false);
             }}
           />
@@ -191,11 +191,11 @@ const AdminDashboard = () => {
         {/* Content area */}
         <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
           {activeTab === 'dashboard' && <DashboardHome />}
-          {activeTab === 'students' && <StudentManagement students={students} />}
+          {activeTab === 'students' && <StudentManagement />}
           {activeTab === 'companies' && <CompanyManagement />}
           {activeTab === 'communications' && <Communications />}
           {activeTab === 'analytics' && <Analytics />}
-          {activeTab === 'reports' && <Reports />}
+          {activeTab === 'List' && <List />}
           {activeTab === 'settings' && <Settings />}
         </main>
       </div>
@@ -308,7 +308,7 @@ const DashboardHome = () => (
   </div>
 );
 
-const StudentManagement = ({ students }) => (
+const StudentManagement = () => (
   <div className="p-6 bg-white rounded-lg shadow-sm">
     <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
       <h3 className="text-lg font-semibold text-gray-800">Student Management</h3>
@@ -328,67 +328,153 @@ const StudentManagement = ({ students }) => (
       </div>
     </div>
 
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/men/32.jpg"
+    name="Rahul Sharma"
+    rollNo="BCA21001"
+    email="rahul.sharma@example.com"
+    field="Full Stack Developer"
+    isVerified={true}
+    analyticsScore={88}
+    portfolioLink="https://rahul-portfolio.com"
+    dashboardLink="/dashboard/rahul"
+    resumeLink="/resumes/rahul.pdf"
+    resumeDownloadLink="/resumes/rahul.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/women/45.jpg"
+    name="Sneha Patel"
+    rollNo="BCA21002"
+    email="sneha.patel@example.com"
+    field="UI/UX Designer"
+    isVerified={false}
+    analyticsScore={72}
+    portfolioLink="https://sneha-ux.com"
+    dashboardLink="/dashboard/sneha"
+    resumeLink="/resumes/sneha.pdf"
+    resumeDownloadLink="/resumes/sneha.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/men/18.jpg"
+    name="Amit Verma"
+    rollNo="BCA21003"
+    email="amit.verma@example.com"
+    field="Backend Developer"
+    isVerified={true}
+    analyticsScore={91}
+    portfolioLink="https://amit-backend.com"
+    dashboardLink="/dashboard/amit"
+    resumeLink="/resumes/amit.pdf"
+    resumeDownloadLink="/resumes/amit.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/women/22.jpg"
+    name="Priya Mehta"
+    rollNo="BCA21004"
+    email="priya.mehta@example.com"
+    field="Data Scientist"
+    isVerified={false}
+    analyticsScore={79}
+    portfolioLink="https://priyadata.com"
+    dashboardLink="/dashboard/priya"
+    resumeLink="/resumes/priya.pdf"
+    resumeDownloadLink="/resumes/priya.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/men/57.jpg"
+    name="Karan Singh"
+    rollNo="BCA21005"
+    email="karan.singh@example.com"
+    field="DevOps Engineer"
+    isVerified={true}
+    analyticsScore={83}
+    portfolioLink="https://karandevops.com"
+    dashboardLink="/dashboard/karan"
+    resumeLink="/resumes/karan.pdf"
+    resumeDownloadLink="/resumes/karan.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/women/33.jpg"
+    name="Anjali Thakur"
+    rollNo="BCA21006"
+    email="anjali.thakur@example.com"
+    field="AI/ML Engineer"
+    isVerified={true}
+    analyticsScore={94}
+    portfolioLink="https://anjali-ml.com"
+    dashboardLink="/dashboard/anjali"
+    resumeLink="/resumes/anjali.pdf"
+    resumeDownloadLink="/resumes/anjali.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/men/29.jpg"
+    name="Rohit Kumar"
+    rollNo="BCA21007"
+    email="rohit.kumar@example.com"
+    field="Frontend Developer"
+    isVerified={false}
+    analyticsScore={68}
+    portfolioLink="https://rohit-ui.com"
+    dashboardLink="/dashboard/rohit"
+    resumeLink="/resumes/rohit.pdf"
+    resumeDownloadLink="/resumes/rohit.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/women/10.jpg"
+    name="Divya Kapoor"
+    rollNo="BCA21008"
+    email="divya.kapoor@example.com"
+    field="Business Analyst"
+    isVerified={true}
+    analyticsScore={76}
+    portfolioLink="https://divyaba.com"
+    dashboardLink="/dashboard/divya"
+    resumeLink="/resumes/divya.pdf"
+    resumeDownloadLink="/resumes/divya.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/men/65.jpg"
+    name="Nikhil Joshi"
+    rollNo="BCA21009"
+    email="nikhil.joshi@example.com"
+    field="Cybersecurity Analyst"
+    isVerified={false}
+    analyticsScore={70}
+    portfolioLink="https://nikhilcyber.com"
+    dashboardLink="/dashboard/nikhil"
+    resumeLink="/resumes/nikhil.pdf"
+    resumeDownloadLink="/resumes/nikhil.pdf"
+  />
+
+  <StudentCard
+    image="https://randomuser.me/api/portraits/women/55.jpg"
+    name="Isha Malhotra"
+    rollNo="BCA21010"
+    email="isha.malhotra@example.com"
+    field="Cloud Engineer"
+    isVerified={true}
+    analyticsScore={85}
+    portfolioLink="https://ishacloud.com"
+    dashboardLink="/dashboard/isha"
+    resumeLink="/resumes/isha.pdf"
+    resumeDownloadLink="/resumes/isha.pdf"
+  />
+
+</div>
+
     {/* Student Table */}
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-              ID
-            </th>
-            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-              Name
-            </th>
-            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-              Email
-            </th>
-            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-              Department
-            </th>
-            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-              Status
-            </th>
-            <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {students.map((student) => (
-            <tr key={student.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {student.id}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">{student.name}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {student.email}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {student.department}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <StatusBadge status={student.status} />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div className="flex space-x-2">
-                  <button className="p-1 text-blue-600 rounded-md hover:bg-blue-50">
-                    <FiEdit className="w-4 h-4" />
-                  </button>
-                  <button className="p-1 text-green-600 rounded-md hover:bg-green-50">
-                    <FiCheckCircle className="w-4 h-4" />
-                  </button>
-                  <button className="p-1 text-red-600 rounded-md hover:bg-red-50">
-                    <FiTrash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+  
+
 
     {/* Pagination */}
     <div className="flex items-center justify-between mt-6">
@@ -483,10 +569,200 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const CompanyManagement = () => <div>Company Management Content</div>;
-const Communications = () => <div>Communications Content</div>;
-const Analytics = () => <div>Analytics Content</div>;
-const Reports = () => <div>Reports Content</div>;
+const CompanyManagement = () => (
+  <>
+  <div  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/microsoft.com"
+      companyName="Microsoft India"
+      studentsApplied={120}
+      onDeleteCompany={() => console.log("Deleted Microsoft")}
+      onDeleteJob={(job) => console.log("Deleted Job from Microsoft:", job)}
+      onAddJobSubmit={(job) => console.log("New Microsoft Job:", job)}
+      jobs={[
+        {
+          title: "Frontend Developer",
+          requirements: ["React", "Tailwind", "Git"],
+          responsibilities: ["Build UI", "Collaborate with backend"],
+          resources: ["Figma", "Codebase Access"],
+        },
+        {
+          title: "Backend Engineer",
+          requirements: ["Node.js", "MongoDB"],
+          responsibilities: ["API Development", "Database Design"],
+          resources: ["DB Server", "API Docs"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/google.com"
+      companyName="Google"
+      studentsApplied={200}
+      onDeleteCompany={() => console.log("Deleted Google")}
+      onDeleteJob={(job) => console.log("Deleted Job from Google:", job)}
+      onAddJobSubmit={(job) => console.log("New Google Job:", job)}
+      jobs={[
+        {
+          title: "AI Researcher",
+          requirements: ["Python", "TensorFlow", "ML Theory"],
+          responsibilities: ["Train models", "Research"],
+          resources: ["TPUs", "Datasets"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/amazon.com"
+      companyName="Amazon"
+      studentsApplied={150}
+      onDeleteCompany={() => console.log("Deleted Amazon")}
+      onDeleteJob={(job) => console.log("Deleted Job from Amazon:", job)}
+      onAddJobSubmit={(job) => console.log("New Amazon Job:", job)}
+      jobs={[
+        {
+          title: "SDE-1",
+          requirements: ["Java", "DSA", "AWS"],
+          responsibilities: ["Service development", "Code reviews"],
+          resources: ["Internal Tools", "Codebase"],
+        },
+        {
+          title: "DevOps Engineer",
+          requirements: ["CI/CD", "Docker", "Kubernetes"],
+          responsibilities: ["Deploy pipelines", "Infrastructure monitoring"],
+          resources: ["Jenkins", "Grafana"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/apple.com"
+      companyName="Apple"
+      studentsApplied={95}
+      onDeleteCompany={() => console.log("Deleted Apple")}
+      onDeleteJob={(job) => console.log("Deleted Job from Apple:", job)}
+      onAddJobSubmit={(job) => console.log("New Apple Job:", job)}
+      jobs={[
+        {
+          title: "iOS Engineer",
+          requirements: ["Swift", "UIKit"],
+          responsibilities: ["App development", "Testing"],
+          resources: ["Xcode", "TestFlight"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/meta.com"
+      companyName="Meta"
+      studentsApplied={180}
+      onDeleteCompany={() => console.log("Deleted Meta")}
+      onDeleteJob={(job) => console.log("Deleted Job from Meta:", job)}
+      onAddJobSubmit={(job) => console.log("New Meta Job:", job)}
+      jobs={[
+        {
+          title: "AR/VR Developer",
+          requirements: ["Unity", "C#", "Oculus SDK"],
+          responsibilities: ["Build VR apps", "Integrate APIs"],
+          resources: ["Unity Hub", "Oculus Dev Tools"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/tesla.com"
+      companyName="Tesla"
+      studentsApplied={60}
+      onDeleteCompany={() => console.log("Deleted Tesla")}
+      onDeleteJob={(job) => console.log("Deleted Job from Tesla:", job)}
+      onAddJobSubmit={(job) => console.log("New Tesla Job:", job)}
+      jobs={[
+        {
+          title: "Embedded Systems Engineer",
+          requirements: ["C/C++", "RTOS"],
+          responsibilities: ["Develop firmware", "Test systems"],
+          resources: ["Hardware lab", "Simulators"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/netflix.com"
+      companyName="Netflix"
+      studentsApplied={88}
+      onDeleteCompany={() => console.log("Deleted Netflix")}
+      onDeleteJob={(job) => console.log("Deleted Job from Netflix:", job)}
+      onAddJobSubmit={(job) => console.log("New Netflix Job:", job)}
+      jobs={[
+        {
+          title: "Streaming Platform Engineer",
+          requirements: ["Golang", "Distributed Systems"],
+          responsibilities: ["Maintain low-latency streaming", "Scale infra"],
+          resources: ["Edge Servers", "Grafana"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/intel.com"
+      companyName="Intel"
+      studentsApplied={70}
+      onDeleteCompany={() => console.log("Deleted Intel")}
+      onDeleteJob={(job) => console.log("Deleted Job from Intel:", job)}
+      onAddJobSubmit={(job) => console.log("New Intel Job:", job)}
+      jobs={[
+        {
+          title: "Chip Design Engineer",
+          requirements: ["Verilog", "VHDL"],
+          responsibilities: ["Design chips", "Simulate designs"],
+          resources: ["Cadence", "EDA Tools"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/salesforce.com"
+      companyName="Salesforce"
+      studentsApplied={112}
+      onDeleteCompany={() => console.log("Deleted Salesforce")}
+      onDeleteJob={(job) => console.log("Deleted Job from Salesforce:", job)}
+      onAddJobSubmit={(job) => console.log("New Salesforce Job:", job)}
+      jobs={[
+        {
+          title: "CRM Developer",
+          requirements: ["Apex", "Lightning", "SOQL"],
+          responsibilities: ["Build CRM solutions", "Client integrations"],
+          resources: ["Salesforce Sandbox", "Trailhead"],
+        },
+      ]}
+    />
+
+    <CompanyCard
+      logo="https://logo.clearbit.com/adobe.com"
+      companyName="Adobe"
+      studentsApplied={134}
+      onDeleteCompany={() => console.log("Deleted Adobe")}
+      onDeleteJob={(job) => console.log("Deleted Job from Adobe:", job)}
+      onAddJobSubmit={(job) => console.log("New Adobe Job:", job)}
+      jobs={[
+        {
+          title: "UI/UX Designer",
+          requirements: ["Adobe XD", "Figma"],
+          responsibilities: ["Create mockups", "Design user flows"],
+          resources: ["Design System", "Prototypes"],
+        },
+      ]}
+    />
+    </div>
+  </>
+);
+
+const Communications = () => 
+<Comm/>
+;
+const Analytics = () => <><Anayltics/></>;
+const List = () => <ListComponent/>;
 const Settings = () => <div>Settings Content</div>;
 
 export default AdminDashboard;

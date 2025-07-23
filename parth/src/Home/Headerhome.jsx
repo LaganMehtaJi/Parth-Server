@@ -1,26 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   AiFillHome,
-  AiOutlineTeam,
   AiFillBell,
   AiOutlineMessage,
   AiOutlineSearch,
 } from 'react-icons/ai';
 import { MdWork } from 'react-icons/md';
+import { MdEmail } from 'react-icons/md';
 
-const LinkedInHeader = () => {
+const Headerhome = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState('Home');
   const dropdownRef = useRef(null);
 
   const navItems = [
-    { label: 'Home', icon: <AiFillHome size={24} />, active: true },
-    { label: 'Network', icon: <AiOutlineTeam size={24} /> },
-    { label: 'Jobs', icon: <MdWork size={24} /> },
-    { label: 'Messaging', icon: <AiOutlineMessage size={24} /> },
-    { label: 'Notifications', icon: <AiFillBell size={24} /> },
+    { label: 'Home', icon: <AiFillHome size={24} />, path: '/home' },
+    { label: 'Email', icon: <MdEmail size={24} />, path: '/email' },
+    { label: 'Jobs', icon: <MdWork size={24} />, path: '/jobs' },
+    { label: 'Messaging', icon: <AiOutlineMessage size={24} />, path: '/messaging' },
+    { label: 'Notifications', icon: <AiFillBell size={24} />, path: '/notifications' },
   ];
 
-  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -32,90 +34,132 @@ const LinkedInHeader = () => {
   }, []);
 
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white shadow">
-      {/* Left section */}
-      <div className="flex items-center space-x-4 w-1/2">
-        <img src="/logoBlack.png" alt="Logo" className="w-8 h-8" />
-        <span style={{fontWeight: 'bold' }}>Parth</span>
-        <div className="relative hidden md:block flex-1 max-w-md">
-          <AiOutlineSearch className="absolute top-2.5 left-3 text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search"
-            className="pl-10 pr-4 py-1.5 w-65 rounded-full bg-gray-100 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
+    <header className="sticky top-0 z-50 bg-white shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-14">
+          {/* Left section - Logo and search */}
+          <div className="flex items-center space-x-2 md:space-x-4 flex-1">
+            {/* Logo */}
+            <Link to="/home" className="flex items-center">
+              <img 
+                src="/logoBlack.png" 
+                alt="Logo" 
+                className="w-8 h-8" 
+              />
+              <span className="ml-1 font-bold hidden sm:inline">PARTH</span>
+            </Link>
 
-      {/* Right section */}
-      <div className="ml-auto flex items-center space-x-6 w-auto">
-        {/* Navigation icons */}
-        <nav className="flex space-x-4">
-          {navItems.map(({ label, icon, badge, active }) => (
-            <button
-              key={label}
-              className={`relative flex flex-col items-center p-2 rounded-md hover:bg-gray-100 transition-colors ${
-                active ? 'font-medium text-black' : 'font-normal text-gray-600'
-              }`}
-              aria-label={label}
+            {/* Search - Desktop */}
+            <div className="relative hidden md:flex items-center flex-1 max-w-md">
+              <AiOutlineSearch className="absolute left-3 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="pl-10 pr-4 py-1.5 w-full rounded-md bg-gray-100 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Search - Mobile toggle */}
+            <button 
+              className="md:hidden p-2 rounded-full hover:bg-gray-100"
+              onClick={() => setSearchOpen(!searchOpen)}
             >
-              <div className="relative">
-                {icon}
-                {badge && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                    {badge}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs mt-1">{label}</span>
-              {active && (
-                <div className="absolute bottom-0 w-4/5 h-0.5 bg-black"></div>
-              )}
+              <AiOutlineSearch size={20} />
             </button>
-          ))}
-        </nav>
-
-        {/* Profile dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <div
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center space-x-2 cursor-pointer"
-          >
-            <img
-              src="https://via.placeholder.com/30"
-              alt="Profile"
-              className="w-8 h-8 rounded-full border"
-            />
-            <span className="text-sm hidden md:inline">Me</span>
           </div>
 
-          {/* Dropdown menu */}
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-md z-50">
-              <a
-                href="#profile"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                View Portfolio
-              </a>
-              <a
-                href="#settings"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                View Resume
-              </a>
-              <a
-                href="#logout"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Sign Out
-              </a>
+          {/* Mobile search bar - appears when searchOpen is true */}
+          {searchOpen && (
+            <div className="absolute top-14 left-0 right-0 bg-white p-2 shadow-md md:hidden">
+              <div className="relative flex items-center">
+                <AiOutlineSearch className="absolute left-3 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="pl-10 pr-4 py-2 w-full rounded-md bg-gray-100 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+                <button 
+                  className="ml-2 text-gray-500"
+                  onClick={() => setSearchOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
+
+          {/* Right section - Navigation and profile */}
+          <div className="flex items-center">
+            {/* Navigation icons */}
+            <nav className="flex space-x-1 sm:space-x-2 md:space-x-4">
+              {navItems.map(({ label, icon, path }) => (
+                <Link
+                  to={path}
+                  key={label}
+                  className={`relative flex flex-col items-center p-2 rounded-md hover:bg-gray-100 transition-colors ${
+                    activeNav === label ? 'font-medium text-black' : 'font-normal text-gray-600'
+                  }`}
+                  aria-label={label}
+                  onClick={() => setActiveNav(label)}
+                >
+                  <div className="relative">
+                    {icon}
+                  </div>
+                  <span className="text-xs mt-1 hidden sm:inline">{label}</span>
+                  {activeNav === label && (
+                    <div className="absolute bottom-0 w-4/5 h-0.5 bg-black hidden sm:block"></div>
+                  )}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Profile dropdown */}
+            <div className="relative ml-2" ref={dropdownRef}>
+              <div
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center space-x-1 cursor-pointer p-1 rounded-md hover:bg-gray-100"
+              >
+                <img
+                  src="chahat.jpg"
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full border"
+                />
+                <span className="text-sm hidden lg:inline">Me</span>
+              </div>
+
+              {/* Dropdown menu */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-md z-50">
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    View Portfolio
+                  </Link>
+                  <Link
+                    to="/resume"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    View Resume
+                  </Link>
+                  <Link
+                    to="/logout"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    Sign Out
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </header>
   );
 };
 
-export default LinkedInHeader;
+export default Headerhome;
