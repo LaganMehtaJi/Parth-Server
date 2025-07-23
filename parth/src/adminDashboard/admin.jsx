@@ -21,7 +21,11 @@ import {
   FiTrash2,
   FiChevronDown,
   FiMenu,
-  FiX
+  FiX,
+  FiDownload,
+  FiUpload,
+  FiGrid,
+  FiLink
 } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -29,9 +33,6 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [notifications] = useState(5);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Sample data
- 
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -44,11 +45,16 @@ const AdminDashboard = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-gray-900 text-white transition duration-300 ease-in-out lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-0 w-64 transform bg-gray-900 text-white transition duration-300 ease-in-out lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-bold">PARTH</h1>
-            <span className="px-2 py-1 text-xs font-semibold bg-blue-600 rounded-md">Admin</span>
+          <div className="flex items-center space-x-2 pl-6 font-bold text-3xl">
+           
+              <span className="text-blue-400">P.</span>
+              <span className="text-green-400">A.</span>
+              <span className="text-yellow-400">R.</span>
+              <span className="text-red-400">T.</span>
+              <span className="text-purple-400">H</span>
+            
           </div>
           <button 
             className="p-1 rounded-md lg:hidden hover:bg-gray-800"
@@ -114,6 +120,24 @@ const AdminDashboard = () => {
             }}
           />
           <NavItem 
+            icon={<FiFileText className="w-5 h-5" />} 
+            text="Resume Templates" 
+            active={activeTab === 'resume-templates'}
+            onClick={() => {
+              setActiveTab('resume-templates');
+              setMobileMenuOpen(false);
+            }}
+          />
+          <NavItem 
+            icon={<FiLink className="w-5 h-5" />} 
+            text="Portfolio Templates" 
+            active={activeTab === 'portfolio-templates'}
+            onClick={() => {
+              setActiveTab('portfolio-templates');
+              setMobileMenuOpen(false);
+            }}
+          />
+          <NavItem 
             icon={<FiSettings className="w-5 h-5" />} 
             text="Settings" 
             active={activeTab === 'settings'}
@@ -131,7 +155,7 @@ const AdminDashboard = () => {
             </div>
             <div>
               <h4 className="text-sm font-medium">Admin User</h4>
-              <p className="text-xs text-gray-400">admin@placementpro.edu</p>
+              <p className="text-xs text-gray-400">admin@parth.edu</p>
             </div>
           </div>
         </div>
@@ -140,7 +164,7 @@ const AdminDashboard = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top navigation */}
-        <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
+        <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
           <div className="flex items-center space-x-4">
             <button 
               className="p-2 text-gray-500 rounded-md hover:bg-gray-100 lg:hidden"
@@ -154,11 +178,13 @@ const AdminDashboard = () => {
             >
               <FiMenu className="w-5 h-5" />
             </button>
-            <h2 className="text-xl font-semibold text-gray-800 capitalize">{activeTab}</h2>
+            <h2 className="text-xl font-semibold text-gray-800 capitalize">
+              {activeTab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+            </h2>
           </div>
 
           <div className="flex items-center space-x-4">
-            <div className="relative">
+            <div className="relative hidden md:block">
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
@@ -196,6 +222,8 @@ const AdminDashboard = () => {
           {activeTab === 'communications' && <Communications />}
           {activeTab === 'analytics' && <Analytics />}
           {activeTab === 'List' && <List />}
+          {activeTab === 'resume-templates' && <ResumeTemplates />}
+          {activeTab === 'portfolio-templates' && <PortfolioTemplates />}
           {activeTab === 'settings' && <Settings />}
         </main>
       </div>
@@ -209,7 +237,7 @@ const NavItem = ({ icon, text, active, onClick }) => (
     onClick={onClick}
     className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
       active 
-        ? 'bg-blue-700 text-white' 
+        ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md' 
         : 'text-gray-300 hover:bg-gray-800 hover:text-white'
     }`}
   >
@@ -328,153 +356,22 @@ const StudentManagement = () => (
       </div>
     </div>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/men/32.jpg"
-    name="Rahul Sharma"
-    rollNo="BCA21001"
-    email="rahul.sharma@example.com"
-    field="Full Stack Developer"
-    isVerified={true}
-    analyticsScore={88}
-    portfolioLink="https://rahul-portfolio.com"
-    dashboardLink="/dashboard/rahul"
-    resumeLink="/resumes/rahul.pdf"
-    resumeDownloadLink="/resumes/rahul.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/women/45.jpg"
-    name="Sneha Patel"
-    rollNo="BCA21002"
-    email="sneha.patel@example.com"
-    field="UI/UX Designer"
-    isVerified={false}
-    analyticsScore={72}
-    portfolioLink="https://sneha-ux.com"
-    dashboardLink="/dashboard/sneha"
-    resumeLink="/resumes/sneha.pdf"
-    resumeDownloadLink="/resumes/sneha.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/men/18.jpg"
-    name="Amit Verma"
-    rollNo="BCA21003"
-    email="amit.verma@example.com"
-    field="Backend Developer"
-    isVerified={true}
-    analyticsScore={91}
-    portfolioLink="https://amit-backend.com"
-    dashboardLink="/dashboard/amit"
-    resumeLink="/resumes/amit.pdf"
-    resumeDownloadLink="/resumes/amit.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/women/22.jpg"
-    name="Priya Mehta"
-    rollNo="BCA21004"
-    email="priya.mehta@example.com"
-    field="Data Scientist"
-    isVerified={false}
-    analyticsScore={79}
-    portfolioLink="https://priyadata.com"
-    dashboardLink="/dashboard/priya"
-    resumeLink="/resumes/priya.pdf"
-    resumeDownloadLink="/resumes/priya.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/men/57.jpg"
-    name="Karan Singh"
-    rollNo="BCA21005"
-    email="karan.singh@example.com"
-    field="DevOps Engineer"
-    isVerified={true}
-    analyticsScore={83}
-    portfolioLink="https://karandevops.com"
-    dashboardLink="/dashboard/karan"
-    resumeLink="/resumes/karan.pdf"
-    resumeDownloadLink="/resumes/karan.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/women/33.jpg"
-    name="Anjali Thakur"
-    rollNo="BCA21006"
-    email="anjali.thakur@example.com"
-    field="AI/ML Engineer"
-    isVerified={true}
-    analyticsScore={94}
-    portfolioLink="https://anjali-ml.com"
-    dashboardLink="/dashboard/anjali"
-    resumeLink="/resumes/anjali.pdf"
-    resumeDownloadLink="/resumes/anjali.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/men/29.jpg"
-    name="Rohit Kumar"
-    rollNo="BCA21007"
-    email="rohit.kumar@example.com"
-    field="Frontend Developer"
-    isVerified={false}
-    analyticsScore={68}
-    portfolioLink="https://rohit-ui.com"
-    dashboardLink="/dashboard/rohit"
-    resumeLink="/resumes/rohit.pdf"
-    resumeDownloadLink="/resumes/rohit.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/women/10.jpg"
-    name="Divya Kapoor"
-    rollNo="BCA21008"
-    email="divya.kapoor@example.com"
-    field="Business Analyst"
-    isVerified={true}
-    analyticsScore={76}
-    portfolioLink="https://divyaba.com"
-    dashboardLink="/dashboard/divya"
-    resumeLink="/resumes/divya.pdf"
-    resumeDownloadLink="/resumes/divya.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/men/65.jpg"
-    name="Nikhil Joshi"
-    rollNo="BCA21009"
-    email="nikhil.joshi@example.com"
-    field="Cybersecurity Analyst"
-    isVerified={false}
-    analyticsScore={70}
-    portfolioLink="https://nikhilcyber.com"
-    dashboardLink="/dashboard/nikhil"
-    resumeLink="/resumes/nikhil.pdf"
-    resumeDownloadLink="/resumes/nikhil.pdf"
-  />
-
-  <StudentCard
-    image="https://randomuser.me/api/portraits/women/55.jpg"
-    name="Isha Malhotra"
-    rollNo="BCA21010"
-    email="isha.malhotra@example.com"
-    field="Cloud Engineer"
-    isVerified={true}
-    analyticsScore={85}
-    portfolioLink="https://ishacloud.com"
-    dashboardLink="/dashboard/isha"
-    resumeLink="/resumes/isha.pdf"
-    resumeDownloadLink="/resumes/isha.pdf"
-  />
-
-</div>
-
-    {/* Student Table */}
-  
-
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      <StudentCard
+        image="https://randomuser.me/api/portraits/men/32.jpg"
+        name="Rahul Sharma"
+        rollNo="BCA21001"
+        email="rahul.sharma@example.com"
+        field="Full Stack Developer"
+        isVerified={true}
+        analyticsScore={88}
+        portfolioLink="https://rahul-portfolio.com"
+        dashboardLink="/dashboard/rahul"
+        resumeLink="/resumes/rahul.pdf"
+        resumeDownloadLink="/resumes/rahul.pdf"
+      />
+      {/* More StudentCards... */}
+    </div>
 
     {/* Pagination */}
     <div className="flex items-center justify-between mt-6">
@@ -498,6 +395,202 @@ const StudentManagement = () => (
     </div>
   </div>
 );
+
+const CompanyManagement = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <CompanyCard
+      logo="https://logo.clearbit.com/microsoft.com"
+      companyName="Microsoft India"
+      studentsApplied={120}
+      onDeleteCompany={() => console.log("Deleted Microsoft")}
+      onDeleteJob={(job) => console.log("Deleted Job from Microsoft:", job)}
+      onAddJobSubmit={(job) => console.log("New Microsoft Job:", job)}
+      jobs={[
+        {
+          title: "Frontend Developer",
+          requirements: ["React", "Tailwind", "Git"],
+          responsibilities: ["Build UI", "Collaborate with backend"],
+          resources: ["Figma", "Codebase Access"],
+        },
+        {
+          title: "Backend Engineer",
+          requirements: ["Node.js", "MongoDB"],
+          responsibilities: ["API Development", "Database Design"],
+          resources: ["DB Server", "API Docs"],
+        },
+      ]}
+    />
+    {/* More CompanyCards... */}
+  </div>
+);
+
+const ResumeTemplates = () => {
+  const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist']);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [templates] = useState([
+    {
+      id: 1,
+      name: 'Modern Professional',
+      category: 'Professional',
+      downloads: 1245,
+      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Modern+Professional'
+    },
+    // More templates...
+  ]);
+
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [newTemplate, setNewTemplate] = useState({
+    name: '',
+    category: 'Professional',
+    file: null
+  });
+
+  const handleUpload = (e) => {
+    e.preventDefault();
+    // Upload logic here
+    setShowUploadModal(false);
+  };
+
+  return (
+    <div className="p-6 bg-white rounded-lg shadow-sm">
+      <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
+        <h3 className="text-lg font-semibold text-gray-800">Resume Templates</h3>
+        <button 
+          onClick={() => setShowUploadModal(true)}
+          className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        >
+          <FiUpload className="w-4 h-4 mr-2" />
+          Upload Template
+        </button>
+      </div>
+
+      <div className="mb-6 overflow-x-auto">
+        <div className="flex space-x-2 pb-2">
+          {categories.map(category => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 text-sm font-medium rounded-md ${
+                selectedCategory === category
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {templates.map(template => (
+          <div key={template.id} className="border rounded-lg overflow-hidden shadow-sm">
+            <img src={template.thumbnail} alt={template.name} className="w-full h-48 object-cover" />
+            <div className="p-4">
+              <h4 className="font-medium">{template.name}</h4>
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">{template.category}</span>
+                <span className="text-sm flex items-center">
+                  <FiDownload className="mr-1" /> {template.downloads}
+                </span>
+              </div>
+              <div className="mt-4 flex space-x-2">
+                <button className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm">
+                  Preview
+                </button>
+                <button className="bg-blue-50 text-blue-600 px-3 py-1 rounded-md text-sm">
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">Upload New Template</h3>
+              <button onClick={() => setShowUploadModal(false)}>
+                <FiX />
+              </button>
+            </div>
+            <form onSubmit={handleUpload} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Template Name</label>
+                <input 
+                  type="text" 
+                  className="w-full border rounded-md p-2 text-sm"
+                  value={newTemplate.name}
+                  onChange={(e) => setNewTemplate({...newTemplate, name: e.target.value})}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select 
+                  className="w-full border rounded-md p-2 text-sm"
+                  value={newTemplate.category}
+                  onChange={(e) => setNewTemplate({...newTemplate, category: e.target.value})}
+                >
+                  {categories.filter(c => c !== 'All').map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Template File</label>
+                <div className="border-2 border-dashed rounded-md p-6 text-center">
+                  <FiUpload className="mx-auto text-gray-400 text-2xl mb-2" />
+                  <p className="text-sm text-gray-600">
+                    <span className="text-blue-600">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">PDF, DOCX up to 10MB</p>
+                  <input 
+                    type="file" 
+                    className="hidden"
+                    onChange={(e) => setNewTemplate({...newTemplate, file: e.target.files[0]})}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button 
+                  type="button" 
+                  className="px-4 py-2 text-sm bg-gray-100 rounded-md"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md"
+                >
+                  Upload
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const PortfolioTemplates = () => {
+  // Similar implementation to ResumeTemplates with portfolio-specific data
+  return (
+    <div className="p-6 bg-white rounded-lg shadow-sm">
+      {/* Similar structure to ResumeTemplates */}
+    </div>
+  );
+};
+
+const Communications = () => <Comm />;
+const Analytics = () => <Anayltics />;
+const List = () => <ListComponent />;
+const Settings = () => <div>Settings Content</div>;
 
 // Helper Components
 const StatCard = ({ title, value, change, icon, color }) => {
@@ -568,201 +661,5 @@ const StatusBadge = ({ status }) => {
     </span>
   );
 };
-
-const CompanyManagement = () => (
-  <>
-  <div  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/microsoft.com"
-      companyName="Microsoft India"
-      studentsApplied={120}
-      onDeleteCompany={() => console.log("Deleted Microsoft")}
-      onDeleteJob={(job) => console.log("Deleted Job from Microsoft:", job)}
-      onAddJobSubmit={(job) => console.log("New Microsoft Job:", job)}
-      jobs={[
-        {
-          title: "Frontend Developer",
-          requirements: ["React", "Tailwind", "Git"],
-          responsibilities: ["Build UI", "Collaborate with backend"],
-          resources: ["Figma", "Codebase Access"],
-        },
-        {
-          title: "Backend Engineer",
-          requirements: ["Node.js", "MongoDB"],
-          responsibilities: ["API Development", "Database Design"],
-          resources: ["DB Server", "API Docs"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/google.com"
-      companyName="Google"
-      studentsApplied={200}
-      onDeleteCompany={() => console.log("Deleted Google")}
-      onDeleteJob={(job) => console.log("Deleted Job from Google:", job)}
-      onAddJobSubmit={(job) => console.log("New Google Job:", job)}
-      jobs={[
-        {
-          title: "AI Researcher",
-          requirements: ["Python", "TensorFlow", "ML Theory"],
-          responsibilities: ["Train models", "Research"],
-          resources: ["TPUs", "Datasets"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/amazon.com"
-      companyName="Amazon"
-      studentsApplied={150}
-      onDeleteCompany={() => console.log("Deleted Amazon")}
-      onDeleteJob={(job) => console.log("Deleted Job from Amazon:", job)}
-      onAddJobSubmit={(job) => console.log("New Amazon Job:", job)}
-      jobs={[
-        {
-          title: "SDE-1",
-          requirements: ["Java", "DSA", "AWS"],
-          responsibilities: ["Service development", "Code reviews"],
-          resources: ["Internal Tools", "Codebase"],
-        },
-        {
-          title: "DevOps Engineer",
-          requirements: ["CI/CD", "Docker", "Kubernetes"],
-          responsibilities: ["Deploy pipelines", "Infrastructure monitoring"],
-          resources: ["Jenkins", "Grafana"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/apple.com"
-      companyName="Apple"
-      studentsApplied={95}
-      onDeleteCompany={() => console.log("Deleted Apple")}
-      onDeleteJob={(job) => console.log("Deleted Job from Apple:", job)}
-      onAddJobSubmit={(job) => console.log("New Apple Job:", job)}
-      jobs={[
-        {
-          title: "iOS Engineer",
-          requirements: ["Swift", "UIKit"],
-          responsibilities: ["App development", "Testing"],
-          resources: ["Xcode", "TestFlight"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/meta.com"
-      companyName="Meta"
-      studentsApplied={180}
-      onDeleteCompany={() => console.log("Deleted Meta")}
-      onDeleteJob={(job) => console.log("Deleted Job from Meta:", job)}
-      onAddJobSubmit={(job) => console.log("New Meta Job:", job)}
-      jobs={[
-        {
-          title: "AR/VR Developer",
-          requirements: ["Unity", "C#", "Oculus SDK"],
-          responsibilities: ["Build VR apps", "Integrate APIs"],
-          resources: ["Unity Hub", "Oculus Dev Tools"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/tesla.com"
-      companyName="Tesla"
-      studentsApplied={60}
-      onDeleteCompany={() => console.log("Deleted Tesla")}
-      onDeleteJob={(job) => console.log("Deleted Job from Tesla:", job)}
-      onAddJobSubmit={(job) => console.log("New Tesla Job:", job)}
-      jobs={[
-        {
-          title: "Embedded Systems Engineer",
-          requirements: ["C/C++", "RTOS"],
-          responsibilities: ["Develop firmware", "Test systems"],
-          resources: ["Hardware lab", "Simulators"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/netflix.com"
-      companyName="Netflix"
-      studentsApplied={88}
-      onDeleteCompany={() => console.log("Deleted Netflix")}
-      onDeleteJob={(job) => console.log("Deleted Job from Netflix:", job)}
-      onAddJobSubmit={(job) => console.log("New Netflix Job:", job)}
-      jobs={[
-        {
-          title: "Streaming Platform Engineer",
-          requirements: ["Golang", "Distributed Systems"],
-          responsibilities: ["Maintain low-latency streaming", "Scale infra"],
-          resources: ["Edge Servers", "Grafana"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/intel.com"
-      companyName="Intel"
-      studentsApplied={70}
-      onDeleteCompany={() => console.log("Deleted Intel")}
-      onDeleteJob={(job) => console.log("Deleted Job from Intel:", job)}
-      onAddJobSubmit={(job) => console.log("New Intel Job:", job)}
-      jobs={[
-        {
-          title: "Chip Design Engineer",
-          requirements: ["Verilog", "VHDL"],
-          responsibilities: ["Design chips", "Simulate designs"],
-          resources: ["Cadence", "EDA Tools"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/salesforce.com"
-      companyName="Salesforce"
-      studentsApplied={112}
-      onDeleteCompany={() => console.log("Deleted Salesforce")}
-      onDeleteJob={(job) => console.log("Deleted Job from Salesforce:", job)}
-      onAddJobSubmit={(job) => console.log("New Salesforce Job:", job)}
-      jobs={[
-        {
-          title: "CRM Developer",
-          requirements: ["Apex", "Lightning", "SOQL"],
-          responsibilities: ["Build CRM solutions", "Client integrations"],
-          resources: ["Salesforce Sandbox", "Trailhead"],
-        },
-      ]}
-    />
-
-    <CompanyCard
-      logo="https://logo.clearbit.com/adobe.com"
-      companyName="Adobe"
-      studentsApplied={134}
-      onDeleteCompany={() => console.log("Deleted Adobe")}
-      onDeleteJob={(job) => console.log("Deleted Job from Adobe:", job)}
-      onAddJobSubmit={(job) => console.log("New Adobe Job:", job)}
-      jobs={[
-        {
-          title: "UI/UX Designer",
-          requirements: ["Adobe XD", "Figma"],
-          responsibilities: ["Create mockups", "Design user flows"],
-          resources: ["Design System", "Prototypes"],
-        },
-      ]}
-    />
-    </div>
-  </>
-);
-
-const Communications = () => 
-<Comm/>
-;
-const Analytics = () => <><Anayltics/></>;
-const List = () => <ListComponent/>;
-const Settings = () => <div>Settings Content</div>;
 
 export default AdminDashboard;
