@@ -203,7 +203,7 @@ const JobSuggestions = () => {
         ))}
       </div>
 
-      {jobs.length > 0 && (
+      {jobs.length >3 && (
         <button className="flex items-center text-sm text-gray-600 hover:text-blue-600 transition mt-4 font-medium">
           Show all <BsArrowRight className="ml-1" />
         </button>
