@@ -207,117 +207,102 @@ const Notifications = () => {
   const unreadCount = notificationsList.filter(n => !n.read).length;
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <Headerhome />
-      <div className="flex gap-6 px-4 mt-4 max-w-7xl mx-auto">
-        <div className="w-full max-w-xs sticky top-20 self-start hidden md:block">
-          <Profilesection />
-        </div>
-        
-        <div className="flex-1">
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
-            <div className="p-4 border-b">
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-xl font-semibold">Notifications</h1>
-                <div className="flex items-center space-x-2">
-                  <button 
-                    onClick={markAllAsRead}
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    Mark all as read
-                  </button>
-                  <button className="text-gray-500 hover:text-gray-700">
-                    <FiSettings size={18} />
-                  </button>
-                </div>
-              </div>
-              
-              <div className="relative">
-                <FiSearch className="absolute left-3 top-3 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search notifications..."
-                  className="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              
-              <div className="flex overflow-x-auto mt-4 pb-2 scrollbar-hide">
+   <div className="bg-gray-100 min-h-screen">
+  <Headerhome />
+  <div className="flex flex-col md:flex-row gap-6 px-4 mt-4 max-w-7xl mx-auto">
+    
+    {/* Left Profile Section (hidden on small screens) */}
+    <div className="w-full md:max-w-xs md:sticky md:top-20 self-start hidden md:block">
+      <Profilesection />
+    </div>
+
+    {/* Right Notifications Section */}
+    <div className="w-full flex-1">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
+        {/* Header */}
+        <div className="p-4 border-b">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+            <h1 className="text-xl font-semibold">Notifications</h1>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={markAllAsRead}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Mark all as read
+              </button>
+              <button className="text-gray-500 hover:text-gray-700">
+                <FiSettings size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Search Input */}
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search notifications..."
+              className="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="flex overflow-x-auto mt-4 pb-2 scrollbar-hide">
+            {['all', 'mention', 'job', 'connection', 'birthday'].map((type) => {
+              const label = type.charAt(0).toUpperCase() + type.slice(1);
+              const isActive = activeFilter === type;
+
+              const colors = {
+                all: 'blue',
+                mention: 'purple',
+                job: 'blue',
+                connection: 'green',
+                birthday: 'pink',
+              };
+
+              return (
                 <button
-                  onClick={() => setActiveFilter('all')}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap mr-2 ${
-                    activeFilter === 'all' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  key={type}
+                  onClick={() => setActiveFilter(type)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap mr-2 transition-colors duration-150
+                    ${isActive
+                      ? `bg-${colors[type]}-100 text-${colors[type]}-700`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`
+                  }
                 >
-                  All {unreadCount > 0 && (
+                  {label}
+                  {type === 'all' && unreadCount > 0 && (
                     <span className="ml-1 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                       {unreadCount}
                     </span>
                   )}
                 </button>
-                <button
-                  onClick={() => setActiveFilter('mention')}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap mr-2 ${
-                    activeFilter === 'mention' 
-                      ? 'bg-purple-100 text-purple-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Mentions
-                </button>
-                <button
-                  onClick={() => setActiveFilter('job')}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap mr-2 ${
-                    activeFilter === 'job' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Jobs
-                </button>
-                <button
-                  onClick={() => setActiveFilter('connection')}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap mr-2 ${
-                    activeFilter === 'connection' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Connections
-                </button>
-                <button
-                  onClick={() => setActiveFilter('birthday')}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap mr-2 ${
-                    activeFilter === 'birthday' 
-                      ? 'bg-pink-100 text-pink-700' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Birthdays
-                </button>
-              </div>
-            </div>
-            
-            {filteredNotifications.length > 0 ? (
-              filteredNotifications.map((n) => (
-                <NotificationCard 
-                  key={n.id} 
-                  notification={n} 
-                  onMarkAsRead={markAsRead}
-                />
-              ))
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                No notifications found
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
+
+        {/* Notification Cards */}
+        {filteredNotifications.length > 0 ? (
+          filteredNotifications.map((n) => (
+            <NotificationCard 
+              key={n.id} 
+              notification={n} 
+              onMarkAsRead={markAsRead}
+            />
+          ))
+        ) : (
+          <div className="p-8 text-center text-gray-500">
+            No notifications found
+          </div>
+        )}
       </div>
     </div>
+  </div>
+</div>
+
   );
 };
 
