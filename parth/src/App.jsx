@@ -18,10 +18,10 @@ function App() {
     <Route path='/home' element={<Home/>} />
     <Route path='/email'element={<Email/>}/>
     <Route path="/jobs"element={<JobsCards/>}/>
-     <Route path='/form' element={<Form/>} />
-      <Route path='/admin' element={<Admin/>} />
-       <Route path='/messaging' element={<Message/>} />
-       <Route path="/notifications"element={<Notifications/>}/>
+    <Route path='/form' element={<Form/>} />
+    <Route path='/admin' element={<Admin/>} />
+    <Route path='/messaging' element={<Message/>} />
+    <Route path="/notifications"element={<Notifications/>}/>
    </Routes>
     </>
   )
