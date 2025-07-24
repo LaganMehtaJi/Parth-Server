@@ -40,16 +40,17 @@ const Services = () => {
       <div className=" mx-auto px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-indig-50">
       <div className=" container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
 
-      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8">Our Services</h2>
+      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
+    from-indigo-900 via-violet-600 to-blue-900  bg-clip-text text-transparent">Our Services</h2>
       <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto mb-12"></div>
       
       <div className="flex flex-col md:flex-row items-center gap-8">
         {/* Left Column - Animation */}
-        <div className="w-full md:w-1/2 flex justify-center">
+        <div className="w-full md:w-1/2 flex justify-center -mt-35">
             <DotLottieReact
                 src="https://lottie.host/b06a2ca9-a41f-4fe4-9ccc-789becde8e0f/gM3IdWQT9D.lottie"
                 loop
-                autoplay style={{ height: '600px', width: '1000px' }}/>
+                autoplay style={{ height: '800px', width: '1200px' }}/>
         </div>
         
         {/* Right Column - Steps */}

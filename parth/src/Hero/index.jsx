@@ -16,6 +16,7 @@ import Marquee from './Marquee';
 import HowItStarts from './HowItStarts';
 import Services from './Services';
 import OurTeam from './OurTeam';
+import Parth from './Parth';
 
 const ParthPlacement = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -166,7 +167,7 @@ const ParthPlacement = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-8 py-3 bg-black text-white rounded-sm shadow-lg"
+                      className="px-8 py-3 bg-black text-white text-xl rounded-sm shadow-lg"
 
                     >
                       Get Started
@@ -176,31 +177,16 @@ const ParthPlacement = () => {
                   </div>
                 </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
-                  className="mt-20"
-                >
-                  <motion.button
-                    onClick={() => scrollTo('services')}
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="flex flex-col items-center text-gray-600"
-                  >
-                    <span>Scroll Down</span>
-                    <FiArrowDown className="mt-2 text-2xl" />
-                  </motion.button>
-                </motion.div>
-              </div>
+               </div>
             </section>
 
             {/* Services Section */}
               <Services/>
-            {/*How it start? */}
+            {/*How it startS? */}
              <HowItStarts/>
-            
-
+             {/* PARTH*/}
+            <Parth/>
+  
             {/* Team members section */}
              <OurTeam/>
             {/*Marquee*/}

@@ -34,7 +34,8 @@ const HowItStarts = () => {
   return (
     <div className=" mx-auto px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-rose-10">
       <div class="container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8">How it starts?</h2>
+      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
+    from-indigo-900 via-violet-600 to-blue-900  bg-clip-text text-transparent">How it starts?</h2>
       <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto mb-12  border-gray-400"></div>
       
       <div className="flex flex-col md:flex-row items-center gap-8 ">
@@ -65,7 +66,7 @@ const HowItStarts = () => {
               
               {/* Step Content */}
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-gray-800 group-hover:text-purple-900 mb-2">
+                <h3 className="text-xl font-semibold group-hover:text-purple-900 mb-2">
                   {item.title}
                 </h3>
                 <p className="text-gray-600 text-xl group-hover:text-gray-800">
@@ -77,7 +78,7 @@ const HowItStarts = () => {
         </div>
         
         {/* Right Column - Image/Animation */}
-        <div className="w-full md:w-1/2 flex justify-center">
+        <div className="w-full relative -top-25 md:w-1/2 flex justify-center">
        
            <DotLottieReact
       src="https://lottie.host/de2dbcf8-f33d-4b5c-acb8-ba8953aee356/wPuT3sblZw.lottie"

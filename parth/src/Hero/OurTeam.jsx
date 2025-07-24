@@ -1,81 +1,40 @@
-import React from 'react'
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Pagination, Autoplay } from 'swiper/modules';
+import React from 'react';
+
 const Team = [
-    {
-      name: "Aryan",
-      desc: "Acharya Pankaj orchestrated success in their webinar funnel growth with Adymize's magic touch",
-      image: "images/aryan.png",
-      badge: "30% MORE UPSALES & 50% MORE PROFIT"
-    },
-    {
-      name: "Ananya Sharma",
-      desc: "Adymize helped scale my personal brand with optimized content funnels.",
-      image: "images/aryan.png",
-      badge: "BRAND GROWTH 2X"
-    },
-    {
-      name: "Dr. Rajat Mehra",
-      desc: "Our online appointments increased by 3x after partnering with Adymize.",
-      image: "images/aryan.png",
-      badge: "3X ONLINE BOOKINGS"
-    }
-  ];
+  { id: 1, name: "JAGRITI GABA", image: "/images/aryan.png", role: "CEO & Founder" },
+  { id: 2, name: "Lagan Mehta", image: "/images/aryan.png", role: "Marketing Director" },
+  { id: 3, name: "PANKAJ", image: "/images/aryan.png", role: "Tech Lead" },
+  { id: 4, name: "CHAHAT SHARMA", image: "/images/aryan.png", role: "Design Head" }
+];
 
-
-const OurTeam = () => {
-    return (
-           <div class="container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-            <section >
-                {/* Centered Heading Section */}
-                
-                    {/* Swiper Container */}
-                    <div className=" bg-gradient-to-r from-indigo-50 via-violet-200 to-indigo-50">
-                       <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Our Team</h2>
-                    <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto"></div>
-                    
-                        <Swiper
-                            modules={[Pagination, Autoplay]}
-                            pagination={{ clickable: true }}
-                            autoplay={{ delay: 5000 }}
-                            loop={true}
-                            spaceBetween={30}
-                            slidesPerView={1}
-                            className="max-w-6xl mx-auto"
-                        > 
-                        
-                            {Team.map((item, i) => (
-                                <SwiperSlide key={i}>
-                                    <div className="flex flex-col md:flex-row items-center bg-white shadow-lg rounded-2xl overflow-hidden p-6 md:p-10">
-                                        
-                                        {/* Left Image */}
-                                        <div className="w-full md:w-1/2 mb-6 md:mb-0 flex justify-center">
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                                className="max-h-[300px] object-contain"
-                                            />
-                                        </div>
-
-                                        {/* Right Text */}
-                                        <div className="w-full md:w-1/2 text-center md:text-left">
-                                            <div className="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded mb-4 uppercase tracking-wider">
-                                                {item.badge}
-                                            </div>
-                                            <p className="text-2xl font-semibold text-gray-900 mb-3">{item.desc}</p>
-                                            <p className="text-gray-700 font-medium">{item.name}</p>
-                                        </div>
-                                    </div>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    </div>
-                
-            </section>
-        </div>
-    )
+export default function OurTeam() {
+  return (
+    <section className="w-full bg-gray-50">
+      <h2 className="text-4xl font-bold py-16 text-center bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+        Our Team
+      </h2>
+      <div className="snap-y snap-mandatory h-screen w-full overflow-y-scroll scroll-smooth">
+        {Team.map(member => (
+          <div 
+            key={member.id} 
+            className="snap-start h-screen w-full flex items-center justify-center bg-gray-50"
+          >
+            <div className="max-w-md w-full mx-auto">
+              <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center space-y-4">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800">{member.name}</h3>
+                <p className="text-indigo-600 font-medium">{member.role}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
-
-export default OurTeam
