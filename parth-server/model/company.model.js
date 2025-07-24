@@ -1,14 +1,3 @@
-import mongoose from "mongoose";
-
-const { Schema } = mongoose;
-
-
-const CompanySchema = new Schema({
-  name:        { type: String, required: true },
-  logoUrl:     { type: String },
-  description: { type: String },
-  createdAt:   { type: Date,   default: Date.now }
-});
 
 export const Company = mongoose.model('Company', CompanySchema);
 
