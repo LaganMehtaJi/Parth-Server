@@ -18,17 +18,10 @@ function App() {
     <Route path='/home' element={<Home/>} />
     <Route path='/email'element={<Email/>}/>
     <Route path="/jobs"element={<JobsCards/>}/>
-<<<<<<< HEAD
-    <Route path='/form' element={<Form/>} />
-    <Route path='/admin' element={<Admin/>} />
-    <Route path='/messaging' element={<Message/>} />
-    <Route path="/notifications"element={<Notifications/>}/>
-=======
      <Route path='/dashboard' element={<Dashboard/>} />
       <Route path='/admin' element={<Admin/>} />
        <Route path='/messaging' element={<Message/>} />
        <Route path="/notifications"element={<Notifications/>}/>
->>>>>>> 812acdaabdd3360cea22c6670883db7424024807
    </Routes>
     </>
   )

@@ -4,6 +4,7 @@ import CompanyCard from './CompanyCard/index.jsx';
 import Comm from './Communications/index.jsx';
 import Anayltics from "./Anayltics/index.jsx";
 import ListComponent from "./List/index.jsx";
+import His from "./History/index.jsx";
 import { 
   FiHome, 
   FiUsers, 
@@ -142,10 +143,10 @@ const AdminDashboard = () => {
           />
           <NavItem 
             icon={<FiSettings className="w-5 h-5" />} 
-            text="Settings" 
-            active={activeTab === 'settings'}
+            text="History" 
+            active={activeTab === 'History'}
             onClick={() => {
-              setActiveTab('settings');
+              setActiveTab('History');
               setMobileMenuOpen(false);
             }}
           />
