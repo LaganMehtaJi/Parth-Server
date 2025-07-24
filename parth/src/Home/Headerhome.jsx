@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useLocation } from 'react-router-dom';
 import {
   AiFillHome,
   AiFillBell,
@@ -12,8 +12,10 @@ import { MdEmail } from 'react-icons/md';
 const Headerhome = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [activeNav, setActiveNav] = useState('Home');
+  const [activeNav, setActiveNav] = useState();
+
   const dropdownRef = useRef(null);
+  const location=useLocation();
 
   const navItems = [
     { label: 'Home', icon: <AiFillHome size={24} />, path: '/home' },
@@ -98,7 +100,7 @@ const Headerhome = () => {
                   to={path}
                   key={label}
                   className={`relative flex flex-col items-center p-2 rounded-md hover:bg-gray-100 transition-colors ${
-                    activeNav === label ? 'font-medium text-black' : 'font-normal text-gray-600'
+                    location.pathname === path ? 'font-medium text-black' : 'font-normal text-gray-600'
                   }`}
                   aria-label={label}
                   onClick={() => setActiveNav(label)}
@@ -107,7 +109,7 @@ const Headerhome = () => {
                     {icon}
                   </div>
                   <span className="text-xs mt-1 hidden sm:inline">{label}</span>
-                  {activeNav === label && (
+                  {location.pathname == path && (
                     <div className="absolute bottom-0 w-4/5 h-0.5 bg-black hidden sm:block"></div>
                   )}
                 </Link>

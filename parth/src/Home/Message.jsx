@@ -19,7 +19,10 @@ const Message = () => {
     setNewMessage('');
 
     setTimeout(() => {
-      setMessages(prev => [...prev, { sender: 'admin', text: 'Thanks for reaching out. We’ll get back shortly.' }]);
+      setMessages(prev => [
+        ...prev,
+        { sender: 'admin', text: 'Thanks for reaching out. We’ll get back shortly.' },
+      ]);
     }, 1000);
   };
 
@@ -58,19 +61,22 @@ const Message = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Headerhome />
-      <div className="flex gap-6 px-4 mt-4">
-        <div className="w-full max-w-xs sticky top-20 self-start">
+
+      <div className="flex flex-col lg:flex-row gap-6 px-4 py-4">
+        {/* Profile Section (hide sticky on mobile) */}
+        <div className="w-full lg:max-w-xs">
           <Profilesection />
         </div>
 
-        <div className="flex justify-center mt-6">
-          <div className="w-[380px] sm:w-[800px] h-[650px] border border-gray-300 rounded-2xl shadow-lg flex flex-col bg-white overflow-hidden">
+        {/* Chat Section */}
+        <div className="flex justify-center w-full mt-4 lg:mt-0">
+          <div className="w-full max-w-xl h-[400px] sm:h-[500px] border border-gray-300 rounded-2xl shadow-lg flex flex-col bg-white overflow-hidden">
             {/* Header */}
-            <div className="bg-blue-600 text-white text-lg font-semibold px-4 py-3 rounded-t-2xl">
-              Chat with Admin
+            <div className="bg-blue-600 text-white text-lg font-semibold px-4 py-3 rounded-t-2xl flex justify-center">
+              <div className="w-14 h-4 bg-white rounded-full shadow-md"></div>
             </div>
 
-            {/* Messages */}
+            {/* Chat Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50">
               {messages.map((msg, idx) => (
                 <div
@@ -86,8 +92,8 @@ const Message = () => {
               ))}
             </div>
 
-            {/* Input */}
-            <div className="flex items-center border-t border-gray-200 p-2 bg-white">
+            {/* Input Area */}
+            <div className="flex items-center border-t border-gray-200 p-2 bg-white flex-wrap gap-2 sm:flex-nowrap">
               <input
                 type="text"
                 className="flex-1 p-2 rounded-lg border border-gray-300 focus:outline-none"
@@ -98,7 +104,9 @@ const Message = () => {
               />
 
               <button
-                className={`ml-2 p-2 rounded-full ${isListening ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+                className={`p-2 rounded-full ${
+                  isListening ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-blue-600'
+                }`}
                 onClick={startListening}
                 title="Speak"
               >
@@ -107,7 +115,7 @@ const Message = () => {
 
               <button
                 onClick={handleSend}
-                className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base"
               >
                 Send
               </button>
