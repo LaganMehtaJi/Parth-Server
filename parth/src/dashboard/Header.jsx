@@ -4,7 +4,7 @@ import { FiSearch, FiBell, FiUser, FiMenu } from "react-icons/fi";
 
 const Header = ({ toggleSidebar }) => {
   return (
-    <header className="bg-white shadow-md px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+    <header className="bg-white shadow-md px-2 py-2 flex items-center justify-between sticky top-0 z-50 h-14 md:h-14 lg:h-14">
       
       
       <div className="md:hidden mr-2">
@@ -17,7 +17,7 @@ const Header = ({ toggleSidebar }) => {
     
       <div className="flex items-center gap-2 flex-shrink-0">
         <img src={logo} alt="Parth" className="h-10 w-10 object-contain" />
-        <h1 className="text-xl font-bold">PARTH</h1>
+        <h1 className="text-3xl font-bold pt-6">PARTH</h1>
       </div>
 
       

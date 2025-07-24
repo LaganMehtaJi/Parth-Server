@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-  <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+  <Header className=" h-14 md:h-14 lg:h-10" toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
   <div className="flex flex-1">
     <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
     <main className="flex-1 bg-[#ecf5fb] p-4">

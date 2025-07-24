@@ -6,6 +6,7 @@ import RightLinks from './RightsLinks';
 
 export default function Index() {
   return (
+    
     <div className="bg-gray-100 min-h-screen">
       <Headerhome />
       <div className="flex gap-6 px-4 mt-4">

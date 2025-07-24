@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import logo from '../assets/ParthLogo.jpg'
+import { Link } from "react-router-dom";
+import { link } from "framer-motion/client";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
@@ -44,7 +46,7 @@ const Sidebar = () => {
   <div className="flex items-center gap-2 flex-shrink-0">
          <img src={logo} alt="Parth" className="h-8 w-auto" />
 
-          <h1 className="text-xl font-bold">PARTH</h1>
+          <h1 className="text-2xl font-bold pt-8">PARTH</h1>
 </div>
 </div>
 
@@ -60,21 +62,25 @@ const Sidebar = () => {
         } md:translate-x-0 transform transition-transform duration-300 ease-in-out bg-[#0d2c54] text-white w-64 min-h-screen p-6 space-y-4 fixed md:static z-40`}
       >
         {[
-          "Dashboard",
-          "Resume Builder",
-          "Portfolio Builder",
-          "Interviews",
-          "Projects",
-          "Resources",
-          "Settings",
-          "Help and Support",
-          "Log Out",
+          { name:"Dashboard" ,path:'/d'} ,
+          {name:"Resume Builder",path:'/Resumebuilder'},
+          {name:"Portfolio Builder",path:'/Portfolio'},
+          {name:"Interviews",path:'/interviews'},
+          {name:"Projects",path:'/projects'},
+          {name:"Resources",path:'/resources'},
+          { name:"Settings",path:'/settings'},
+          {name:"Help and Support",path:'/help'},
+          {name:"Log Out",path:'/logout'}
         ].map((item) => (
           <div
             key={item}
             className="hover:bg-blue-900 cursor-pointer p-2 rounded transition-colors duration-200"
           >
-            {item}
+            {
+              <LinK to=></LinK>
+              
+             
+            }
           </div>
         ))}
       </aside>
