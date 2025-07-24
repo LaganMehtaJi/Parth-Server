@@ -59,21 +59,24 @@ const Sidebar = () => {
       <aside
         className={`${
           open ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transform transition-transform duration-300 ease-in-out bg-[#0d2c54] text-white w-64 min-h-screen p-6 space-y-4 fixed md:static z-40`}
+        } md:translate-x-0 transform transition-transform duration-300 ease-in-out bg-[#0d2c54] text-white w-64 min-h-screen p-6 space-y-2 fixed md:static z-40`}
       >
         {[
-          { name:"Dashboard" ,path:'/d'} ,
-          {name:"Resume Builder",path:'/Resumebuilder'},
-          {name:"Portfolio Builder",path:'/Portfolio'},
-          {name:"Interviews",path:'/interviews'},
-          {name:"Projects",path:'/projects'},
-          {name:"Resources",path:'/resources'},
-          { name:"Settings",path:'/settings'},
-          {name:"Help and Support",path:'/help'},
-          {name:"Log Out",path:'/logout'}
-        ].map((item) => (
+          { name:"Dashboard" ,path:'/'} ,
+          {name:"Resume Builder",path:'Resumebuilder'},
+          {name:"Portfolio Builder",path:'Portfolio'},
+          {name:"Job Updates",path:'job'},
+          {name:"Projects",path:'projects'},
+          {name:"Certificates",path:'certificates'},
+          { name:"Volunatering",path:'/volunatering'},
+          {name:"Experince",path:'experience'},
+          {name:"Skill",path:'skill'},
+          {name:"Education",path:'education'},
+          {name:"Setting",path:'setting'},
+          {name:"Log Out",path:'logout'}
+        ].map((item,index) => (
           <div
-            key={item}
+            key={item.name}
             className="hover:bg-blue-900 cursor-pointer p-2 rounded transition-colors duration-200"
           >
             {
