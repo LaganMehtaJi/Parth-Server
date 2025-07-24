@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /.env
 .env
 ./.env
 node_modules
 /node_modules
+=======
+/node_modules
+node_modules
+>>>>>>> 3bb28db (Create omething)

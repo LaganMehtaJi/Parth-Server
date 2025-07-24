@@ -1,6 +1,6 @@
 import './App.css'
 import {Routes,Route} from "react-router-dom";
-import Hero from "../src/Hero/index.jsx";
+import Hero from "../src/Hero/HowItStarts.jsx";
 import Home from "../src/Home/index.jsx";
 import Dashboard from './dashboard/index.jsx'
 import Admin from "../src/adminDashboard/admin.jsx";
