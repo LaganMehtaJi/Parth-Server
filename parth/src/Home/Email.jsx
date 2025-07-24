@@ -72,11 +72,14 @@ const Email = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Headerhome />
-      <div className="flex gap-6 px-4 mt-4">
-        <div className="w-full max-w-xs sticky top-20 self-start">
+      <div className="flex flex-col lg:flex-row gap-6 px-4 py-4">
+        {/* Left - Profile (sticky on large screens only) */}
+        <div className="w-full lg:max-w-xs lg:sticky lg:top-20 self-start">
           <Profilesection />
         </div>
-        <div className="p-6 w-full max-w-3xl">
+
+        {/* Right - Main Email Area */}
+        <div className="w-full">
           <div className="flex justify-end mb-4">
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -85,8 +88,10 @@ const Email = () => {
               {showCompose ? 'Close' : 'Compose'}
             </button>
           </div>
+
+          {/* Compose Email */}
           {showCompose && (
-            <div className="bg-white p-6 rounded-xl shadow mb-6">
+            <div className="bg-white p-4 sm:p-6 rounded-xl shadow mb-6 w-full">
               <h3 className="text-lg font-bold mb-4">New Email</h3>
               <form onSubmit={handleSend} className="space-y-4">
                 <input
@@ -125,12 +130,17 @@ const Email = () => {
               </form>
             </div>
           )}
+
+          {/* Outbox */}
           <h2 className="text-xl font-bold mb-4 border-b pb-2">Outbox</h2>
           {paginatedEmails.length === 0 ? (
             <p className="text-gray-500">No sent emails.</p>
           ) : (
             paginatedEmails.map((email) => (
-              <div key={email.id} className="bg-white shadow-md rounded-xl p-4 mb-4">
+              <div
+                key={email.id}
+                className="bg-white shadow-md rounded-xl p-4 mb-4 w-full"
+              >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-semibold text-gray-800">{email.to}</h3>
                 </div>

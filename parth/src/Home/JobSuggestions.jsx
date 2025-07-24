@@ -105,15 +105,19 @@ const JobSuggestions = () => {
   };
 
   return (
+    <>
     <div className="bg-white w-full max-w-2xl rounded-lg shadow-md p-5 border border-gray-200">
-      <h1 className="font-semibold text-gray-800 text-lg mb-1">
-        Top job picks for you
-      </h1>
-      <p className="text-xs text-gray-500 mb-4">
-        Based on your profile, preferences, and activity like applies, searches, and saves
-      </p>
+      <div className="sticky top-0 z-20 bg-white px-5 pt-4 pb-3 border-b border-gray-200">
+    <h1 className="text-lg font-semibold text-gray-800">
+      Top job picks for you
+    </h1>
+    <p className="text-xs text-gray-500">
+      Based on your profile, preferences, and activity like applies, searches, and saves
+    </p>
+  </div>
 
-      <div className="space-y-4">
+
+      <div className="space-y-4 mt-3">
         {jobs.map((job, index) => (
           <div
             key={index}
@@ -209,6 +213,7 @@ const JobSuggestions = () => {
         </button>
       )}
     </div>
+    </>
   );
 };
 
