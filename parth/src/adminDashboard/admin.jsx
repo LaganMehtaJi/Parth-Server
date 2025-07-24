@@ -4,6 +4,7 @@ import CompanyCard from './CompanyCard/index.jsx';
 import Comm from './Communications/index.jsx';
 import Anayltics from "./Anayltics/index.jsx";
 import ListComponent from "./List/index.jsx";
+import His from "./History/index.jsx";
 import { 
   FiHome, 
   FiUsers, 
@@ -25,8 +26,13 @@ import {
   FiDownload,
   FiUpload,
   FiGrid,
-  FiLink
+  FiLink,
+  FiExternalLink,
+  FiCheck
 } from 'react-icons/fi';
+import Lottie from 'react-lottie';
+import animationData from './loading-animation.json';
+import { TailSpin } from 'react-loader-spinner';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -48,13 +54,11 @@ const AdminDashboard = () => {
       <div className={`fixed inset-y-0 left-0 z-0 w-64 transform bg-gray-900 text-white transition duration-300 ease-in-out lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
           <div className="flex items-center space-x-2 pl-6 font-bold text-3xl">
-           
-              <span className="text-blue-400">P.</span>
-              <span className="text-green-400">A.</span>
-              <span className="text-yellow-400">R.</span>
-              <span className="text-red-400">T.</span>
-              <span className="text-purple-400">H</span>
-            
+            <span className="text-blue-400">P.</span>
+            <span className="text-green-400">A.</span>
+            <span className="text-yellow-400">R.</span>
+            <span className="text-red-400">T.</span>
+            <span className="text-purple-400">H</span>
           </div>
           <button 
             className="p-1 rounded-md lg:hidden hover:bg-gray-800"
@@ -113,9 +117,9 @@ const AdminDashboard = () => {
           <NavItem 
             icon={<FiFileText className="w-5 h-5" />} 
             text="List" 
-            active={activeTab === 'List'}
+            active={activeTab === 'list'}
             onClick={() => {
-              setActiveTab('List');
+              setActiveTab('list');
               setMobileMenuOpen(false);
             }}
           />
@@ -139,10 +143,10 @@ const AdminDashboard = () => {
           />
           <NavItem 
             icon={<FiSettings className="w-5 h-5" />} 
-            text="Settings" 
-            active={activeTab === 'settings'}
+            text="History" 
+            active={activeTab === 'History'}
             onClick={() => {
-              setActiveTab('settings');
+              setActiveTab('History');
               setMobileMenuOpen(false);
             }}
           />
@@ -221,7 +225,7 @@ const AdminDashboard = () => {
           {activeTab === 'companies' && <CompanyManagement />}
           {activeTab === 'communications' && <Communications />}
           {activeTab === 'analytics' && <Analytics />}
-          {activeTab === 'List' && <List />}
+          {activeTab === 'list' && <List />}
           {activeTab === 'resume-templates' && <ResumeTemplates />}
           {activeTab === 'portfolio-templates' && <PortfolioTemplates />}
           {activeTab === 'settings' && <Settings />}
@@ -425,55 +429,128 @@ const CompanyManagement = () => (
 );
 
 const ResumeTemplates = () => {
-  const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist']);
+  const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [templates] = useState([
+  const [templates, setTemplates] = useState([
     {
       id: 1,
       name: 'Modern Professional',
       category: 'Professional',
       downloads: 1245,
-      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Modern+Professional'
+      score: 92,
+      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Modern+Professional',
+      previewUrl: '#',
+      downloadUrl: '#'
+    },
+    {
+      id: 2,
+      name: 'Creative Designer',
+      category: 'Creative',
+      downloads: 892,
+      score: 85,
+      thumbnail: 'https://via.placeholder.com/300x400/10b981/ffffff?text=Creative+Designer',
+      previewUrl: '#',
+      downloadUrl: '#'
     },
     // More templates...
   ]);
 
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState('idle'); // 'idle', 'uploading', 'success', 'error'
   const [newTemplate, setNewTemplate] = useState({
     name: '',
     category: 'Professional',
-    file: null
+    file: null,
+    previewImage: null
   });
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice'
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewTemplate({
+          ...newTemplate,
+          file,
+          previewImage: e.target.result
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleUpload = (e) => {
     e.preventDefault();
-    // Upload logic here
-    setShowUploadModal(false);
+    if (!newTemplate.file) return;
+    
+    setUploadStatus('uploading');
+    
+    // Simulate upload and testing process
+    setTimeout(() => {
+      const score = Math.floor(Math.random() * 21) + 80; // Random score between 80-100
+      
+      // Add new template to the list
+      const newTemplateObj = {
+        id: templates.length + 1,
+        name: newTemplate.name,
+        category: newTemplate.category,
+        downloads: 0,
+        score: score,
+        thumbnail: newTemplate.previewImage || 'https://via.placeholder.com/300x400',
+        previewUrl: '#',
+        downloadUrl: '#'
+      };
+      
+      setTemplates([...templates, newTemplateObj]);
+      setUploadStatus('success');
+      
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setShowUploadModal(false);
+        setUploadStatus('idle');
+        setNewTemplate({
+          name: '',
+          category: 'Professional',
+          file: null,
+          previewImage: null
+        });
+      }, 3000);
+    }, 3000);
   };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
-        <h3 className="text-lg font-semibold text-gray-800">Resume Templates</h3>
+        <h2 className="text-2xl font-bold text-gray-800">Resume Templates</h2>
         <button 
           onClick={() => setShowUploadModal(true)}
-          className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
         >
           <FiUpload className="w-4 h-4 mr-2" />
-          Upload Template
+          Add New Template
         </button>
       </div>
 
+      {/* Category Filter */}
       <div className="mb-6 overflow-x-auto">
         <div className="flex space-x-2 pb-2">
           {categories.map(category => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               {category}
@@ -482,95 +559,186 @@ const ResumeTemplates = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map(template => (
-          <div key={template.id} className="border rounded-lg overflow-hidden shadow-sm">
-            <img src={template.thumbnail} alt={template.name} className="w-full h-48 object-cover" />
-            <div className="p-4">
-              <h4 className="font-medium">{template.name}</h4>
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-sm bg-gray-100 px-2 py-1 rounded-full">{template.category}</span>
-                <span className="text-sm flex items-center">
-                  <FiDownload className="mr-1" /> {template.downloads}
-                </span>
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {templates
+          .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
+          .map(template => (
+            <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={template.thumbnail} 
+                  alt={template.name}
+                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
+                  Score: {template.score}
+                </div>
               </div>
-              <div className="mt-4 flex space-x-2">
-                <button className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm">
-                  Preview
-                </button>
-                <button className="bg-blue-50 text-blue-600 px-3 py-1 rounded-md text-sm">
-                  Download
-                </button>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                    {template.category}
+                  </span>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FiDownload className="w-4 h-4 mr-1" />
+                    {template.downloads.toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex mt-4 space-x-2">
+                  <a 
+                    href={template.previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    <FiExternalLink className="w-4 h-4 mr-1" />
+                    Preview
+                  </a>
+                  <a 
+                    href={template.downloadUrl}
+                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                  >
+                    <FiDownload className="w-4 h-4 mr-1" />
+                    Download
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
+      {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Upload New Template</h3>
-              <button onClick={() => setShowUploadModal(false)}>
-                <FiX />
-              </button>
-            </div>
-            <form onSubmit={handleUpload} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Template Name</label>
-                <input 
-                  type="text" 
-                  className="w-full border rounded-md p-2 text-sm"
-                  value={newTemplate.name}
-                  onChange={(e) => setNewTemplate({...newTemplate, name: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Category</label>
-                <select 
-                  className="w-full border rounded-md p-2 text-sm"
-                  value={newTemplate.category}
-                  onChange={(e) => setNewTemplate({...newTemplate, category: e.target.value})}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-medium text-gray-800">
+                {uploadStatus === 'idle' && 'Upload New Template'}
+                {uploadStatus === 'uploading' && 'Testing Your Template'}
+                {uploadStatus === 'success' && 'Upload Successful!'}
+              </h3>
+              {uploadStatus === 'idle' && (
+                <button 
+                  onClick={() => setShowUploadModal(false)}
+                  className="p-1 text-gray-400 rounded-md hover:bg-gray-100 hover:text-gray-500"
                 >
-                  {categories.filter(c => c !== 'All').map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Template File</label>
-                <div className="border-2 border-dashed rounded-md p-6 text-center">
-                  <FiUpload className="mx-auto text-gray-400 text-2xl mb-2" />
-                  <p className="text-sm text-gray-600">
-                    <span className="text-blue-600">Click to upload</span> or drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">PDF, DOCX up to 10MB</p>
-                  <input 
-                    type="file" 
-                    className="hidden"
-                    onChange={(e) => setNewTemplate({...newTemplate, file: e.target.files[0]})}
+                  <FiX className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            
+            {uploadStatus === 'idle' && (
+              <form onSubmit={handleUpload} className="p-4 space-y-4">
+                <div>
+                  <label className="block mb-1 text-sm font-medium text-gray-700">Template Name</label>
+                  <input
+                    type="text"
+                    value={newTemplate.name}
+                    onChange={(e) => setNewTemplate({...newTemplate, name: e.target.value})}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
+                
+                <div>
+                  <label className="block mb-1 text-sm font-medium text-gray-700">Category</label>
+                  <select
+                    value={newTemplate.category}
+                    onChange={(e) => setNewTemplate({...newTemplate, category: e.target.value})}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    {categories.filter(c => c !== 'All').map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block mb-1 text-sm font-medium text-gray-700">Template File</label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    <div className="space-y-1 text-center">
+                      {newTemplate.previewImage ? (
+                        <img 
+                          src={newTemplate.previewImage} 
+                          alt="Preview" 
+                          className="mx-auto h-32 object-contain"
+                        />
+                      ) : (
+                        <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
+                      )}
+                      <div className="flex text-sm text-gray-600">
+                        <label className="relative font-medium text-blue-600 bg-white rounded-md cursor-pointer hover:text-blue-500">
+                          <span>Upload a file</span>
+                          <input 
+                            type="file" 
+                            className="sr-only"
+                            onChange={handleFileChange}
+                            accept=".pdf,.docx,.zip"
+                            required
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500">PDF, DOCX or ZIP up to 10MB</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowUploadModal(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    Upload & Test
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {uploadStatus === 'uploading' && (
+              <div className="p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  {/* You can use either Lottie or react-loader-spinner */}
+                  {/* Option 1: Lottie animation */}
+                  <Lottie 
+                    options={defaultOptions}
+                    height={150}
+                    width={150}
+                  />
+                  
+                  {/* Option 2: React loader spinner */}
+                  {/* <TailSpin color="#3B82F6" height={80} width={80} /> */}
+                </div>
+                <h4 className="text-lg font-medium text-gray-800 mb-2">Testing Your Template</h4>
+                <p className="text-gray-600">Our system is analyzing your template for quality and compatibility...</p>
               </div>
-              <div className="flex justify-end space-x-3">
-                <button 
-                  type="button" 
-                  className="px-4 py-2 text-sm bg-gray-100 rounded-md"
-                  onClick={() => setShowUploadModal(false)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md"
-                >
-                  Upload
-                </button>
+            )}
+
+            {uploadStatus === 'success' && (
+              <div className="p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
+                    <FiCheck className="w-8 h-8 text-green-600" />
+                  </div>
+                </div>
+                <h4 className="text-lg font-medium text-gray-800 mb-2">Template Approved!</h4>
+                <p className="text-gray-600 mb-4">
+                  Your template scored <span className="font-bold text-green-600">80+</span> in our quality tests!
+                </p>
+                <p className="text-sm text-gray-500">
+                  Congratulations! Your template has been added to our collection.
+                </p>
               </div>
-            </form>
+            )}
           </div>
         </div>
       )}
@@ -579,10 +747,110 @@ const ResumeTemplates = () => {
 };
 
 const PortfolioTemplates = () => {
-  // Similar implementation to ResumeTemplates with portfolio-specific data
+  const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [templates] = useState([
+    {
+      id: 1,
+      name: 'Portfolio Pro',
+      category: 'Professional',
+      downloads: 945,
+      score: 94,
+      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Portfolio+Pro',
+      previewUrl: '#',
+      downloadUrl: '#'
+    },
+    {
+      id: 2,
+      name: 'Design Showcase',
+      category: 'Creative',
+      downloads: 782,
+      score: 89,
+      thumbnail: 'https://via.placeholder.com/300x400/10b981/ffffff?text=Design+Showcase',
+      previewUrl: '#',
+      downloadUrl: '#'
+    },
+    // More templates...
+  ]);
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
-      {/* Similar structure to ResumeTemplates */}
+      <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
+        <h2 className="text-2xl font-bold text-gray-800">Portfolio Templates</h2>
+        <button className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+          <FiUpload className="w-4 h-4 mr-2" />
+          Add New Template
+        </button>
+      </div>
+
+      {/* Category Filter */}
+      <div className="mb-6 overflow-x-auto">
+        <div className="flex space-x-2 pb-2">
+          {categories.map(category => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                selectedCategory === category
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {templates
+          .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
+          .map(template => (
+            <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={template.thumbnail} 
+                  alt={template.name}
+                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
+                  Score: {template.score}
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                    {template.category}
+                  </span>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FiDownload className="w-4 h-4 mr-1" />
+                    {template.downloads.toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex mt-4 space-x-2">
+                  <a 
+                    href={template.previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    <FiExternalLink className="w-4 h-4 mr-1" />
+                    Preview
+                  </a>
+                  <a 
+                    href={template.downloadUrl}
+                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                  >
+                    <FiDownload className="w-4 h-4 mr-1" />
+                    Download
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
@@ -590,7 +858,57 @@ const PortfolioTemplates = () => {
 const Communications = () => <Comm />;
 const Analytics = () => <Anayltics />;
 const List = () => <ListComponent />;
-const Settings = () => <div>Settings Content</div>;
+const Settings = () => (
+  <div className="p-6 bg-white rounded-lg shadow-sm">
+    <h2 className="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
+    <div className="space-y-6">
+      <div className="p-4 border border-gray-200 rounded-lg">
+        <h3 className="text-lg font-medium text-gray-800 mb-3">Account Settings</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              defaultValue="admin@parth.edu"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              placeholder="Enter new password"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+            Update Account
+          </button>
+        </div>
+      </div>
+
+      <div className="p-4 border border-gray-200 rounded-lg">
+        <h3 className="text-lg font-medium text-gray-800 mb-3">System Preferences</h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-700">Dark Mode</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" value="" className="sr-only peer" />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-700">Email Notifications</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 // Helper Components
 const StatCard = ({ title, value, change, icon, color }) => {
