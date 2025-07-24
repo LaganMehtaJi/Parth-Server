@@ -1,13 +1,5 @@
 {
   "dependencies": {
-<<<<<<< HEAD
-    "react-loader-spinner": "^6.1.6"
-=======
-    "dotenv": "^17.2.0",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "lottie-react": "^2.4.1",
-    "mongoose": "^8.16.4"
->>>>>>> 3bb28db (Create omething)
+    "@lottiefiles/dotlottie-react": "^0.14.4"
   }
 }
