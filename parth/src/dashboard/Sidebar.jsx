@@ -77,7 +77,8 @@ const Sidebar = () => {
             className="hover:bg-blue-900 cursor-pointer p-2 rounded transition-colors duration-200"
           >
             {
-              <LinK to=></LinK>
+              <Link to={item.path}>{item.name}
+              </Link >
               
              
             }
