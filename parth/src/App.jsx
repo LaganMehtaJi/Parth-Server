@@ -10,6 +10,8 @@ import Message from './Home/Message.jsx';
 import Notifications from './Home/Notifications.jsx';
 import Main from "./dashboard/main";
 import { Header } from "./dashboard/ResumeBuilder/Header.jsx"; 
+import Index from './dashboard/Projects/Index.jsx';
+import Certificate from './dashboard/Certificates/Certificate.jsx';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
       <Route path='/dashboard' element={<Dashboard />}>
         <Route index element={<Main />} />
         <Route path='Resumebuilder' element={<Header/>} />
+        <Route path='projects'element={<Index/>}/>
+        <Route path='certificates'element={<Certificate/>}/>
       </Route>
     </Routes>
   );
