@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import Main from "./main";
 import Footer from "./Footer";
 
 const Dashboard = () => {
@@ -9,16 +9,22 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-  <Header className=" h-14 md:h-14 lg:h-10" toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-  <div className="flex flex-1">
-    <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(false)} />
-    <main className="flex-1 bg-[#ecf5fb] p-4">
-      <Main />
-    </main>
-  </div>
-  <Footer />
-</div>
-
+      <Header
+        className="h-14 md:h-14 lg:h-10"
+        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
+      <div className="flex flex-1">
+        <Sidebar
+          isOpen={isSidebarOpen}
+          toggleSidebar={() => setIsSidebarOpen(false)}
+        />
+        <main className="flex-1 bg-[#ecf5fb] p-4">
+        
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+    </div>
   );
 };
 
