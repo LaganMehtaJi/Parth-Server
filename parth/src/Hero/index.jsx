@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-import 'swiper/css';
-import 'swiper/css/pagination';
+// import 'swiper/css';
+// import 'swiper/css/pagination';
 
 
 
@@ -16,7 +16,7 @@ import Marquee from './Marquee';
 import HowItStarts from './HowItStarts';
 import Services from './Services';
 import OurTeam from './OurTeam';
-import Parth from './Parth';
+import Parth from './WhatisParth';
 
 const ParthPlacement = () => {
   const [activeSection, setActiveSection] = useState('hero');
