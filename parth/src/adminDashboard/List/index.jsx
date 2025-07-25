@@ -205,7 +205,7 @@ const StudentHistoryTracker = () => {
                 Clear Selection
               </button>
             </div>
-            
+           
             <div className="flex flex-wrap gap-2 mb-4">
               <button
                 onClick={() => activeStudentId && updateStudentStatus(activeStudentId, 'pending')}
