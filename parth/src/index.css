@@ -1,3 +1,27 @@
+
+html, body {
+  overflow-x: hidden;
+}
+html, body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.snap-item {
+  scroll-snap-align: start;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+=======
 .academic-analytics-dashboard {
   padding: 20px;
   font-family: Arial, sans-serif;
