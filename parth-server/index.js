@@ -1,18 +1,21 @@
+<<<<<<< HEAD:index.js
+=======
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan";
 import ConnectDb from "./config/db.js";
-import Resume from "./routes/resume/resume.routes.js";
+import Comapny from "./routes/student/apply.routes.js";
 const app = express();
 dotenv.config();
-app.set("view engine", "ejs");
+app.use(cors());
+app.use(morgan('dev'));
 app.use(express.json());
-app.use("/resume",Resume);
+app.use("/api/company",Comapny);
 
-ConnectDb();
-app.listen(process.env.PORT,(err)=>{
-    if(err){
-        console.log(`Server not Started ${err}`)
-    }else{
-        console.log(`Server Start ${process.env.PORT}`);
-    }
-})
+>>>>>>> 7286c04f945917f3f0e0a50f96a683bbe1ef42c5:parth-server/index.js
+
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
