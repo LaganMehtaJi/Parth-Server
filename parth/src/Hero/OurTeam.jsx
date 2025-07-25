@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { motion } from 'framer-motion';
 const Team = [
   { id: 1, name: "JAGRITI GABA", image: "/images/aryan.png", role: "CEO & Founder" },
   { id: 2, name: "Lagan Mehta", image: "/images/aryan.png", role: "Marketing Director" },
@@ -9,11 +9,19 @@ const Team = [
 
 export default function OurTeam() {
   return (
-    <section className="w-full bg-gray-50">
+    // <section className="w-full bg-gray-50">
+    <motion.div 
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="relative"
+          >
       <h2 className="text-4xl font-bold py-16 text-center bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
         Our Team
       </h2>
-      <div className="snap-y snap-mandatory h-screen w-full overflow-y-scroll scroll-smooth">
+      </motion.div>
+      )
+      {/* {/* <div className="snap-y snap-mandatory h-screen w-full overflow-y-scroll scroll-smooth">
         {Team.map(member => (
           <div 
             key={member.id} 
@@ -33,8 +41,8 @@ export default function OurTeam() {
               </div>
             </div>
           </div>
-        ))}
-      </div>
-    </section>
-  );
+        ))} */}
+      {/* </div>
+    </section> */}
+  
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion';
 
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -22,18 +23,24 @@ const steps = [
     id: 4,
     title: 'Host Your Portfolio',
     description: 'Add credibility to your profile and stand out as an authentic candidate.'
-  },
-  {
-    id:5,
-    title:'You are ready to go!',
-    description:'You are all set to use this platform.'
   }
+  // {
+  //   id:5,
+  //   title:'You are ready to go!',
+  //   description:'You are all set to use this platform.'
+  // }
 ];
 
 const HowItStarts = () => {
   return (
-    <div className=" mx-auto px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-rose-10">
-      <div class="container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <motion.div 
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="relative"
+          >
+    <div className=" px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-rose-10 ">
+      <div className="container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
     from-indigo-900 via-violet-600 to-blue-900  bg-clip-text text-transparent">How it starts?</h2>
       <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto mb-12  border-gray-400"></div>
@@ -89,6 +96,7 @@ const HowItStarts = () => {
       </div>
       </div>
     </div>
+    </motion.div>
   )
 }
 
