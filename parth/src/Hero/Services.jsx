@@ -52,8 +52,8 @@ const Services = () => {
     >                      
       <div className=" container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
 
-      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
-    from-indigo-900 via-violet-600 to-blue-900  bg-clip-text text-transparent">Our Services</h2>
+      <div className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
+    from-indigo-900 via-violet-900 to-blue-900  bg-clip-text text-transparent">Our Services</div>
       <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto mb-12"></div>
       
       <div className="flex flex-col md:flex-row items-center gap-8">

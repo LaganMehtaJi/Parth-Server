@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-
-// import 'swiper/css';
-// import 'swiper/css/pagination';
-
-
-
 import {
   FiUser, FiBriefcase, FiFileText, FiDownload,
   FiLogIn, FiLogOut, FiEdit,
@@ -57,20 +51,20 @@ const ParthPlacement = () => {
           <div className='justify-center'>
             {/* Gradient Navbar (Fixed) */}
             
-            <nav className='sticky top-0 z-50 bg-white shadow-lg px-6 py-3 h-20 mt-4 w-full'>
+            <nav className='sticky z-50 bg-white shadow-2xl px-6 py-3 h-20 mt-4 w-full rounded-4xl'>
 
-              <div className="max-w-7xl mx-auto px-10 h-full flex items-center justify-between gap-16">
+              <div className="max-w-7xl mx-auto px-10 flex items-center justify-between gap-16">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   className="flex items-center space-x-2 cursor-pointer"
                   onClick={() => scrollTo('hero')}
                 >
-                  <img src="/images/logo.png" alt="Logo" className='h-8 w-auto md:h-12 lg:h-16' />
+                  <img src="/images/logo.png" alt="Logo" className=' w-auto md:h-12 lg:h-16' />
                   <span className="text-2xl font-sans text-violet-950 tracking-wide ">PARTH</span>
                 </motion.div>
 
                 <div className="hidden md:flex gap-8 text-violet-900 font-medium">
-                  {['Services', 'Features', 'Why Parth?', 'Our Team'].map((item) => (
+                  {['Our Services','Get started','What is Parth?','Our Team'].map((item) => (
                     <motion.button
                       key={item}
                       whileHover={{ y: -2 }}
@@ -133,14 +127,24 @@ const ParthPlacement = () => {
              {/*Tag line*/}
             <Tagline/>
             {/* Services Section */}
+            <section id="Our Services">
               <Services/>
-            {/*How it startS? */}
+              </section>
+              
+            {/*Get Started */}
+            <section id="Get started">
              <HowItStarts/>
+             </section>
+
              {/* PARTH*/}
+             <section id="What is Parth?">
             <Parth/>
+            </section>
   
             {/* Team members section */}
+            <section id="Our Team">
              <OurTeam/>
+             </section>
             {/*Marquee*/}
             <Marquee/>
 

@@ -1,11 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-const Team = [
-  { id: 1, name: "JAGRITI GABA", image: "/images/aryan.png", role: "CEO & Founder" },
-  { id: 2, name: "Lagan Mehta", image: "/images/aryan.png", role: "Marketing Director" },
-  { id: 3, name: "PANKAJ", image: "/images/aryan.png", role: "Tech Lead" },
-  { id: 4, name: "CHAHAT SHARMA", image: "/images/aryan.png", role: "Design Head" }
-];
+
 
 export default function OurTeam() {
   return (
