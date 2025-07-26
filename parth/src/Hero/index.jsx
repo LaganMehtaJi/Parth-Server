@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 import {
   FiUser, FiBriefcase, FiFileText, FiDownload,
@@ -110,7 +111,7 @@ const ParthPlacement = () => {
 
 
             {/* Hero Section */}
-            
+ 
              {/*Tag line*/}
             <Tagline/>
             {/* Services Section */}

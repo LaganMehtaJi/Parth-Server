@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion';
 import {useInView} from 'react-intersection-observer';
-
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 const Tagline = () => {
 const { ref, inView } = useInView({
         // triggerOnce: true, // animates only once
@@ -27,7 +27,17 @@ const { ref, inView } = useInView({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-
+                           <div style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    zIndex: -1,
+    overflow: 'hidden',
+  }}>
+             
+                </div>
            
                   <h1 className="text-center px-4 sm:px-6 max-w-4xl mx-auto">
                     <span className="
@@ -68,8 +78,10 @@ const { ref, inView } = useInView({
 
                </div>
             </section>
+           
     </motion.div>
    </div>
+   
    </>
   )
 }

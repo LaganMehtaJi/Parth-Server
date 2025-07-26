@@ -1,91 +1,133 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
-
-
-
-
-
 const Parth = () => {
-  const { ref, inView } = useInView({
-    // triggerOnce: true, // animates only once
-    threshold: 0.30,     // percentage of element visible to trigger
+  const [ref, inView] = useInView({
+    threshold: 0.3,
+    triggerOnce: false
   });
 
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    
-    <div className="min-h-screen w-full bg-gradient-to-r from-indigo-50 via-violet-200 to-indigo-50">
-      <motion.div
-        ref={ref}
-        initial={{ y: 50, opacity: 0 }}
-        animate={inView ? { y: 0, opacity: 1 } : {}}
-        transition={{ duration: 1, ease: 'easeOut' }}
+    <div className="min-h-screen w-full bg-gradient-to-br from-indigo-50 to-violet-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <motion.div
+          ref={ref}
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+          variants={fadeIn}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <div className="relative bg-white/90 backdrop-blur-md rounded-xl shadow-lg overflow-hidden p-8 md:p-10">
+            {/* Background watermark */}
+            <div className="absolute inset-0 bg-[url('/images/maimt-logo.png')] bg-no-repeat bg-center opacity-5 pointer-events-none"></div>
 
-      >
-       
-        <div className="relative flex-grow text-lg md:text-xl py-8 px-6 md:px-8 bg-white/80 backdrop-blur-sm rounded-lg">
-         
-          <div className="text-3xl md:text-4xl font-bold mb-3 text-center bg-gradient-to-b 
-        from-indigo-900 via-violet-900 to-blue-900 bg-clip-text text-transparent">
-            What is PARTH?
-          </div>
-        <div className="w-70 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto "></div>
-         
-         <motion.div
-  initial={{ x: -100, opacity: 0 }}
-  animate={inView ? { x: 1300, opacity: 0.5 } : {}}
-  transition={{ duration: 7, ease: 'easeOut' }}
-  className="text-purple-900 text-4xl z-0"  
->
-  ➤
-</motion.div>
-            
-          <div className="absolute inset-0 bg-[url('/images/maimt-logo.png')] bg-no-repeat bg-center opacity-10 rounded-2xl"></div>
-
-
-          <div className='flex justify-center font-semibold text-xl mb-6 '>
-            <div className="justiy-center bg-gradient-to-b  text-3xl mb-2.5 text-left 
-        bg-purple-950 bg-clip-text text-transparent">
-            P:Placement<br/>
-            A:Assisstant for<br/>
-            R:Recruitment<br/>
-            T:Training and<br/>
-            H:Hiring
-
- 
+            {/* Header */}
+            <div className="text-center mb-10">
+              <motion.h2 
+                className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-900 to-violet-800 bg-clip-text text-transparent"
+                initial={{ opacity: 0, y: -20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.2, duration: 0.8 }}
+              >
+                What is PARTH?
+              </motion.h2>
+              <div className="w-24 h-1.5 bg-gradient-to-r from-cyan-400 to-violet-500 mx-auto rounded-full mb-8"></div>
               
+              {/* Acronym */}
+              <div className="flex justify-center mb-10">
+                <div className="text-center md:text-left space-y-2">
+                  <motion.div 
+                    className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-900 to-blue-800 bg-clip-text text-transparent"
+                    initial={{ opacity: 0 }}
+                    animate={inView ? { opacity: 1 } : {}}
+                    transition={{ delay: 0.4, staggerChildren: 0.1 }}
+                  >
+                    <p className="leading-tight">P: Placement</p>
+                    <p className="leading-tight">A: Assistant for</p>
+                    <p className="leading-tight">R: Recruitment</p>
+                    <p className="leading-tight">T: Training and</p>
+                    <p className="leading-tight">H: Hiring</p>
+                  </motion.div>
+                </div>
+              </div>
             </div>
+
+            {/* Content */}
+            <div className="relative space-y-6 text-gray-800">
+              <motion.p 
+                className="text-lg leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.6 }}
+              >
+                The name PARTH draws inspiration from the legendary warrior Arjuna from the epic Mahabharat, known for his unwavering focus, resilience, and dedication to his karma.
+              </motion.p>
+
+              <motion.p 
+                className="text-lg leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.7 }}
+              >
+                Just as Arjuna overcame adversity with determination and righteous action, every stakeholder in the MAIMT family is encouraged to embody the same spirit. Built to address every hassle in the placement lifecycle, PARTH empowers students and recruiters alike by providing:
+              </motion.p>
+
+              <motion.ul 
+                className="list-disc pl-6 space-y-3 text-lg"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.8 }}
+              >
+                <li className="font-medium text-indigo-900">Verified profiles with academic validation</li>
+                <li className="font-medium text-indigo-900">AI-powered resume building tools</li>
+                <li className="font-medium text-indigo-900">Professional portfolio hosting</li>
+                <li className="font-medium text-indigo-900">Personalized job matching and alerts</li>
+                <li className="font-medium text-indigo-900">Streamlined recruitment process</li>
+              </motion.ul>
+
+              <motion.p 
+                className="text-lg leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.9 }}
+              >
+                Under the esteemed guidance of Director Sir Dr. Narinder Rana, our team united not just as developers and designers, but with a shared mission: to reimagine how placement is managed across the academic landscape.
+              </motion.p>
+
+              <motion.div 
+                className="bg-indigo-50/50 border-l-4 border-violet-600 p-6 rounded-r-lg"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.0 }}
+              >
+                <p className="text-lg font-semibold text-violet-900 italic">
+                  "This project isn't just about technology—it's about purpose. It's about empowering the MAIMT community to approach recruitment and hiring with the clarity and focus of Arjuna through the support of a platform designed to make excellence achievable."
+                </p>
+              </motion.div>
+            </div>
+
+            {/* Decorative elements */}
+            <motion.div
+              className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-violet-200/30 blur-xl"
+              initial={{ scale: 0 }}
+              animate={inView ? { scale: 1 } : {}}
+              transition={{ delay: 1.2, duration: 1 }}
+            />
+            <motion.div
+              className="absolute -top-10 -left-10 w-24 h-24 rounded-full bg-indigo-200/30 blur-xl"
+              initial={{ scale: 0 }}
+              animate={inView ? { scale: 1 } : {}}
+              transition={{ delay: 1.4, duration: 1 }}
+            />
           </div>
-
-          <div className="space-y-4 text-black">
-            <p className="text-justify ">
-              The name PARTH draws inspiration from the legendary warrior Arjuna from the epic Mahabharat, known for his unwavering focus, resilience, and dedication to his karma.
-            </p>
-
-            <p className="text-justify">
-              Just as Arjuna overcame adversity with determination and righteous action, every stakeholder in the MAIMT family is encouraged to embody the same spirit.
-              Built to address every hassle in the placement lifecycle, PARTH empowers students and recruiters alike by providing:
-            </p>
-
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Verified profiles</li>
-              <li>Smart resume building tools</li>
-              <li>Hosted portfolios</li>
-              <li>Personalized job alerts</li>
-            </ul>
-
-            <p className="text-justify">
-              Under the esteemed guidance of Director Sir Dr. Narinder Rana, our team united not just as developers and designers, but with a shared mission: to reimagine how placement is managed across the academic landscape.
-            </p>
-
-            <p className="text-justify font-medium text-purple-950">
-              This project isn't just about technology—it's about purpose. It's about empowering the MAIMT community to approach recruitment and hiring with the clarity and focus of Arjuna through the support of a platform designed to make excellence achievable.
-            </p>
-          </div>
-
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 };
