@@ -1,43 +1,37 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import {useInView} from 'react-intersection-observer';
 
 
 export default function OurTeam() {
+  const { ref, inView } = useInView({
+    // triggerOnce: true, // animates only once
+    threshold: 0.30,     // percentage of element visible to trigger
+  });
+  
   return (
-    // <section className="w-full bg-gray-50">
-    <motion.div 
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="relative"
-          >
-      <h2 className="text-4xl font-bold py-16 text-center bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-        Our Team
-      </h2>
+
+    <> 
+
+        <div className=" px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-rose-10 ">
+          <motion.div
+                     ref={ref}
+                     initial={{ y: 50, opacity: 0 }}
+                     animate={inView ? { y: 0, opacity: 1 } : {}}
+                     transition={{ duration: 1, ease: 'easeOut' }}
+                     
+                   >  
+        <div className="relative flex-grow text-lg md:text-xl py-8 px-6 md:px-8 bg-white/80 backdrop-blur-sm rounded-lg">
+        <div className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
+    from-indigo-900 via-violet-900 to-blue-900  bg-clip-text text-transparent">Our Team</div>
+      <div className="w-50 h-1 bg-gradient-to-br from-cyan-100 via-violet-200 to-cyan-100 mx-auto mb-12  border-gray-400"></div>
+      <img src="/images/aryan.png" alt="Front" className="rounded-xl" />
+      
+      </div>
       </motion.div>
-      )
-      {/* {/* <div className="snap-y snap-mandatory h-screen w-full overflow-y-scroll scroll-smooth">
-        {Team.map(member => (
-          <div 
-            key={member.id} 
-            className="snap-start h-screen w-full flex items-center justify-center bg-gray-50"
-          >
-            <div className="max-w-md w-full mx-auto">
-              <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center space-y-4">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800">{member.name}</h3>
-                <p className="text-indigo-600 font-medium">{member.role}</p>
-              </div>
-            </div>
-          </div>
-        ))} */}
-      {/* </div>
-    </section> */}
+      </div>
+      </>
+  )
+     
   
 }

@@ -58,8 +58,8 @@ const Parth = () => {
             </div>
           </div>
 
-          <div className="space-y-4 text-gray-900">
-            <p className="text-justify">
+          <div className="space-y-4 text-black">
+            <p className="text-justify ">
               The name PARTH draws inspiration from the legendary warrior Arjuna from the epic Mahabharat, known for his unwavering focus, resilience, and dedication to his karma.
             </p>
 

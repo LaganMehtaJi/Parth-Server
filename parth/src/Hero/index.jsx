@@ -8,7 +8,7 @@ import {
 } from 'react-icons/fi';
 import Footer from './Footer';
 import Marquee from './Marquee';
-import HowItStarts from './HowItStarts';
+import HowItStarts from './GetStarted';
 import Services from './Services';
 import OurTeam from './OurTeam';
 import Parth from './WhatisParth';
@@ -18,21 +18,7 @@ const ParthPlacement = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [user, setUser] = useState(null);
-
-  
-
-
-  // Sample data
-  
-
-  const features = [
-    { icon: <FiEdit />, title: "Edit Profile", desc: "Update profile information as you grow" },
-    { icon: <FiDownload />, title: "Download Resumes", desc: "Multiple format options available" },
-    { icon: <FiCheckCircle />, title: "Verify Profiles", desc: "List authentic candidates " },
-    { icon: <FiMail />, title: "Job Alerts", desc: "Get notified about new opportunities" },
-  ];
-
-  
+    
 
   const handleLogin = (role) => {
     setUser({ name: 'Demo User', role });
@@ -64,7 +50,7 @@ const ParthPlacement = () => {
                 </motion.div>
 
                 <div className="hidden md:flex gap-8 text-violet-900 font-medium">
-                  {['Our Services','Get started','What is Parth?','Our Team'].map((item) => (
+                  {['Our Services','Get started','About Parth','Our Team'].map((item) => (
                     <motion.button
                       key={item}
                       whileHover={{ y: -2 }}
@@ -124,6 +110,7 @@ const ParthPlacement = () => {
 
 
             {/* Hero Section */}
+            
              {/*Tag line*/}
             <Tagline/>
             {/* Services Section */}
@@ -137,7 +124,7 @@ const ParthPlacement = () => {
              </section>
 
              {/* PARTH*/}
-             <section id="What is Parth?">
+             <section id="About Parth">
             <Parth/>
             </section>
   
@@ -152,6 +139,7 @@ const ParthPlacement = () => {
             {/*Footer */}
 
             <Footer/>
+            
           </div>
         </div>
       </div>
