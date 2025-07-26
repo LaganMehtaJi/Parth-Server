@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import {useInView} from 'react-intersection-observer';
 import {
   FiUser, FiFileText, FiDownload,
   FiEdit, FiMail, FiCheckCircle
@@ -11,33 +12,44 @@ const services = [
     id: 1,
     title: "Resume Builder",
     desc: "Design impactful, recruiter-ready resumes with customizable templates and guided suggestions tailored to your industry.",
-    icon: <FiFileText />
+   
   },
   {
     id: 2,
     title: "Portfolio Hosting",
     desc: "Host and showcase your work with a stunning, personalized portfolio page — perfect for developers, designers, and creatives.",
-    icon: <FiUser />
+   
   },
    {
     id: 3,
     title: "Verify Profiles",
     desc: "Boost credibility with profile verification — enabling companies to identify authentic, high-quality candidates faster.",
-    icon: <FiCheckCircle />
+ 
   },
   {
     id: 4,
     title: "Job Alerts",
     desc: "Stay ahead with personalized job alerts sent directly to your inbox, matched to your skills and preferences.",
-    icon: <FiMail />
+    
   }
 ];
 
 
 const Services = () => {
+   const { ref, inView } = useInView({
+    // triggerOnce: true, // animates only once
+    threshold: 0.30,     // percentage of element visible to trigger
+  });
   return (
     <>
       <div className=" mx-auto px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-indig-50">
+        <motion.div
+      ref={ref}
+      initial={{ y: 50, opacity: 0 }}
+      animate={inView ? { y: 0, opacity: 1 } : {}}
+      transition={{ duration: 1, ease: 'easeOut' }}
+      
+    >                      
       <div className=" container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
 
       <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
@@ -87,10 +99,15 @@ const Services = () => {
                 </p>
               </div>
             </div>
+            
           ))}
+          
         </div>
+        
       </div>
+      
     </div>
+    </motion.div> 
   </div>
     </>
   )

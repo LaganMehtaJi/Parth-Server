@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion';
+import {useInView} from 'react-intersection-observer';
 
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -32,14 +33,20 @@ const steps = [
 ];
 
 const HowItStarts = () => {
+   const { ref, inView } = useInView({
+    // triggerOnce: true, // animates only once
+    threshold: 0.30,     // percentage of element visible to trigger
+  });
   return (
-    <motion.div 
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="relative"
-          >
+      
     <div className=" px-4 py-12 bg-gradient-to-r from-indigo-50 via-violet-200 to-rose-10 ">
+      <motion.div
+           ref={ref}
+           initial={{ y: 50, opacity: 0 }}
+           animate={inView ? { y: 0, opacity: 1 } : {}}
+           transition={{ duration: 1, ease: 'easeOut' }}
+           
+         >  
       <div className="container mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center m-8  bg-gradient-to-b 
     from-indigo-900 via-violet-600 to-blue-900  bg-clip-text text-transparent">How it starts?</h2>
@@ -95,8 +102,9 @@ const HowItStarts = () => {
         </div>
       </div>
       </div>
+      </motion.div>
     </div>
-    </motion.div>
+    
   )
 }
 
