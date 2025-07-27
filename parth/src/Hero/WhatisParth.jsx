@@ -30,14 +30,17 @@ const Parth = () => {
             {/* Header */}
             <div className="text-center mb-10">
               <motion.h2 
-                className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-900 to-violet-800 bg-clip-text text-transparent"
+                className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-b 
+    from-indigo-900 via-violet-900 to-blue-900  bg-clip-text text-transparent"
                 initial={{ opacity: 0, y: -20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.2, duration: 0.8 }}
               >
-                What is PARTH?
+                <span className="bg-gradient-to-b from-indigo-900 via-violet-900 to-blue-900 bg-clip-text text-transparent">
+    What is PARTH?
+  </span>
               </motion.h2>
-              <div className="w-24 h-1.5 bg-gradient-to-r from-cyan-400 to-violet-500 mx-auto rounded-full mb-8"></div>
+              
               
               {/* Acronym */}
               <div className="flex justify-center mb-10">

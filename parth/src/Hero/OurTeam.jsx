@@ -21,7 +21,7 @@ const OurTeam = () => {
           <div className="relative rounded-xl overflow-hidden shadow-2xl mb-8 group">
             {/* Replace with your actual team image */}
             <img 
-              src="/images/team-photo.jpg" 
+              src="/images/Team-Demo.png" 
               alt="PARTH Development Team"
               className="w-full h-auto object-cover aspect-video"
             />
@@ -69,8 +69,8 @@ const OurTeam = () => {
               </blockquote>
               
               <div className="mt-6">
-                <p className="text-lg font-semibold text-indigo-900">Dr. Narinder Rana</p>
-                <p className="text-violet-700">Director, MAIMT</p>
+                <p className="text-lg font-semibold text-indigo-900">Team Parth</p>
+                <p className="text-violet-700"> MAIMT</p>
               </div>
             </div>
           </motion.div>
