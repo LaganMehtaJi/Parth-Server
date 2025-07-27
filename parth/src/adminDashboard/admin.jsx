@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import StudentCard from './StudentCard/index.jsx';
-import CompanyCard from './CompanyCard/index.jsx';
-import Comm from './Communications/index.jsx';
-import Anayltics from "./Anayltics/index.jsx";
-import ListComponent from "./List/index.jsx";
-import His from "./History/index.jsx";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BeatLoader } from 'react-spinners';
+import axios from "axios";
+
 import { 
   FiHome, 
   FiUsers, 
@@ -32,7 +31,14 @@ import {
 } from 'react-icons/fi';
 import Lottie from 'react-lottie';
 import animationData from './loading-animation.json';
-import { TailSpin } from 'react-loader-spinner';
+
+// Placeholder components - replace these with your actual components
+const StudentCard = () => <div>Student Card</div>;
+const CompanyCard = () => <div>Company Card</div>;
+const Comm = () => <div>Communications</div>;
+const Anayltics = () => <div>Analytics</div>;
+const ListComponent = () => <div>List</div>;
+const His = () => <div>History</div>;
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -228,7 +234,7 @@ const AdminDashboard = () => {
           {activeTab === 'list' && <List />}
           {activeTab === 'resume-templates' && <ResumeTemplates />}
           {activeTab === 'portfolio-templates' && <PortfolioTemplates />}
-          {activeTab === 'settings' && <Settings />}
+          {activeTab === 'History' && <History />}
         </main>
       </div>
     </div>
@@ -340,91 +346,436 @@ const DashboardHome = () => (
   </div>
 );
 
-const StudentManagement = () => (
-  <div className="p-6 bg-white rounded-lg shadow-sm">
-    <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
-      <h3 className="text-lg font-semibold text-gray-800">Student Management</h3>
-      <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-3">
-        <button className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-          <FiPlus className="w-4 h-4 mr-2" />
-          Add Student
-        </button>
-        <div className="relative">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search students..."
-            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+const StudentManagement = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('manual');
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    registrationNo: '',
+    rollNo: '',
+    name: '',
+    email: '',
+    phone: '',
+    field: '',
+    customField: '',
+    batchYear: '',
+    profilePic: '',
+    verify: false,
+    address: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      const response = await axios.post("http://localhost:3000/api/student/send", formData);
+      console.log(response.data);
+      
+      toast.success('Student added successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      
+      setFormData({
+        registrationNo: '',
+        rollNo: '',
+        name: '',
+        email: '',
+        phone: '',
+        field: '',
+        customField: '',
+        batchYear: '',
+        profilePic: '',
+        verify: false,
+        address: ''
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error adding student:', error);
+      
+      toast.error(`Failed to add student: ${error.response?.data?.message || error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post("/api/student/upload", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      toast.success(`${response.data.count} students imported successfully!`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Error importing students:', error);
+      toast.error(`Failed to import students: ${error.response?.data?.message || error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-6 bg-white rounded-lg shadow-sm">
+      <ToastContainer />
+
+      <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
+        <h3 className="text-lg font-semibold text-gray-800">Student Management</h3>
+        <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-3">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <BeatLoader size={8} color="#ffffff" />
+            ) : (
+              <>
+                <FiPlus className="w-4 h-4 mr-2" />
+                Add Student
+              </>
+            )}
+          </button>
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search students..."
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={isLoading}
+            />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      <StudentCard
-        image="https://randomuser.me/api/portraits/men/32.jpg"
-        name="Rahul Sharma"
-        rollNo="BCA21001"
-        email="rahul.sharma@example.com"
-        field="Full Stack Developer"
-        isVerified={true}
-        analyticsScore={88}
-        portfolioLink="https://rahul-portfolio.com"
-        dashboardLink="/dashboard/rahul"
-        resumeLink="/resumes/rahul.pdf"
-        resumeDownloadLink="/resumes/rahul.pdf"
-      />
-      {/* More StudentCards... */}
-    </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        <StudentCard />
+      </div>
 
-    {/* Pagination */}
-    <div className="flex items-center justify-between mt-6">
-      <div className="text-sm text-gray-500">
-        Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of <span className="font-medium">24</span> results
+      <div className="flex items-center justify-between mt-6">
+        <div className="text-sm text-gray-500">
+          Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of <span className="font-medium">24</span> results
+        </div>
+        <div className="flex space-x-2">
+          <button 
+            className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+            disabled={isLoading}
+          >
+            Previous
+          </button>
+          <button className="px-3 py-1 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700">
+            1
+          </button>
+          <button 
+            className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+            disabled={isLoading}
+          >
+            2
+          </button>
+          <button 
+            className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+            disabled={isLoading}
+          >
+            Next
+          </button>
+        </div>
       </div>
-      <div className="flex space-x-2">
-        <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-          Previous
-        </button>
-        <button className="px-3 py-1 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700">
-          1
-        </button>
-        <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-          2
-        </button>
-        <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-          Next
-        </button>
-      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {activeTab === 'manual' ? 'Add New Student' : 'Import Students'}
+              </h3>
+              <button 
+                onClick={() => !isLoading && setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-500"
+                disabled={isLoading}
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-4">
+              <div className="flex border-b">
+                <button
+                  className={`px-4 py-2 font-medium ${activeTab === 'manual' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  onClick={() => !isLoading && setActiveTab('manual')}
+                  disabled={isLoading}
+                >
+                  Manual Entry
+                </button>
+                <button
+                  className={`px-4 py-2 font-medium ${activeTab === 'excel' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  onClick={() => !isLoading && setActiveTab('excel')}
+                  disabled={isLoading}
+                >
+                  Import Excel
+                </button>
+              </div>
+
+              {isLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <BeatLoader size={15} color="#3b82f6" />
+                  <span className="ml-3 text-gray-600">
+                    {activeTab === 'manual' ? 'Adding student...' : 'Processing file...'}
+                  </span>
+                </div>
+              ) : activeTab === 'manual' ? (
+                <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Registration No</label>
+                      <input
+                        type="text"
+                        name="registrationNo"
+                        value={formData.registrationNo}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="REG2025001"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Roll No</label>
+                      <input
+                        type="text"
+                        name="rollNo"
+                        value={formData.rollNo}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="R001"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="Lagan Mehta"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="laganmehta@example.com"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Phone</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="9876543210"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Field</label>
+                      <input
+                        type="text"
+                        name="field"
+                        value={formData.field}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="Web-Developer"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Custom Field</label>
+                      <input
+                        type="text"
+                        name="customField"
+                        value={formData.customField}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="React Developer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Batch Year</label>
+                      <input
+                        type="number"
+                        name="batchYear"
+                        value={formData.batchYear}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="2025"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Profile Picture URL</label>
+                      <input
+                        type="url"
+                        name="profilePic"
+                        value={formData.profilePic}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="https://example.com/profile.jpg"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Address</label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                        placeholder="Yamunanagar, Haryana, India"
+                      />
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="verify"
+                        checked={formData.verify}
+                        onChange={handleInputChange}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label className="ml-2 block text-sm text-gray-700">Verified Student</label>
+                    </div>
+                  </div>
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center min-w-[100px]"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <BeatLoader size={8} color="#ffffff" />
+                      ) : (
+                        'Add Student'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="mt-4">
+                  <div className="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center">
+                    <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
+                    <h4 className="mt-2 text-sm font-medium text-gray-700">Upload Excel File</h4>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Supports .xlsx, .xls, or .csv file formats
+                    </p>
+                    <div className="mt-4">
+                      <label className="cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                        <input
+                          type="file"
+                          accept=".xlsx,.xls,.csv"
+                          onChange={handleFileUpload}
+                          className="sr-only"
+                          disabled={isLoading}
+                        />
+                        Select File
+                      </label>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center text-sm text-gray-500">
+                    <FiDownload className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
+                    <a href="#" className="text-blue-600 hover:text-blue-500">
+                      Download sample Excel template
+                    </a>
+                  </div>
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 opacity-50 cursor-not-allowed"
+                      disabled
+                    >
+                      Import Students
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 const CompanyManagement = () => (
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-    <CompanyCard
-      logo="https://logo.clearbit.com/microsoft.com"
-      companyName="Microsoft India"
-      studentsApplied={120}
-      onDeleteCompany={() => console.log("Deleted Microsoft")}
-      onDeleteJob={(job) => console.log("Deleted Job from Microsoft:", job)}
-      onAddJobSubmit={(job) => console.log("New Microsoft Job:", job)}
-      jobs={[
-        {
-          title: "Frontend Developer",
-          requirements: ["React", "Tailwind", "Git"],
-          responsibilities: ["Build UI", "Collaborate with backend"],
-          resources: ["Figma", "Codebase Access"],
-        },
-        {
-          title: "Backend Engineer",
-          requirements: ["Node.js", "MongoDB"],
-          responsibilities: ["API Development", "Database Design"],
-          resources: ["DB Server", "API Docs"],
-        },
-      ]}
-    />
-    {/* More CompanyCards... */}
+    <CompanyCard />
   </div>
 );
 
@@ -452,11 +803,10 @@ const ResumeTemplates = () => {
       previewUrl: '#',
       downloadUrl: '#'
     },
-    // More templates...
   ]);
 
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState('idle'); // 'idle', 'uploading', 'success', 'error'
+  const [uploadStatus, setUploadStatus] = useState('idle');
   const [newTemplate, setNewTemplate] = useState({
     name: '',
     category: 'Professional',
@@ -494,11 +844,9 @@ const ResumeTemplates = () => {
     
     setUploadStatus('uploading');
     
-    // Simulate upload and testing process
     setTimeout(() => {
-      const score = Math.floor(Math.random() * 21) + 80; // Random score between 80-100
+      const score = Math.floor(Math.random() * 21) + 80;
       
-      // Add new template to the list
       const newTemplateObj = {
         id: templates.length + 1,
         name: newTemplate.name,
@@ -513,7 +861,6 @@ const ResumeTemplates = () => {
       setTemplates([...templates, newTemplateObj]);
       setUploadStatus('success');
       
-      // Reset form after 3 seconds
       setTimeout(() => {
         setShowUploadModal(false);
         setUploadStatus('idle');
@@ -540,7 +887,6 @@ const ResumeTemplates = () => {
         </button>
       </div>
 
-      {/* Category Filter */}
       <div className="mb-6 overflow-x-auto">
         <div className="flex space-x-2 pb-2">
           {categories.map(category => (
@@ -559,7 +905,6 @@ const ResumeTemplates = () => {
         </div>
       </div>
 
-      {/* Templates Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {templates
           .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
@@ -609,7 +954,6 @@ const ResumeTemplates = () => {
           ))}
       </div>
 
-      {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
@@ -706,18 +1050,11 @@ const ResumeTemplates = () => {
 
             {uploadStatus === 'uploading' && (
               <div className="p-8 text-center">
-                <div className="flex justify-center mb-4">
-                  {/* You can use either Lottie or react-loader-spinner */}
-                  {/* Option 1: Lottie animation */}
-                  <Lottie 
-                    options={defaultOptions}
-                    height={150}
-                    width={150}
-                  />
-                  
-                  {/* Option 2: React loader spinner */}
-                  {/* <TailSpin color="#3B82F6" height={80} width={80} /> */}
-                </div>
+                <Lottie 
+                  options={defaultOptions}
+                  height={150}
+                  width={150}
+                />
                 <h4 className="text-lg font-medium text-gray-800 mb-2">Testing Your Template</h4>
                 <p className="text-gray-600">Our system is analyzing your template for quality and compatibility...</p>
               </div>
@@ -770,7 +1107,6 @@ const PortfolioTemplates = () => {
       previewUrl: '#',
       downloadUrl: '#'
     },
-    // More templates...
   ]);
 
   return (
@@ -783,7 +1119,6 @@ const PortfolioTemplates = () => {
         </button>
       </div>
 
-      {/* Category Filter */}
       <div className="mb-6 overflow-x-auto">
         <div className="flex space-x-2 pb-2">
           {categories.map(category => (
@@ -802,7 +1137,6 @@ const PortfolioTemplates = () => {
         </div>
       </div>
 
-      {/* Templates Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {templates
           .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
@@ -858,57 +1192,7 @@ const PortfolioTemplates = () => {
 const Communications = () => <Comm />;
 const Analytics = () => <Anayltics />;
 const List = () => <ListComponent />;
-const Settings = () => (
-  <div className="p-6 bg-white rounded-lg shadow-sm">
-    <h2 className="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
-    <div className="space-y-6">
-      <div className="p-4 border border-gray-200 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-3">Account Settings</h3>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              defaultValue="admin@parth.edu"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter new password"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-            Update Account
-          </button>
-        </div>
-      </div>
-
-      <div className="p-4 border border-gray-200 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-3">System Preferences</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Dark Mode</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Email Notifications</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+const History = () => <His />;
 
 // Helper Components
 const StatCard = ({ title, value, change, icon, color }) => {
@@ -963,20 +1247,6 @@ const ActionButton = ({ icon, text, color }) => {
       {icon}
       {text}
     </button>
-  );
-};
-
-const StatusBadge = ({ status }) => {
-  const statusClasses = {
-    Verified: 'bg-green-100 text-green-800',
-    Pending: 'bg-yellow-100 text-yellow-800',
-    Rejected: 'bg-red-100 text-red-800',
-  };
-
-  return (
-    <span className={`inline-flex px-2 py-1 text-xs font-semibold leading-4 rounded-full ${statusClasses[status]}`}>
-      {status}
-    </span>
   );
 };
 

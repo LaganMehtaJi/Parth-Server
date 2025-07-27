@@ -1,30 +1,40 @@
 import './App.css'
-import {Routes,Route} from "react-router-dom";
-import Hero from "../src/Hero/index.jsx";
-import Home from "../src/Home/index.jsx";
-import Dashboard from './dashboard/index.jsx'
-import Admin from "../src/adminDashboard/admin.jsx";
+import { Routes, Route } from "react-router-dom";
+import Login from "../src/Login/Login.jsx";
+import Hero from "./Hero/index.jsx";
+import Home from "./Home/index.jsx";
+import Dashboard from './dashboard/index.jsx';
+import Admin from "./adminDashboard/admin.jsx";
 import Email from './Home/Email.jsx';
 import JobsCards from './Home/JobCards.jsx';
 import Message from './Home/Message.jsx';
 import Notifications from './Home/Notifications.jsx';
+import Main from "./dashboard/main";
+import { Header } from "./dashboard/ResumeBuilder/Header.jsx"; 
+import Index from './dashboard/Projects/Index.jsx';
+import Certificate from './dashboard/Certificates/Certificate.jsx';
+
 function App() {
-
-
   return (
-    <>
-   <Routes>
-    <Route path='/' element={<Hero/>} />
-    <Route path='/home' element={<Home/>} />
-    <Route path='/email'element={<Email/>}/>
-    <Route path="/jobs"element={<JobsCards/>}/>
-     <Route path='/dashboard' element={<Dashboard/>} />
-      <Route path='/admin' element={<Admin/>} />
-       <Route path='/messaging' element={<Message/>} />
-       <Route path="/notifications"element={<Notifications/>}/>
-   </Routes>
-    </>
-  )
+    <Routes>
+      <Route path='/:type' element={<Login/>} />
+      <Route path='/' element={<Hero />} />
+      <Route path='/home' element={<Home />} />
+      <Route path='/email' element={<Email />} />
+      <Route path='/jobs' element={<JobsCards />} />
+      <Route path='/admindash' element={<Admin />} />
+      <Route path='/messaging' element={<Message />} />
+      <Route path='/notifications' element={<Notifications />} />
+
+    
+      <Route path='/dashboard' element={<Dashboard />}>
+        <Route index element={<Main />} />
+        <Route path='Resumebuilder' element={<Header/>} />
+        <Route path='projects'element={<Index/>}/>
+        <Route path='certificates'element={<Certificate/>}/>
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;
