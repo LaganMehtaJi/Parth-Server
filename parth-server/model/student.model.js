@@ -4,6 +4,8 @@ const { Schema } = mongoose;
 // ==============================
 // 🧑‍🎓 Student Schema
 // ==============================
+
+
 const studentSchema = new Schema({
   registrationNo: {
     type: String,
@@ -11,6 +13,10 @@ const studentSchema = new Schema({
     unique: true,
     trim: true,
     maxlength: 20
+  },
+  password:{
+    type: String,
+    required: true,
   },
   rollNo: {
     type: String,

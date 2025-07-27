@@ -1,5 +1,6 @@
 import './App.css'
 import { Routes, Route } from "react-router-dom";
+import Login from "../src/Login/Login.jsx";
 import Hero from "./Hero/index.jsx";
 import Home from "./Home/index.jsx";
 import Dashboard from './dashboard/index.jsx';
@@ -16,11 +17,12 @@ import Certificate from './dashboard/Certificates/Certificate.jsx';
 function App() {
   return (
     <Routes>
+      <Route path='/:type' element={<Login/>} />
       <Route path='/' element={<Hero />} />
       <Route path='/home' element={<Home />} />
       <Route path='/email' element={<Email />} />
       <Route path='/jobs' element={<JobsCards />} />
-      <Route path='/admin' element={<Admin />} />
+      <Route path='/admindash' element={<Admin />} />
       <Route path='/messaging' element={<Message />} />
       <Route path='/notifications' element={<Notifications />} />
 

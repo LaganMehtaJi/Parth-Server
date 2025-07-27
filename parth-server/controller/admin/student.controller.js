@@ -14,7 +14,8 @@ export const AddStudent = async (req, res) => {
     batchYear,
     profilePic,
     verify,
-    address
+    address,
+    password 
   } = req.body;
  console.log(rollNo)
   if(!registrationNo){
@@ -28,7 +29,6 @@ export const AddStudent = async (req, res) => {
     if(found) {
       return res.status(404).json({ message: "User Already Exists" });
     }
-
     const newStudent = await StudentObj.Student.create({
       registrationNo,
       rollNo,
@@ -36,6 +36,7 @@ export const AddStudent = async (req, res) => {
       email,
       phone,
       field,
+      password,
       customField,
       batchYear,
       profilePic,
