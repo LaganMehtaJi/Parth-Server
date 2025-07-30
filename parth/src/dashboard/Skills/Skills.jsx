@@ -1,51 +1,55 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSkills,addSkill,deleteSkill,updateSkill } from "../../redux/SkillSlice";
 
 export default function Skills() {
-  const [skills, setSkills] = useState([]);
+  const dispatch = useDispatch();
+  const { items: skills, status, error } = useSelector((state) => state.skills);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
-    skill: "",
-    proficiency: "",
-    registrationNo: "",
+
+
+  const skillSchema = Yup.object().shape({
+    skill: Yup.string().required("Skill name is required"),
+    proficiency: Yup.string().required("Proficiency level is required"),
+    registrationNo: Yup.string().required("Registration number is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      skill: "",
+      proficiency: "",
+      registrationNo: "",
+    },
+    validationSchema: skillSchema,
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        if (editingId) {
+          await dispatch(updateSkill({ id: editingId, ...values })).unwrap();
+        } else {
+          await dispatch(addSkill(values)).unwrap();
+        }
+        resetForm();
+        setIsModalOpen(false);
+        setEditingId(null);
+      } catch (err) {
+        console.error("Error submitting form:", err);
+      }
+    },
   });
 
   useEffect(() => {
-    fetchSkills();
-  }, []);
-
-  const fetchSkills = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/skills");
-      setSkills(res.data);
-    } catch (err) {
-      console.error("Error fetching skills:", err);
-    }
-  };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      if (editingId) {
-        await axios.put(`http://localhost:5000/student/skills/${editingId}`, formData);
-      } else {
-        await axios.post("http://localhost:5000/student/skills", formData);
-      }
-      await fetchSkills();
-      resetForm();
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error("Error submitting form:", err);
-    }
-  };
+    dispatch(fetchSkills());
+  }, [dispatch]);
 
   const handleEdit = (item) => {
-    setFormData(item);
+    formik.setValues({
+      skill: item.skill,
+      proficiency: item.proficiency,
+      registrationNo: item.registrationNo,
+    });
     setEditingId(item._id);
     setIsModalOpen(true);
   };
@@ -53,28 +57,31 @@ export default function Skills() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this skill?")) return;
     try {
-      await axios.delete(`http://localhost:5000/student/skills/${id}`);
-      await fetchSkills();
+      await dispatch(deleteSkill(id)).unwrap();
     } catch (err) {
       console.error("Error deleting skill:", err);
     }
   };
 
   const resetForm = () => {
-    setFormData({
-      skill: "",
-      proficiency: "",
-      registrationNo: "",
-    });
+    formik.resetForm();
     setEditingId(null);
   };
+
+  if (status === 'loading' && !skills.length) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 text-center">
-            My<span className="text-blue-600"> Skills</span>
-          </h1>
+          My<span className="text-blue-600"> Skills</span>
+        </h1>
 
         <div className="mt-8 flex justify-center">
           <button
@@ -132,27 +139,40 @@ export default function Skills() {
               {editingId ? "Edit Skill" : "Add Skill"}
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={formik.handleSubmit} className="space-y-4">
               <div>
                 <label className="block font-medium">Skill</label>
                 <input
                   type="text"
                   name="skill"
-                  value={formData.skill}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                  required
+                  value={formik.values.skill}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full border ${
+                    formik.touched.skill && formik.errors.skill
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded px-3 py-2`}
                 />
+                {formik.touched.skill && formik.errors.skill ? (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.skill}
+                  </div>
+                ) : null}
               </div>
 
               <div>
                 <label className="block font-medium">Proficiency</label>
                 <select
                   name="proficiency"
-                  value={formData.proficiency}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                  required
+                  value={formik.values.proficiency}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full border ${
+                    formik.touched.proficiency && formik.errors.proficiency
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded px-3 py-2`}
                 >
                   <option value="">Select</option>
                   <option value="Beginner">Beginner</option>
@@ -160,6 +180,11 @@ export default function Skills() {
                   <option value="Advanced">Advanced</option>
                   <option value="Expert">Expert</option>
                 </select>
+                {formik.touched.proficiency && formik.errors.proficiency ? (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.proficiency}
+                  </div>
+                ) : null}
               </div>
 
               <div>
@@ -167,17 +192,29 @@ export default function Skills() {
                 <input
                   type="text"
                   name="registrationNo"
-                  value={formData.registrationNo}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                  required
+                  value={formik.values.registrationNo}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={`w-full border ${
+                    formik.touched.registrationNo && formik.errors.registrationNo
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded px-3 py-2`}
                 />
+                {formik.touched.registrationNo && formik.errors.registrationNo ? (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.registrationNo}
+                  </div>
+                ) : null}
               </div>
 
               <div className="flex justify-end space-x-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    resetForm();
+                    setIsModalOpen(false);
+                  }}
                   className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                 >
                   Cancel
@@ -185,8 +222,13 @@ export default function Skills() {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  disabled={status === 'loading'}
                 >
-                  {editingId ? "Update" : "Add"}
+                  {status === 'loading'
+                    ? "Processing..."
+                    : editingId
+                    ? "Update"
+                    : "Add"}
                 </button>
               </div>
             </form>
