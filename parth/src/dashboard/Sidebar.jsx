@@ -68,7 +68,7 @@ const Sidebar = () => {
           {name:"Job Updates",path:'job'},
           {name:"Projects",path:'projects'},
           {name:"Certificates",path:'certificates'},
-          { name:"Volunatering",path:'/volunatering'},
+          {name:"voluntaring",path:'voluntaring'},
           {name:"Experince",path:'experience'},
           {name:"Skill",path:'skill'},
           {name:"Education",path:'education'},

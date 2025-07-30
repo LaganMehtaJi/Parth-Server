@@ -13,6 +13,10 @@ import Main from "./dashboard/main";
 import { Header } from "./dashboard/ResumeBuilder/Header.jsx"; 
 import Index from './dashboard/Projects/Index.jsx';
 import Certificate from './dashboard/Certificates/Certificate.jsx';
+import Voluntary from './dashboard/Voluntary/Voluntary.jsx';
+import Skills from './dashboard/Skills/Skills.jsx';
+import Education from './dashboard/Education/Education.jsx';
+import Experience from './dashboard/Experince/Experince.jsx';
 
 function App() {
   return (
@@ -32,6 +36,10 @@ function App() {
         <Route path='Resumebuilder' element={<Header/>} />
         <Route path='projects'element={<Index/>}/>
         <Route path='certificates'element={<Certificate/>}/>
+        <Route path='voluntaring'element={<Voluntary/>}/>
+        <Route path='skill'element={<Skills/>}/>
+        <Route path="education"element={<Education/>}/>
+        <Route path="experience"element={<Experience/>}/>
       </Route>
     </Routes>
   );
