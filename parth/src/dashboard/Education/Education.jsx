@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// src/components/Education.jsx
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchEducation,
+  addEducation,
+  updateEducation,
+  deleteEducation,
+} from "../../redux/EducationSlice";
 
 export default function Education() {
-  const [education, setEducation] = useState([]);
+  const dispatch = useDispatch();
+  const { list: education, loading } = useSelector((state) => state.education);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-
   const [formData, setFormData] = useState({
     registrationNo: "",
     institution: "",
@@ -19,17 +27,8 @@ export default function Education() {
   });
 
   useEffect(() => {
-    fetchEducation();
-  }, []);
-
-  const fetchEducation = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/student/education");
-      setEducation(res.data);
-    } catch (err) {
-      console.error("Error fetching education:", err);
-    }
-  };
+    dispatch(fetchEducation());
+  }, [dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,20 +50,15 @@ export default function Education() {
     setEditingId(null);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      if (editingId) {
-        await axios.put(`http://localhost:5000/student/education/${editingId}`, formData);
-      } else {
-        await axios.post("http://localhost:5000/student/education", formData);
-      }
-      fetchEducation();
-      setIsModalOpen(false);
-      resetForm();
-    } catch (err) {
-      console.error("Error saving education:", err);
+    if (editingId) {
+      dispatch(updateEducation({ id: editingId, formData }));
+    } else {
+      dispatch(addEducation(formData));
     }
+    resetForm();
+    setIsModalOpen(false);
   };
 
   const handleEdit = (item) => {
@@ -73,13 +67,9 @@ export default function Education() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this education entry?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/student/education/${id}`);
-      fetchEducation();
-    } catch (err) {
-      console.error("Error deleting education:", err);
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this education entry?")) {
+      dispatch(deleteEducation(id));
     }
   };
 
@@ -120,20 +110,25 @@ export default function Education() {
         ))}
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
             <h2 className="text-xl font-bold mb-4">{editingId ? "Edit Education" : "Add Education"}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="text" name="registrationNo" placeholder="Registration No" value={formData.registrationNo} onChange={handleInputChange} required className="w-full border px-4 py-2 rounded" />
-              <input type="text" name="institution" placeholder="Institution" value={formData.institution} onChange={handleInputChange} required className="w-full border px-4 py-2 rounded" />
-              <input type="text" name="degree" placeholder="Degree" value={formData.degree} onChange={handleInputChange} required className="w-full border px-4 py-2 rounded" />
-              <input type="text" name="fieldOfStudy" placeholder="Field of Study" value={formData.fieldOfStudy} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" />
+              {["registrationNo", "institution", "degree", "fieldOfStudy", "grade", "batchYear"].map((field) => (
+                <input
+                  key={field}
+                  type={field === "batchYear" ? "number" : "text"}
+                  name={field}
+                  placeholder={field.replace(/([A-Z])/g, " $1")}
+                  value={formData[field]}
+                  onChange={handleInputChange}
+                  required={["registrationNo", "institution", "degree"].includes(field)}
+                  className="w-full border px-4 py-2 rounded"
+                />
+              ))}
               <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" />
               <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" />
-              <input type="text" name="grade" placeholder="Grade" value={formData.grade} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" />
-              <input type="number" name="batchYear" placeholder="Batch Year" value={formData.batchYear} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" />
               <textarea name="description" placeholder="Description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full border px-4 py-2 rounded" />
               <div className="flex justify-end gap-4 pt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>

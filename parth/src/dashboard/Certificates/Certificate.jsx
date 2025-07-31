@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-// You can move this to a .env later
-const API_BASE = "http://localhost:5000/student";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchCertificates,
+  addCertificate,
+  updateCertificate,
+  deleteCertificate
+} from "../../redux/CertificateSlice.js";
 
 const categoryColors = {
   Business: "bg-purple-100 text-purple-800",
@@ -13,7 +16,9 @@ const categoryColors = {
 };
 
 export default function Certificates() {
-  const [certificates, setCertificates] = useState([]);
+  const dispatch = useDispatch();
+  const { list: certificates, loading } = useSelector((state) => state.certificates);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -27,37 +32,23 @@ export default function Certificates() {
   });
 
   useEffect(() => {
-    fetchCertificates();
-  }, []);
-
-  const fetchCertificates = async () => {
-    try {
-      const response = await axios.get(`${API_BASE}/certificates`);
-      setCertificates(response.data);
-    } catch (error) {
-      console.error("Failed to fetch certificates", error);
-    }
-  };
+    dispatch(fetchCertificates());
+  }, [dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      if (editingId) {
-        await axios.put(`${API_BASE}/certificates/${editingId}`, formData);
-      } else {
-        await axios.post(`${API_BASE}/certificates`, formData);
-      }
-      fetchCertificates();
-      resetForm();
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error saving certificate", error);
+    if (editingId) {
+      dispatch(updateCertificate({ id: editingId, formData }));
+    } else {
+      dispatch(addCertificate(formData));
     }
+    resetForm();
+    setIsModalOpen(false);
   };
 
   const handleEdit = (cert) => {
@@ -66,13 +57,8 @@ export default function Certificates() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${API_BASE}/certificates/${id}`);
-      fetchCertificates();
-    } catch (error) {
-      console.error("Error deleting certificate", error);
-    }
+  const handleDelete = (id) => {
+    dispatch(deleteCertificate(id));
   };
 
   const handleAdd = () => {
@@ -151,7 +137,6 @@ export default function Certificates() {
                       title="Edit"
                     >
                       Edit
-                      
                     </button>
                     <button
                       onClick={() => handleDelete(cert.id)}
@@ -167,7 +152,6 @@ export default function Certificates() {
           ))}
         </div>
 
-        {/* Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
             <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-lg">
