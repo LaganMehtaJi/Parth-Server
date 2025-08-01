@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BeatLoader } from 'react-spinners';
@@ -6,6 +6,7 @@ import axios from "axios";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 // import { BeatLoader } from 'react-spinners';
+
 
 import { 
   FiHome, 
@@ -576,29 +577,10 @@ const CompanyManagement = () => (
 const ResumeTemplates = () => {
   const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [templates, setTemplates] = useState([
-    {
-      id: 1,
-      name: 'Modern Professional',
-      category: 'Professional',
-      downloads: 1245,
-      score: 92,
-      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Modern+Professional',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-    {
-      id: 2,
-      name: 'Creative Designer',
-      category: 'Creative',
-      downloads: 892,
-      score: 85,
-      thumbnail: 'https://via.placeholder.com/300x400/10b981/ffffff?text=Creative+Designer',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-  ]);
-
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('idle');
   const [newTemplate, setNewTemplate] = useState({
@@ -617,6 +599,23 @@ const ResumeTemplates = () => {
     }
   };
 
+  // Fetch templates from API
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('https://localhost:5000/templates'); // Replace with your API endpoint
+        setTemplates(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -632,29 +631,31 @@ const ResumeTemplates = () => {
     }
   };
 
-  const handleUpload = (e) => {
+  const handleUpload = async (e) => {
     e.preventDefault();
     if (!newTemplate.file) return;
     
     setUploadStatus('uploading');
     
-    setTimeout(() => {
-      const score = Math.floor(Math.random() * 21) + 80;
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('name', newTemplate.name);
+      formData.append('category', newTemplate.category);
+      formData.append('file', newTemplate.file);
       
-      const newTemplateObj = {
-        id: templates.length + 1,
-        name: newTemplate.name,
-        category: newTemplate.category,
-        downloads: 0,
-        score: score,
-        thumbnail: newTemplate.previewImage || 'https://via.placeholder.com/300x400',
-        previewUrl: '#',
-        downloadUrl: '#'
-      };
+      // Upload to API
+      const response = await axios.post('https://localhost:5000/templates', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       
-      setTemplates([...templates, newTemplateObj]);
+      // Add the new template to the list
+      setTemplates([...templates, response.data]);
       setUploadStatus('success');
       
+      // Reset form after 3 seconds
       setTimeout(() => {
         setShowUploadModal(false);
         setUploadStatus('idle');
@@ -665,8 +666,25 @@ const ResumeTemplates = () => {
           previewImage: null
         });
       }, 3000);
-    }, 3000);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      setUploadStatus('error');
+      setTimeout(() => setUploadStatus('idle'), 3000);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-white rounded-lg shadow-sm flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading templates...</p>
+        </div>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
@@ -699,54 +717,60 @@ const ResumeTemplates = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {templates
-          .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
-          .map(template => (
-            <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={template.thumbnail} 
-                  alt={template.name}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
-                  Score: {template.score}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
-                    {template.category}
-                  </span>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    {template.downloads.toLocaleString()}
+      {templates.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No templates found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {templates
+            .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
+            .map(template => (
+              <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={template.thumbnail} 
+                    alt={template.name}
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
+                    Score: {template.score}
                   </div>
                 </div>
-                <div className="flex mt-4 space-x-2">
-                  <a 
-                    href={template.previewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <FiExternalLink className="w-4 h-4 mr-1" />
-                    Preview
-                  </a>
-                  <a 
-                    href={template.downloadUrl}
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
-                  >
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    Download
-                  </a>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                      {template.category}
+                    </span>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      {template.downloads.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="flex mt-4 space-x-2">
+                    <a 
+                      href={template.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                      <FiExternalLink className="w-4 h-4 mr-1" />
+                      Preview
+                    </a>
+                    <a 
+                      href={template.downloadUrl}
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                    >
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      Download
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      )}
 
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
@@ -756,6 +780,7 @@ const ResumeTemplates = () => {
                 {uploadStatus === 'idle' && 'Upload New Template'}
                 {uploadStatus === 'uploading' && 'Testing Your Template'}
                 {uploadStatus === 'success' && 'Upload Successful!'}
+                {uploadStatus === 'error' && 'Upload Failed'}
               </h3>
               {uploadStatus === 'idle' && (
                 <button 
@@ -870,12 +895,33 @@ const ResumeTemplates = () => {
                 </p>
               </div>
             )}
+
+            {uploadStatus === 'error' && (
+              <div className="p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full">
+                    <FiX className="w-8 h-8 text-red-600" />
+                  </div>
+                </div>
+                <h4 className="text-lg font-medium text-gray-800 mb-2">Upload Failed</h4>
+                <p className="text-gray-600 mb-4">
+                  There was an error processing your template.
+                </p>
+                <button
+                  onClick={() => setUploadStatus('idle')}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
     </div>
   );
 };
+
 
 const PortfolioTemplates = () => {
   const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
