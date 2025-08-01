@@ -68,14 +68,6 @@ export default function Skills() {
     setEditingId(null);
   };
 
-  if (status === 'loading' && !skills.length) {
-    return <div className="text-center py-8">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
-  }
-
   return (
     <>
       <div className="container mx-auto px-4 py-8">

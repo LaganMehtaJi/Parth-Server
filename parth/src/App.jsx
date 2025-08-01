@@ -10,13 +10,14 @@ import JobsCards from './Home/JobCards.jsx';
 import Message from './Home/Message.jsx';
 import Notifications from './Home/Notifications.jsx';
 import Main from "./dashboard/main";
-import { Header } from "./dashboard/ResumeBuilder/Header.jsx"; 
+import Header  from "./dashboard/ResumeBuilder/Header.jsx"; 
 import Index from './dashboard/Projects/Index.jsx';
 import Certificate from './dashboard/Certificates/Certificate.jsx';
 import Voluntary from './dashboard/Voluntary/Voluntary.jsx';
 import Skills from './dashboard/Skills/Skills.jsx';
 import Education from './dashboard/Education/Education.jsx';
 import Experience from './dashboard/Experince/Experince.jsx';
+import Jobs from './dashboard/Job/Jobs.jsx';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         <Route path='skill'element={<Skills/>}/>
         <Route path="education"element={<Education/>}/>
         <Route path="experience"element={<Experience/>}/>
+        <Route path="job"element={<Jobs/>}/>
       </Route>
     </Routes>
   );

@@ -1,11 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { FiEdit2, FiTrash2, FiLink, FiPlus, FiX, FiCheck, FiExternalLink, FiShare2 } from 'react-icons/fi';
+import React, { useState } from 'react';
+import {
+  FiEdit2,
+  FiTrash2,
+  FiLink,
+  FiPlus,
+  FiX,
+  FiCheck,
+  FiExternalLink,
+  FiShare2,
+} from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addProject,
+  updateProject,
+  deleteProject,
+  toggleFeatured,
+} from '../../redux/ProjectsSlice';
 
 const Index = () => {
-  const [projects, setProjects] = useState(() => {
-    const savedProjects = localStorage.getItem('projects');
-    return savedProjects ? JSON.parse(savedProjects) : [];
-  });
+  const dispatch = useDispatch();
+  const { projects, copiedId } = useSelector((state) => state.projects);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -19,11 +33,6 @@ const Index = () => {
     featured: false,
     date: new Date().toISOString().split('T')[0],
   });
-  const [copiedId, setCopiedId] = useState(null);
-
-  useEffect(() => {
-    localStorage.setItem('projects', JSON.stringify(projects));
-  }, [projects]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -57,33 +66,22 @@ const Index = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (editMode) {
-      setProjects((prev) =>
-        prev.map((proj) => (proj.id === formData.id ? formData : proj))
-      );
+      dispatch(updateProject(formData));
     } else {
-      setProjects((prev) => [...prev, { ...formData, id: Date.now() }]);
+      dispatch(addProject(formData));
     }
     setIsFormOpen(false);
   };
 
   const handleDeleteProject = (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
-      setProjects((prev) => prev.filter((project) => project.id !== id));
+      dispatch(deleteProject(id));
     }
   };
 
   const handleCopyLink = (link, id) => {
     navigator.clipboard.writeText(link);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  const toggleFeatured = (id) => {
-    setProjects((prev) =>
-      prev.map((proj) =>
-        proj.id === id ? { ...proj, featured: !proj.featured } : proj
-      )
-    );
+    alert('Link copied to clipboard!');
   };
 
   const handleShare = async (project) => {
@@ -133,7 +131,11 @@ const Index = () => {
               <div className="p-5">
                 <div className="flex items-start gap-4">
                   {project.logo ? (
-                    <img src={project.logo} alt="logo" className="w-14 h-14 object-contain" />
+                    <img
+                      src={project.logo}
+                      alt="logo"
+                      className="w-14 h-14 object-contain"
+                    />
                   ) : (
                     <div className="w-14 h-14 bg-gray-100 flex items-center justify-center">
                       <FiExternalLink />
@@ -142,7 +144,7 @@ const Index = () => {
                   <div className="flex-1">
                     <div className="flex justify-between">
                       <h2 className="text-lg font-semibold">{project.title}</h2>
-                      <button onClick={() => toggleFeatured(project.id)}>
+                      <button onClick={() => dispatch(toggleFeatured(project.id))}>
                         {project.featured ? '★' : '☆'}
                       </button>
                     </div>
@@ -159,23 +161,28 @@ const Index = () => {
                     <FiExternalLink /> Visit
                   </a>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEditClick(project)} title="Edit">
+                    <button
+                      onClick={() => handleEditClick(project)}
+                      title="Edit"
+                    >
                       <FiEdit2 />
                     </button>
                     <button
                       onClick={() => handleCopyLink(project.link, project.id)}
                       title="Copy Link"
                     >
-                      {copiedId === project.id ? (
-                        <FiCheck className="text-green-500" />
-                      ) : (
-                        <FiLink />
-                      )}
+                      <FiLink />
                     </button>
-                    <button onClick={() => handleShare(project)} title="Share">
+                    <button
+                      onClick={() => handleShare(project)}
+                      title="Share"
+                    >
                       <FiShare2 />
                     </button>
-                    <button onClick={() => handleDeleteProject(project.id)} title="Delete">
+                    <button
+                      onClick={() => handleDeleteProject(project.id)}
+                      title="Delete"
+                    >
                       <FiTrash2 />
                     </button>
                   </div>
@@ -199,19 +206,75 @@ const Index = () => {
               </button>
             </div>
             <form onSubmit={handleFormSubmit} className="space-y-4">
-              <input name="title" placeholder="Title" value={formData.title} onChange={handleInputChange} required className="w-full p-2 border rounded" />
-              <textarea name="description" placeholder="Description" value={formData.description} onChange={handleInputChange} required rows={3} className="w-full p-2 border rounded" />
-              <input name="techStack" placeholder="Tech Stack" value={formData.techStack} onChange={handleInputChange} required className="w-full p-2 border rounded" />
-              <input name="link" placeholder="Project URL" value={formData.link} onChange={handleInputChange} required className="w-full p-2 border rounded" />
-              <input name="logo" placeholder="Logo URL" value={formData.logo} onChange={handleInputChange} className="w-full p-2 border rounded" />
-              <input name="date" type="date" value={formData.date} onChange={handleInputChange} required className="w-full p-2 border rounded" />
+              <input
+                name="title"
+                placeholder="Title"
+                value={formData.title}
+                onChange={handleInputChange}
+                required
+                className="w-full p-2 border rounded"
+              />
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={formData.description}
+                onChange={handleInputChange}
+                required
+                rows={3}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                name="techStack"
+                placeholder="Tech Stack"
+                value={formData.techStack}
+                onChange={handleInputChange}
+                required
+                className="w-full p-2 border rounded"
+              />
+              <input
+                name="link"
+                placeholder="Project URL"
+                value={formData.link}
+                onChange={handleInputChange}
+                required
+                className="w-full p-2 border rounded"
+              />
+              <input
+                name="logo"
+                placeholder="Logo URL"
+                value={formData.logo}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded"
+              />
+              <input
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+                className="w-full p-2 border rounded"
+              />
               <div className="flex items-center gap-2">
-                <input type="checkbox" name="featured" checked={formData.featured} onChange={handleInputChange} />
+                <input
+                  type="checkbox"
+                  name="featured"
+                  checked={formData.featured}
+                  onChange={handleInputChange}
+                />
                 <label>Featured</label>
               </div>
               <div className="flex justify-end gap-3">
-                <button type="button" onClick={() => setIsFormOpen(false)} className="border px-4 py-2 rounded">Cancel</button>
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+                <button
+                  type="button"
+                  onClick={() => setIsFormOpen(false)}
+                  className="border px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                >
                   {editMode ? 'Update' : 'Add'}
                 </button>
               </div>

@@ -17,7 +17,7 @@ const categoryColors = {
 
 export default function Certificates() {
   const dispatch = useDispatch();
-  const { list: certificates, loading } = useSelector((state) => state.certificates);
+  const { list: certificates } = useSelector((state) => state.certificates);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
