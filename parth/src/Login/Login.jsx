@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 const Login = () => {
   const { type } = useParams();
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
 
   
   // Background images for different user types

@@ -7,24 +7,25 @@ import RightLinks from './RightsLinks';
 export default function Index() {
   return (
     <div className="bg-gray-100 min-h-screen">
+      {/* Static Header */}
       <Headerhome />
+
+      {/* Responsive 3-column layout */}
       <div className="flex flex-col lg:flex-row gap-6 px-4 mt-4">
         
-        {/* Left Sidebar - Profile Section (Sticky on lg only) */}
-        <div className="w-full lg:max-w-xs lg:sticky lg:top-20 self-start">
+        {/* Left Sidebar - Profile Section */}
+        <div className="w-full lg:max-w-xs">
           <Profilesection />
         </div>
 
         {/* Center - Job Suggestions */}
-        <div className="w-full lg:flex-1 flex justify-center">
+        <div className="w-full lg:flex-1">
           <JobSuggestions />
         </div>
 
-        {/* Right Sidebar - Links (Sticky on lg only) */}
-        <div className="w-full lg:max-w-xs flex justify-center">
-          <div className="w-full lg:sticky lg:top-20 self-start">
-            <RightLinks />
-          </div>
+        {/* Right Sidebar - Links */}
+        <div className="w-full lg:max-w-xs">
+          <RightLinks />
         </div>
 
       </div>
