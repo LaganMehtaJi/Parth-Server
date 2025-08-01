@@ -1,7 +1,7 @@
 import express from "express";
 import { CheckStudent } from "../../controller/student/auth.controller.js";
 const router  = express.Router();
-router.post("/student",CheckStudent);
+router.post("/login",CheckStudent);
 // router.post("/recruiter");
 // router.post("/admin");
 
