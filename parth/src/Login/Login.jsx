@@ -11,16 +11,11 @@ import { useEffect } from 'react';
 const Login = () => {
   const { type } = useParams();
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
-
-  
-  // Background images for different user types
   const backgroundImages = {
     student: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg',
     recruiter: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg',
     admin: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg'
   };
-  
-  // Titles for different user types
   const titles = {
     student: {
       main: "Let's Start Learning",
@@ -74,10 +69,6 @@ const Login = () => {
       .string()
       .email('Please enter a valid email')
       .required('Please enter your email'),
-    name: yup
-      .string()
-      .min(3, 'Minimum 3 characters required')
-      .required('Please enter your name')
   });
   
  useEffect(() => {
@@ -130,28 +121,32 @@ const Login = () => {
   const forgotPasswordFormik = useFormik({
     initialValues: {
       email: '',
-      name: ''
     },
     validationSchema: forgotPasswordSchema,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      console.log('Forgot password values:', values);
-      // Simulate sending email
-      setTimeout(() => {
-        toast.success(`Password reset link sent to ${values.email}`, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        setIsForgotPasswordOpen(false);
-        resetForm();
-        setSubmitting(false);
-      }, 1500);
-    },
+   onSubmit: async (values, { setSubmitting, resetForm }) => {
+  const expiry = Date.now() + 2 * 60 * 1000; // 2 minutes from now
+
+  // Simulate sending OTP
+  toast.success(`OTP sent to ${values.email}`, {
+    position: "top-center",
+    autoClose: 1500,
+  });
+
+  setTimeout(() => {
+    setIsForgotPasswordOpen(false);
+    resetForm();
+    setSubmitting(false);
+
+    navigate('/otp', {
+      state: {
+        email: values.email,
+        type,
+        expiry,
+      },
+    });
+  }, 1500);
+}
+
   });
 
   return (
@@ -352,7 +347,7 @@ const Login = () => {
 
             <form onSubmit={forgotPasswordFormik.handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <div className="relative">
+                {/* <div className="relative">
                   <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
                     type="text"
@@ -363,10 +358,10 @@ const Login = () => {
                     onBlur={forgotPasswordFormik.handleBlur}
                     className="pl-10 w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                   />
-                </div>
-                {forgotPasswordFormik.touched.name && forgotPasswordFormik.errors.name && (
+                </div> */}
+                {/* {forgotPasswordFormik.touched.name && forgotPasswordFormik.errors.name && (
                   <div className="text-red-500 text-sm ml-1">{forgotPasswordFormik.errors.name}</div>
-                )}
+                )} */}
               </div>
 
               <div className="space-y-2">
