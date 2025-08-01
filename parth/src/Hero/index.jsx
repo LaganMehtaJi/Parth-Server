@@ -22,8 +22,8 @@ const ParthPlacement = () => {
     { id: 'hero', label: 'Home' },
     { id: 'Services', label: 'Services' },
     { id: 'Features', label: 'Features' },
-    { id: 'Why Parth?', label: 'Why Parth?' },
-    { id: 'Our Team', label: 'Our Team' }
+    { id: 'Why-Parth', label: 'About Parth' },
+    { id: 'Our-Team', label: 'Our Team' }
   ];
 
   useEffect(() => {
@@ -288,10 +288,18 @@ const ParthPlacement = () => {
         </section>
 
         {/* Other Sections */}
-        <Services id="Services" />
-        <HowItStarts id="Features" />
-        <Parth id="Why Parth?" />
-        <OurTeam id="Our Team" />
+        <section id="Services">
+        <Services />
+        </section>
+        <section id="Features">
+        <HowItStarts  />
+        </section>
+        <section id="Why-Parth">
+        <Parth  />
+        </section>
+        <section id="Our-Team">
+        <OurTeam  />
+        </section>
         <Marquee />
         <Footer />
       </div>

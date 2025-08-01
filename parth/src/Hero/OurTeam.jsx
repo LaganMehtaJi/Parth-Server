@@ -29,7 +29,7 @@ const Team = [
   { 
     id: 3, 
     name: "PANKAJ", 
-    image: "./Pankaj.png", 
+    image: "./Pankaj.jpeg", 
     role: "Full Stack Developer",
     contributions: [
       "Developed database architecture",
