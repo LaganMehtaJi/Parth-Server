@@ -19,7 +19,7 @@ const Message = () => {
     setNewMessage('');
 
     setTimeout(() => {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { sender: 'admin', text: 'Thanks for reaching out. We’ll get back shortly.' },
       ]);
@@ -45,7 +45,7 @@ const Message = () => {
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setNewMessage(prev => prev + ' ' + transcript);
+      setNewMessage((prev) => prev + ' ' + transcript);
     };
 
     recognition.onerror = (event) => {
@@ -63,20 +63,25 @@ const Message = () => {
       <Headerhome />
 
       <div className="flex flex-col lg:flex-row gap-6 px-4 py-4">
-        {/* Profile Section (hide sticky on mobile) */}
+        {/* Profile Section */}
         <div className="w-full lg:max-w-xs">
           <Profilesection />
         </div>
 
         {/* Chat Section */}
-        <div className="flex justify-center w-full mt-4 lg:mt-0">
-          <div className="w-full max-w-xl h-[400px] sm:h-[500px] border border-gray-300 rounded-2xl shadow-lg flex flex-col bg-white overflow-hidden">
-            {/* Header */}
-            <div className="bg-blue-600 text-white text-lg font-semibold px-4 py-3 rounded-t-2xl flex justify-center">
-              <div className="w-14 h-4 bg-white rounded-full shadow-md"></div>
+        <div className="flex  w-full mt-4 lg:mt-0">
+          <div className="w-full max-w-xxl h-[500px] border border-gray-300 rounded-2xl shadow-lg flex flex-col bg-white overflow-hidden">
+            
+            <div className="bg-blue-600 text-white px-4 py-4 rounded-t-2xl flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-lg">
+                A
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg font-semibold">Admin </span>
+              </div>
             </div>
 
-            {/* Chat Messages */}
+            {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50">
               {messages.map((msg, idx) => (
                 <div
@@ -92,7 +97,7 @@ const Message = () => {
               ))}
             </div>
 
-            {/* Input Area */}
+            {/* Input Section */}
             <div className="flex items-center border-t border-gray-200 p-2 bg-white flex-wrap gap-2 sm:flex-nowrap">
               <input
                 type="text"

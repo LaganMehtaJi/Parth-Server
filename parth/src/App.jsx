@@ -18,6 +18,7 @@ import Skills from './dashboard/Skills/Skills.jsx';
 import Education from './dashboard/Education/Education.jsx';
 import Experience from './dashboard/Experince/Experince.jsx';
 import Jobs from './dashboard/Job/Jobs.jsx';
+import OTP from './Login/Otp.jsx';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
       <Route path='/admindash' element={<Admin />} />
       <Route path='/messaging' element={<Message />} />
       <Route path='/notifications' element={<Notifications />} />
+      <Route path="/otp"element={<OTP/>}/>
 
     
       <Route path='/dashboard' element={<Dashboard />}>
@@ -42,6 +44,7 @@ function App() {
         <Route path="education"element={<Education/>}/>
         <Route path="experience"element={<Experience/>}/>
         <Route path="job"element={<Jobs/>}/>
+
       </Route>
     </Routes>
   );
