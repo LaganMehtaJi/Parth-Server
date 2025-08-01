@@ -1,5 +1,6 @@
 import XLSX from 'xlsx';
-import Student from '../models/Student.js';
+
+import { Student } from "../../model/student.model.js";
 import * as StudentObj  from "../../model/student.model.js"; 
 
 export const AddStudent = async (req, res) => {
@@ -16,9 +17,9 @@ export const AddStudent = async (req, res) => {
     batchYear,
     profilePic,
     verify,
-    address
+    address,
+    password 
   } = req.body;
-  const password = name;
  console.log(rollNo)
   if(!registrationNo){
      res.status(202).json({ message: "Enter  All Details" });
@@ -43,10 +44,8 @@ export const AddStudent = async (req, res) => {
       batchYear,
       profilePic,
       verify,
-      address,
-      password
+      address
     });
-    
 
     return res.status(201).json({ message: "Student Added Successfully", student: newStudent });
 
@@ -77,14 +76,57 @@ export const getStudent = async (req,res)=>{
           return res.status(500).json({ message: "Internal Server Error", error });
        }
 };
-// Helper function to check for duplicates
+
+
+//excel logic
+
+
+
+// Helper function to check for duplicates - fixed version
 async function isDuplicate(student) {
-  return await Student.exists({
-    $or: [
-      { registrationNo: student.registrationNo },
-      { email: student.email }
-    ]
-  });
+  try {
+    if (!student.registrationNo && !student.email) return false;
+    
+    const query = {};
+    if (student.registrationNo) {
+      query.registrationNo = student.registrationNo.trim();
+    }
+    if (student.email) {
+      query.email = student.email.toLowerCase().trim();
+    }
+
+    return await Student.exists(query);
+  } catch (err) {
+    console.error('Duplicate check error:', err);
+    return false; // Fail-safe
+  }
+}
+
+// Validation function - minimal fixes
+function validateStudent(doc) {
+  const errors = [];
+  const currentYear = new Date().getFullYear();
+
+  // Required fields
+  if (!doc.registrationNo?.trim()) errors.push('Registration No is required');
+  if (!doc.name?.trim()) errors.push('Name is required');
+  if (!doc.email?.trim()) errors.push('Email is required');
+  if (doc.batchYear === null || doc.batchYear === undefined) errors.push('Batch Year is required');
+
+  // Data formats
+  if (doc.batchYear && (isNaN(doc.batchYear) || doc.batchYear < 2000 || doc.batchYear > currentYear + 5)) {
+    errors.push(`Batch Year must be a number between 2000-${currentYear + 5}`);
+  }
+
+  if (doc.phone && doc.phone.trim() && !/^\d{10,15}$/.test(doc.phone)) {
+    errors.push('Phone must be 10-15 digits or empty');
+  }
+
+  if (doc.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(doc.email)) {
+    errors.push('Invalid email format');
+  }
+
+  return errors.length ? errors : null;
 }
 
 export const uploadStudents = async (req, res) => {
@@ -96,70 +138,79 @@ export const uploadStudents = async (req, res) => {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet, { defval: null });
 
-    // Define required fields based on schema
-    const required = [
-      'Registration No', 'Name', 'Email', 'Batch Year'
-    ];
-
     const toInsert = [];
     const skippedRecords = [];
 
     // Process each row
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
-      const missing = required.filter(f => {
-        const v = r[f];
-        return v === null || v === undefined || String(v).trim() === '';
-      });
-
+      
+      // Prepare document - minimal changes
       const doc = {
-        registrationNo: r['Registration No'] ? String(r['Registration No']) : '',
-        password: r['Password'] || 'defaultPassword', // You should hash this
-        rollNo: r['Roll No'] ? String(r['Roll No']) : '',
-        name: r['Name'] || '',
-        email: (r['Email'] || '').toLowerCase(),
-        phone: r['Phone'] ? String(r['Phone']) : '',
+        registrationNo: r['Registration No']?.toString().trim() || '',
+        password: r['Password'] || 'defaultPassword',
+        rollNo: r['Roll No']?.toString().trim() || '',
+        name: r['Name']?.toString().trim() || '',
+        email: (r['Email']?.toString() || '').toLowerCase().trim(),
+        phone: r['Phone']?.toString().trim() || undefined, // Key fix: undefined for empty
         field: r['Field'] || 'Web-Developer',
         batchYear: r['Batch Year'] ? Number(r['Batch Year']) : null,
         profilePic: r['Profile Pic'] || 'https://res.cloudinary.com/dbeqhfbpk/image/upload/v1753455162/logoBlack_fwyfer.png',
         address: r['Address'] || ''
       };
 
-      if (missing.length > 0) {
+      // Validate
+      const validationErrors = validateStudent(doc);
+      if (validationErrors) {
         skippedRecords.push({
           row: i + 2,
-          reason: 'Missing required fields: ' + missing.join(', '),
-          original: r
+          registrationNo: doc.registrationNo || 'Not provided',
+          reason: 'Validation failed',
+          details: validationErrors.join(', ')
         });
-      } else if (await isDuplicate(doc)) {
+        continue;
+      }
+
+      // Check duplicates
+      if (await isDuplicate(doc)) {
         skippedRecords.push({
           row: i + 2,
-          reason: 'Duplicate record (registrationNo or email already exists)',
-          original: r
+          registrationNo: doc.registrationNo,
+          reason: 'Duplicate record',
+          details: 'Registration No or Email already exists'
         });
-      } else {
-        toInsert.push(doc);
+        continue;
+      }
+
+      toInsert.push(doc);
+    }
+
+    // Insert documents - minimal change for error handling
+    let inserted = [];
+    for (const doc of toInsert) {
+      try {
+        const newStudent = await Student.create(doc);
+        inserted.push({
+          registrationNo: newStudent.registrationNo,
+          name: newStudent.name,
+          email: newStudent.email,
+          batchYear: newStudent.batchYear
+        });
+      } catch (err) {
+        const errorMsg = err.code === 11000 ? 'Duplicate detected during insert' : 
+                        err.message.includes('phone') ? 'Invalid phone format' :
+                        err.message;
+                        
+        skippedRecords.push({
+          row: 'Unknown',
+          registrationNo: doc.registrationNo || 'Not provided',
+          reason: 'Insertion error',
+          details: errorMsg
+        });
       }
     }
 
-    // Insert valid documents
-    let inserted = [];
-    if (toInsert.length > 0) {
-      inserted = await Student.insertMany(toInsert, { ordered: false });
-    }
-
-    // Format response
-    const formattedSkipped = skippedRecords.map(record => {
-      return {
-        rowNumber: record.row,
-        registrationNo: record.original['Registration No'] || 'Not provided',
-        reason: record.reason,
-        details: record.reason.includes('Missing') 
-          ? `Missing fields: ${record.missingFields?.join(', ') || 'Unknown'}`
-          : 'Duplicate of existing record'
-      };
-    });
-
+    // Same response format
     res.json({
       message: 'Upload processed successfully',
       summary: {
@@ -168,16 +219,13 @@ export const uploadStudents = async (req, res) => {
         skipped: skippedRecords.length,
       },
       details: {
-        insertedRecords: inserted.map(doc => ({
-          registrationNo: doc.registrationNo,
-          name: doc.name,
-          email: doc.email
-        })),
-        skippedRecords: formattedSkipped
+        insertedRecords: inserted,
+        skippedRecords: skippedRecords
       }
     });
 
   } catch (e) {
+    console.error('Upload error:', e);
     res.status(500).json({ 
       message: 'Error processing file', 
       error: e.message 
