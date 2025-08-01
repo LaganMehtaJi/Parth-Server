@@ -14,9 +14,9 @@ export const AddStudent = async (req, res) => {
     batchYear,
     profilePic,
     verify,
-    address,
-    password 
+    address
   } = req.body;
+  const password = name;
  console.log(rollNo)
   if(!registrationNo){
      res.status(202).json({ message: "Enter  All Details" });
@@ -41,8 +41,10 @@ export const AddStudent = async (req, res) => {
       batchYear,
       profilePic,
       verify,
-      address
+      address,
+      password
     });
+    
 
     return res.status(201).json({ message: "Student Added Successfully", student: newStudent });
 
