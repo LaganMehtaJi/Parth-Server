@@ -11,17 +11,14 @@ import { useEffect } from 'react';
 const Login = () => {
   const { type } = useParams();
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
-  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
-  const [emailForReset, setEmailForReset] = useState('');
 
+  
   // Background images for different user types
   const backgroundImages = {
     student: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg',
     recruiter: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg',
     admin: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg'
   };
-  
-  // Titles for different user types
   const titles = {
     student: {
       main: "Let's Start Learning",
@@ -75,10 +72,6 @@ const Login = () => {
       .string()
       .email('Please enter a valid email')
       .required('Please enter your email'),
-    name: yup
-      .string()
-      .min(3, 'Minimum 3 characters required')
-      .required('Please enter your name')
   });
 
   // OTP and new password validation
@@ -153,64 +146,13 @@ const Login = () => {
   const forgotPasswordFormik = useFormik({
     initialValues: {
       email: '',
-      name: ''
     },
     validationSchema: forgotPasswordSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       console.log('Forgot password values:', values);
       // Simulate sending email
-      axios.post("http://localhost:3000/api/send-otp", values)
-        .then((res) => {
-          console.log(res.data.message);
-          setEmailForReset(values.email); // Store email for password reset
-          setIsOtpModalOpen(true); // Open OTP modal
-          setIsForgotPasswordOpen(false); // Close forgot password modal
-          resetForm();
-          setSubmitting(false);
-          
-          toast.success(`OTP sent to ${values.email}`, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        }).catch((error) => {
-          console.log(error.response?.data);
-          toast.error(`Failed to send OTP to ${values.email}`, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-          setSubmitting(false);
-        });
-    },
-  });
-
-  const otpFormik = useFormik({
-    initialValues: {
-      otp: '',
-      newPassword: '',
-      confirmPassword: ''
-    },
-    validationSchema: otpValidationSchema,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      try {
-        const response = await axios.post("http://localhost:3000/api/chnage-password", {
-          email: emailForReset,
-          otp: values.otp,
-          new_password: values.newPassword
-        });
-
-        toast.success('Password changed successfully!', {
+      setTimeout(() => {
+        toast.success(`Password reset link sent to ${values.email}`, {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -220,25 +162,11 @@ const Login = () => {
           progress: undefined,
           theme: "light",
         });
-
-        setIsOtpModalOpen(false);
+        setIsForgotPasswordOpen(false);
         resetForm();
-      } catch (error) {
-        console.log(error.response?.data);
-        toast.error(error.response?.data?.message || 'Failed to change password', {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      } finally {
         setSubmitting(false);
-      }
-    }
+      }, 1500);
+    },
   });
 
   return (
@@ -439,7 +367,7 @@ const Login = () => {
 
             <form onSubmit={forgotPasswordFormik.handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <div className="relative">
+                {/* <div className="relative">
                   <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
                   <input
                     type="text"
@@ -450,10 +378,10 @@ const Login = () => {
                     onBlur={forgotPasswordFormik.handleBlur}
                     className="pl-10 w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                   />
-                </div>
-                {forgotPasswordFormik.touched.name && forgotPasswordFormik.errors.name && (
+                </div> */}
+                {/* {forgotPasswordFormik.touched.name && forgotPasswordFormik.errors.name && (
                   <div className="text-red-500 text-sm ml-1">{forgotPasswordFormik.errors.name}</div>
-                )}
+                )} */}
               </div>
 
               <div className="space-y-2">
