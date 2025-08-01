@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchExperience,
+  addExperience,
+  updateExperience,
+  deleteExperience,
+} from "../../redux/ExperinceSlice";
 
 export default function Experience() {
-  const [experience, setExperience] = useState([]);
+  const dispatch = useDispatch();
+  const { list: experience } = useSelector((state) => state.experience);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-
   const [formData, setFormData] = useState({
     registrationNo: "",
     title: "",
@@ -13,22 +20,12 @@ export default function Experience() {
     location: "",
     startDate: "",
     endDate: "",
-    description: ""
+    description: "",
   });
 
-  // Fetch experiences on mount
   useEffect(() => {
-    fetchExperience();
-  }, []);
-
-  const fetchExperience = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/student/experience");
-      setExperience(res.data);
-    } catch (err) {
-      console.error("Error fetching experience:", err);
-    }
-  };
+    dispatch(fetchExperience());
+  }, [dispatch]);
 
   const resetForm = () => {
     setFormData({
@@ -38,30 +35,20 @@ export default function Experience() {
       location: "",
       startDate: "",
       endDate: "",
-      description: ""
+      description: "",
     });
     setEditingId(null);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      if (editingId) {
-        await axios.put(`http://localhost:5000/student/experience/${editingId}`, formData);
-      } else {
-        await axios.post("http://localhost:5000/student/experience", formData);
-      }
-      await fetchExperience();
-      resetForm();
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error("Error submitting experience:", err);
+    if (editingId) {
+      dispatch(updateExperience({ id: editingId, formData }));
+    } else {
+      dispatch(addExperience(formData));
     }
+    resetForm();
+    setIsModalOpen(false);
   };
 
   const handleEdit = (item) => {
@@ -70,21 +57,17 @@ export default function Experience() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this experience?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/student/experience/${id}`);
-      await fetchExperience();
-    } catch (err) {
-      console.error("Error deleting experience:", err);
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this experience?")) {
+      dispatch(deleteExperience(id));
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 text-center">
-            My<span className="text-blue-600"> Intership</span> Experince
-          </h1>
+        My <span className="text-blue-600">Internship</span> Experience
+      </h1>
 
       <div className="flex justify-center mb-6">
         <button
@@ -136,8 +119,8 @@ export default function Experience() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-md w-full max-w-lg shadow-lg">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-md w-full max-w-lg shadow-lg relative">
             <h2 className="text-xl font-bold mb-4">
               {editingId ? "Edit Experience" : "Add Experience"}
             </h2>
@@ -148,7 +131,7 @@ export default function Experience() {
                 name="registrationNo"
                 placeholder="Registration No"
                 value={formData.registrationNo}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, registrationNo: e.target.value })}
                 className="border px-3 py-2 rounded"
                 required
               />
@@ -157,7 +140,7 @@ export default function Experience() {
                 name="title"
                 placeholder="Title"
                 value={formData.title}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="border px-3 py-2 rounded"
                 required
               />
@@ -166,7 +149,7 @@ export default function Experience() {
                 name="company"
                 placeholder="Company"
                 value={formData.company}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                 className="border px-3 py-2 rounded"
               />
               <input
@@ -174,33 +157,33 @@ export default function Experience() {
                 name="location"
                 placeholder="Location"
                 value={formData.location}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 className="border px-3 py-2 rounded"
               />
               <input
                 type="date"
                 name="startDate"
                 value={formData.startDate}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                 className="border px-3 py-2 rounded"
               />
               <input
                 type="date"
                 name="endDate"
                 value={formData.endDate}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                 className="border px-3 py-2 rounded"
               />
               <textarea
                 name="description"
                 placeholder="Description"
                 value={formData.description}
-                onChange={handleInputChange}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows="3"
                 className="border px-3 py-2 rounded"
               />
 
-              <div className="flex justify-end gap-4">
+              <div className="flex justify-end gap-4 mt-4">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -212,7 +195,7 @@ export default function Experience() {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  {editingId ? "Update" : "Add"}
+                  {editingId ? "Update" : "+ Add"}
                 </button>
               </div>
             </form>

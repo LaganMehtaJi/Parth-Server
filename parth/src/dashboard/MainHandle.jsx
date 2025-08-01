@@ -12,6 +12,7 @@ import Voluntary from "./Voluntary/Voluntary";
 import Skills from "./Skills/Skills";
 import Education from "./Education/Education";
 import Experience from "./Experince/Experince";
+import Jobs from "./Job/Jobs";
 
 
 export const MainHandler = () => {
@@ -26,6 +27,7 @@ export const MainHandler = () => {
         <Route path="skills"elements={<Skills/>}/>
         <Route path="education"element={<Education/>}/>
         <Route path="experience"element={<Experience/>}/>
+        <Route path="job"element={<Jobs/>}/>
 
       
       </Route>
