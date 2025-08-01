@@ -77,14 +77,11 @@ export const getStudent = async (req,res)=>{
 };
 
 
-<<<<<<< HEAD
-=======
-//excel logic
 
 
 
-import XLSX from 'xlsx';
-import { Student } from "../../model/student.model.js";
+
+
 
 // Helper function to check for duplicates - fixed version
 async function isDuplicate(student) {
@@ -236,4 +233,3 @@ export const uploadStudents = async (req, res) => {
     });
   }
 };
->>>>>>> 2a9df0332e068a81b479ede14e0fc5ece334fdd9
