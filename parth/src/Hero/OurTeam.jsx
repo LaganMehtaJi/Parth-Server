@@ -5,12 +5,13 @@ const Team = [
   { 
     id: 1, 
     name: "JAGRITI GABA", 
-    image: "/images/jagriti.jpg", 
+    image: "./Jagriti.jpg", 
     role: "UI Developer",
     contributions: [
       "Designed hero page using React",
       "Implemented key feature components",
-      "Collaborated on UI/UX design"
+      "Collaborated within agile teams",
+      "Participated in design reviews"
     ]
   },
   { 
@@ -28,7 +29,7 @@ const Team = [
   { 
     id: 3, 
     name: "PANKAJ", 
-    image: "/images/pankaj.jpg", 
+    image: "./Pankaj.png", 
     role: "Full Stack Developer",
     contributions: [
       "Developed database architecture",
@@ -40,7 +41,7 @@ const Team = [
   { 
     id: 4, 
     name: "CHAHAT SHARMA", 
-    image: "/images/chahat.jpg", 
+    image: "./Chahat_Hero.JPG", 
     role: "UI/UX Specialist",
     contributions: [
       "Created home/dashboard designs",
@@ -49,18 +50,18 @@ const Team = [
       "Ensured responsive layouts"
     ]
   },
-  { 
-    id: 5, 
-    name: "MEHAK", 
-    image: "/images/mehak.jpg", 
-    role: "UI/UX Designer",
-    contributions: [
-      "Designed all Figma prototypes",
-      "Created visual style guide",
-      "Defined user flows",
-      "Ensured design consistency"
-    ]
-  }
+  // { 
+  //   id: 5, 
+  //   name: "MEHAK", 
+  //   image: "/images/mehak.jpg", 
+  //   role: "UI/UX Designer",
+  //   contributions: [
+  //     "Designed all Figma prototypes",
+  //     "Created visual style guide",
+  //     "Defined user flows",
+  //     "Ensured design consistency"
+  //   ]
+  // }
 ];
 
 const containerVariants = {
