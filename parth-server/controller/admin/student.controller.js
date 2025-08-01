@@ -82,6 +82,9 @@ export const getStudent = async (req,res)=>{
 
 
 
+import XLSX from 'xlsx';
+import { Student } from "../../model/student.model.js";
+
 // Helper function to check for duplicates - fixed version
 async function isDuplicate(student) {
   try {
