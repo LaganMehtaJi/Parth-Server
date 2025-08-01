@@ -156,7 +156,7 @@ const AdminDashboard = () => {
               setMobileMenuOpen(false);
             }}
           />
-          <NavItem 
+          {/* <NavItem 
             icon={<FiSettings className="w-5 h-5" />} 
             text="History" 
             active={activeTab === 'History'}
@@ -164,7 +164,7 @@ const AdminDashboard = () => {
               setActiveTab('History');
               setMobileMenuOpen(false);
             }}
-          />
+          /> */}
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
           {activeTab === 'list' && <List />}
           {activeTab === 'resume-templates' && <ResumeTemplates />}
           {activeTab === 'portfolio-templates' && <PortfolioTemplates />}
-          {activeTab === 'History' && <History />}
+          {/* {activeTab === 'History' && <History />} */}
         </main>
       </div>
     </div>
@@ -926,28 +926,38 @@ const ResumeTemplates = () => {
 const PortfolioTemplates = () => {
   const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [templates] = useState([
-    {
-      id: 1,
-      name: 'Portfolio Pro',
-      category: 'Professional',
-      downloads: 945,
-      score: 94,
-      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Portfolio+Pro',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-    {
-      id: 2,
-      name: 'Design Showcase',
-      category: 'Creative',
-      downloads: 782,
-      score: 89,
-      thumbnail: 'https://via.placeholder.com/300x400/10b981/ffffff?text=Design+Showcase',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-  ]);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch templates from API
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await axios.get('https://localhost:5000/portfolio-templates'); 
+        setTemplates(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-white rounded-lg shadow-sm flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading portfolio templates...</p>
+        </div>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
@@ -977,57 +987,68 @@ const PortfolioTemplates = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {templates
-          .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
-          .map(template => (
-            <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={template.thumbnail} 
-                  alt={template.name}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
-                  Score: {template.score}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
-                    {template.category}
-                  </span>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    {template.downloads.toLocaleString()}
+      {templates.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No portfolio templates found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {templates
+            .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
+            .map(template => (
+              <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={template.thumbnail} 
+                    alt={template.name}
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src = 'https://via.placeholder.com/300x400?text=Template+Image';
+                    }}
+                  />
+                  <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
+                    Score: {template.score}
                   </div>
                 </div>
-                <div className="flex mt-4 space-x-2">
-                  <a 
-                    href={template.previewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <FiExternalLink className="w-4 h-4 mr-1" />
-                    Preview
-                  </a>
-                  <a 
-                    href={template.downloadUrl}
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
-                  >
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    Download
-                  </a>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                      {template.category}
+                    </span>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      {template.downloads.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="flex mt-4 space-x-2">
+                    <a 
+                      href={template.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                      <FiExternalLink className="w-4 h-4 mr-1" />
+                      Preview
+                    </a>
+                    <a 
+                      href={template.downloadUrl}
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                    >
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      Download
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
+
 
 const Communications = () => <Comm />;
 const Analytics = () => <Anayltics />;
