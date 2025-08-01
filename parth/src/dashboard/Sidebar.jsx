@@ -35,17 +35,17 @@ const Sidebar = () => {
 
   const navItems = [
     { name: "Dashboard", path: '/', icon: <RiDashboardFill size={20} /> },
-    { name: "Resume Builder", path: '/Resumebuilder', icon: <FiFileText size={20} /> },
+    { name: "Resume Builder", path: '/dashboard/resumeBuilder', icon: <FiFileText size={20} /> },
     { name: "Portfolio Builder", path: '/Portfolio', icon: <FiUser size={20} /> },
-    { name: "Job Updates", path: '/job', icon: <FiBriefcase size={20} /> },
-    { name: "Projects", path: '/projects', icon: <FaProjectDiagram size={20} /> },
-    { name: "Certificates", path: '/certificates', icon: <FaCertificate size={20} /> },
-    { name: "Volunteering", path: '/voluntaring', icon: <FaHandsHelping size={20} /> },
-    { name: "Experience", path: '/experience', icon: <MdWork size={20} /> },
-    { name: "Skills", path: '/skill', icon: <FiAward size={20} /> },
-    { name: "Education", path: '/education', icon: <MdSchool size={20} /> },
-    { name: "Settings", path: '/setting', icon: <FiSettings size={20} /> },
-    { name: "Log Out", path: '/logout', icon: <FiLogOut size={20} /> }
+    { name: "Job Updates", path: '/dashboard/job', icon: <FiBriefcase size={20} /> },
+    { name: "Projects", path: '/dashboard/projects', icon: <FaProjectDiagram size={20} /> },
+    { name: "Certificates", path: '/dashboard/certificates', icon: <FaCertificate size={20} /> },
+    { name: "Volunteering", path: '/dashboard/voluntaring', icon: <FaHandsHelping size={20} /> },
+    { name: "Experience", path: '/dashboard/experience', icon: <MdWork size={20} /> },
+    { name: "Skills", path: '/dashboard/skill', icon: <FiAward size={20} /> },
+    { name: "Education", path: '/dashboard/education', icon: <MdSchool size={20} /> },
+    { name: "Settings", path: '/dashboard/setting', icon: <FiSettings size={20} /> },
+    { name: "Log Out", path: '/dashboard/logout', icon: <FiLogOut size={20} /> }
   ];
 
   return (

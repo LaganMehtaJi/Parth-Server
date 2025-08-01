@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import TemplateSelector from './TemplateSelector';
 import Template1 from './Template1'; // Default template
-import sampleData from './sampleData';
 
 const Header = () => {
   const [SelectedTemplate, setSelectedTemplate] = useState(() => Template1);
   const [showSelector, setShowSelector] = useState(false);
+  const [resumeData, setResumeData] = useState(null);
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/resume')
+      .then(response => {
+        setResumeData(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching resume data:', error);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -21,12 +32,17 @@ const Header = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <SelectedTemplate data={sampleData} />
+          {resumeData ? (
+            <SelectedTemplate data={resumeData} />
+          ) : (
+            <p>Loading resume data...</p>
+          )}
         </div>
       </div>
 
-      {showSelector && (
+      {showSelector && resumeData && (
         <TemplateSelector
+          data={resumeData}
           onClose={() => setShowSelector(false)}
           onSelect={(Comp) => {
             setSelectedTemplate(() => Comp);

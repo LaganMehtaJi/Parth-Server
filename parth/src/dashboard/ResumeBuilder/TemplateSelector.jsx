@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Template1 from './Template1';
 import Template2 from './Template2';
 import Template3 from './Template3';
-import sampleData from './sampleData';
 
 const templates = [
   { component: Template1, name: 'Classic', type: 'Headshot', color: 'white' },
@@ -10,7 +9,7 @@ const templates = [
   { component: Template3, name: 'Professional', type: 'Dark', color: 'blue' }
 ];
 
-const TemplateSelector = ({ onClose, onSelect }) => {
+const TemplateSelector = ({ onClose, onSelect, data }) => {
   const [filters, setFilters] = useState({ type: '', color: '' });
 
   const filteredTemplates = templates.filter(
@@ -58,7 +57,7 @@ const TemplateSelector = ({ onClose, onSelect }) => {
               onClick={() => onSelect(Comp)}
               className="cursor-pointer border hover:shadow-lg p-4 rounded-md bg-gray-50"
             >
-              <Comp data={sampleData} />
+              <Comp data={data} />
               <button className="mt-4 w-full bg-blue-600 text-white rounded py-1 hover:bg-blue-700 transition">
                 Choose Template
               </button>
