@@ -11,6 +11,9 @@ import { useEffect } from 'react';
 const Login = () => {
   const { type } = useParams();
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+
+  
+  // Background images for different user types
   const backgroundImages = {
     student: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg',
     recruiter: 'https://img.freepik.com/free-vector/hand-drawn-student-background_23-2149464866.jpg',
@@ -70,19 +73,32 @@ const Login = () => {
       .email('Please enter a valid email')
       .required('Please enter your email'),
   });
-  
- useEffect(() => {
-  const formdata = JSON.parse(localStorage.getItem({type})); // Get data using type as key
-  if (formdata) {
-    formik.setValues({
-      ...formik.values,
-      ...formdata
-    });
-  }
-}, [type]); // Add type as dependency
 
+  // OTP and new password validation
+  const otpValidationSchema = yup.object({
+    otp: yup
+      .string()
+      .length(6, 'OTP must be 6 characters')
+      .required('Please enter OTP'),
+    newPassword: yup
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .required('Please enter new password'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('newPassword'), null], 'Passwords must match')
+      .required('Please confirm your password')
+  });
 
-
+  useEffect(() => {
+    const formdata = JSON.parse(localStorage.getItem(type)); // Fixed: removed curly braces around type
+    if (formdata) {
+      formik.setValues({
+        ...formik.values,
+        ...formdata
+      });
+    }
+  }, [type]);
 
   const formik = useFormik({
     initialValues: {
@@ -93,25 +109,34 @@ const Login = () => {
       pass: '',
     },
     validationSchema,
-      onSubmit: async (values, { setSubmitting, resetForm }) => {
-      localStorage.setItem({type},JSON.stringify(values));
-      axios.post(`http://localhost:3000/api/auth/${type}`,values)
-      .then((res)=>{
-        console.log(res.data.message);
-         toast.success(` ${res.data.message}`, {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-      }).catch((error)=>{
-        
-        console.log(error.data);
-      })
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      localStorage.setItem(type, JSON.stringify(values)); // Fixed: removed curly braces around type
+      axios.post(`http://localhost:3000/api/auth/${type}`, values)
+        .then((res) => {
+          console.log(res.data.message);
+          toast.success(` ${res.data.message}`, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }).catch((error) => {
+          console.log(error.response?.data);
+          toast.error(error.response?.data?.message || 'Login failed', {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        })
       console.log('Form values:', values);
       resetForm();
       setSubmitting(false);
@@ -123,30 +148,25 @@ const Login = () => {
       email: '',
     },
     validationSchema: forgotPasswordSchema,
-   onSubmit: async (values, { setSubmitting, resetForm }) => {
-  const expiry = Date.now() + 2 * 60 * 1000; // 2 minutes from now
-
-  // Simulate sending OTP
-  toast.success(`OTP sent to ${values.email}`, {
-    position: "top-center",
-    autoClose: 1500,
-  });
-
-  setTimeout(() => {
-    setIsForgotPasswordOpen(false);
-    resetForm();
-    setSubmitting(false);
-
-    navigate('/otp', {
-      state: {
-        email: values.email,
-        type,
-        expiry,
-      },
-    });
-  }, 1500);
-}
-
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      console.log('Forgot password values:', values);
+      // Simulate sending email
+      setTimeout(() => {
+        toast.success(`Password reset link sent to ${values.email}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setIsForgotPasswordOpen(false);
+        resetForm();
+        setSubmitting(false);
+      }, 1500);
+    },
   });
 
   return (
@@ -341,7 +361,7 @@ const Login = () => {
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800">Reset Your Password</h2>
               <p className="text-gray-600 mt-1">
-                Enter your details to receive a password reset link
+                Enter your details to receive a password reset OTP
               </p>
             </div>
 
@@ -394,7 +414,93 @@ const Login = () => {
                   type="submit"
                   className="px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium"
                 >
-                  Send Reset Link
+                  Send OTP
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* OTP Verification Modal */}
+      {isOtpModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Verify OTP</h2>
+              <p className="text-gray-600 mt-1">
+                Enter the OTP sent to {emailForReset} and your new password
+              </p>
+            </div>
+
+            <form onSubmit={otpFormik.handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <div className="relative">
+                  <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    type="text"
+                    name="otp"
+                    placeholder="Enter 6-digit OTP"
+                    value={otpFormik.values.otp}
+                    onChange={otpFormik.handleChange}
+                    onBlur={otpFormik.handleBlur}
+                    className="pl-10 w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
+                  />
+                </div>
+                {otpFormik.touched.otp && otpFormik.errors.otp && (
+                  <div className="text-red-500 text-sm ml-1">{otpFormik.errors.otp}</div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="relative">
+                  <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    type="password"
+                    name="newPassword"
+                    placeholder="New Password"
+                    value={otpFormik.values.newPassword}
+                    onChange={otpFormik.handleChange}
+                    onBlur={otpFormik.handleBlur}
+                    className="pl-10 w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
+                  />
+                </div>
+                {otpFormik.touched.newPassword && otpFormik.errors.newPassword && (
+                  <div className="text-red-500 text-sm ml-1">{otpFormik.errors.newPassword}</div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="relative">
+                  <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm New Password"
+                    value={otpFormik.values.confirmPassword}
+                    onChange={otpFormik.handleChange}
+                    onBlur={otpFormik.handleBlur}
+                    className="pl-10 w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
+                  />
+                </div>
+                {otpFormik.touched.confirmPassword && otpFormik.errors.confirmPassword && (
+                  <div className="text-red-500 text-sm ml-1">{otpFormik.errors.confirmPassword}</div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsOtpModalOpen(false)}
+                  className="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium"
+                >
+                  Reset Password
                 </button>
               </div>
             </form>

@@ -49,8 +49,7 @@ const studentSchema = new Schema({
   batchYear: {
     type: Number,
     required: true,
-    min: 2000,
-    max: new Date().getFullYear() + 5
+    default: new Date().getFullYear()
   },
   profilePic: {
     type: String,
