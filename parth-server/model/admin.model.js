@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 // =============================
 
 const adminSchema = new Schema({
-  adminacesscode: {             
+  adminCode: {             
     type: String,
     required: true,
     unique: true,

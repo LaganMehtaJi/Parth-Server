@@ -32,7 +32,7 @@ function App() {
       <Route path='/notifications' element={<Notifications />} />
 
     
-      <Route path='/dashboard' element={<Dashboard />}>
+      <Route path='/studentdash' element={<Dashboard />}>
         <Route index element={<Main />} />
         <Route path='Resumebuilder' element={<Header/>} />
         <Route path='projects'element={<Index/>}/>
