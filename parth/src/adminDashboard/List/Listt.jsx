@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const StudentHistoryTracker = () => {
+const Listt= () => {
   // Sample initial data
   const [companies, setCompanies] = useState([
     {
@@ -479,4 +479,4 @@ const StudentHistoryTracker = () => {
   );
 };
 
-export default StudentHistoryTracker;
+export default Listt;

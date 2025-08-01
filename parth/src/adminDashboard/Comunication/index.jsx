@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CommunicationPanel = () => {
+const Comunication = () => {
   const [rollNo, setRollNo] = useState("");
   const [classOption, setClassOption] = useState("BCA");
   const [notificationMessage, setNotificationMessage] = useState("");
@@ -270,4 +270,4 @@ const CommunicationPanel = () => {
   );
 };
 
-export default CommunicationPanel;
+export default Comunication;

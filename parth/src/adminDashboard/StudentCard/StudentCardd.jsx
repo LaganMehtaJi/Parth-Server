@@ -5,7 +5,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { RiDashboardLine } from "react-icons/ri";
 import { FaRegFileAlt } from "react-icons/fa";
 
-const StudentCard = ({
+const StudentCardd = ({
   image,
   name,
   rollNo, // NEW PROP
@@ -129,4 +129,4 @@ const StudentCard = ({
   );
 };
 
-export default StudentCard;
+export default StudentCardd;

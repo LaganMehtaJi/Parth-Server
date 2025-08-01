@@ -35,13 +35,17 @@ import {
 import Lottie from 'react-lottie';
 import animationData from './loading-animation.json';
 import Companies from './Companies/Companies';
+import Comunication from './Comunication';
+import AnalyticsDashboard from './Anayltics/Anaytics';
+import Listt from './List/Listt';
+import StudentCardd from './StudentCard/StudentCardd';
 
 // Placeholder components - replace these with your actual components
-const StudentCard = () => <div>Student Card</div>;
+const StudentCard = () => <StudentCardd/>;
 const CompanyCard = () => <Companies/>;
-const Comm = () => <div>Communications</div>;
-const Anayltics = () => <div>Analytics</div>;
-const ListComponent = () => <div>List</div>;
+const Comm = () => <Comunication/>;
+const Anayltics = () => <AnalyticsDashboard/>;
+const ListComponent = () => <Listt/>;
 const His = () => <div>History</div>;
 
 const AdminDashboard = () => {
