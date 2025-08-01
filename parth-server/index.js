@@ -19,11 +19,8 @@ app.use(express.json());
 app.use("/api/student",Student);
 app.use("/api/auth/student",AuthStudent);
 app.use("/api/auth/admin",AuthAdmin);
-<<<<<<< HEAD
 app.use("/api/auth/profile",StudentOpp);
-=======
 app.use("/api/auth/admin/upload-excel",AuthAdmin);
->>>>>>> 2a9df0332e068a81b479ede14e0fc5ece334fdd9
 ConnectDb();
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
