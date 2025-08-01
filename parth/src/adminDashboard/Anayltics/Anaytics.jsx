@@ -14,6 +14,7 @@ import {
   RadialLinearScale
 } from 'chart.js';
 import { Card, CardContent, Grid, Typography, Select, MenuItem, FormControl, InputLabel, Divider } from '@mui/material';
+import axios from 'axios';
 
 // Register ChartJS components
 ChartJS.register(
@@ -34,57 +35,103 @@ const AnalyticsDashboard = () => {
   const [selectedProgram, setSelectedProgram] = useState('All');
   const [selectedSkill, setSelectedSkill] = useState('All');
   const [timeRange, setTimeRange] = useState('Last 6 Months');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample data - in a real app, this would come from an API
+  // State for all data
   const [studentData, setStudentData] = useState({
-    programs: ['BCA', 'MBA', 'MCA', 'BBA', 'BCA AI', 'BCA CTIS'],
-    skills: ['MERN', 'Docker', 'Python', 'Java', 'Data Science', 'Cloud Computing'],
-    companies: ['TCS', 'Infosys', 'Wipro', 'Amazon', 'Microsoft', 'Google'],
+    programs: [],
+    skills: [],
+    companies: [],
     jobData: [],
     studentSkills: [],
     placementStats: []
   });
 
-  // Initialize sample data
+  // Fetch data from API
   useEffect(() => {
-    // Generate sample job data
-    const jobData = studentData.companies.map(company => ({
-      company,
-      jobsPosted: Math.floor(Math.random() * 50) + 10,
-      averageSalary: Math.floor(Math.random() * 10) + 5,
-      hiresByProgram: studentData.programs.reduce((acc, program) => {
-        acc[program] = Math.floor(Math.random() * 20);
-        return acc;
-      }, {})
-    }));
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+      
+        const [programsRes, skillsRes, companiesRes, jobsRes, placementsRes] = await Promise.all([
+          axios.get('/api/programs'),
+          axios.get('/api/skills'),
+          axios.get('/api/companies'),
+          axios.get('/api/jobs'),
+          axios.get('/api/placements')
+        ]);
 
-    // Generate sample student skill data
-    const studentSkills = studentData.programs.map(program => ({
-      program,
-      skills: studentData.skills.reduce((acc, skill) => {
-        acc[skill] = Math.floor(Math.random() * 100);
-        return acc;
-      }, {})
-    }));
+        setStudentData({
+          programs: programsRes.data,
+          skills: skillsRes.data,
+          companies: companiesRes.data,
+          jobData: jobsRes.data,
+          placementStats: placementsRes.data,
+          // Generate student skills data based on programs and skills
+          studentSkills: programsRes.data.map(program => ({
+            program,
+            skills: skillsRes.data.reduce((acc, skill) => {
+              acc[skill] = Math.floor(Math.random() * 100); // Replace with actual data from API
+              return acc;
+            }, {})
+          }))
+        });
+      } catch (err) {
+        setError(err.response?.data?.message);
+        console.error('Error fetching data:', err);
+        
+        // Fallback to sample data if API fails
+        setStudentData({
+          programs: ['BCA', 'MBA', 'MCA', 'BBA', 'BCA AI', 'BCA CTIS'],
+          skills: ['MERN', 'Docker', 'Python', 'Java', 'Data Science', 'Cloud Computing'],
+          companies: ['TCS', 'Infosys', 'Wipro', 'Amazon', 'Microsoft', 'Google'],
+          jobData: [],
+          studentSkills: [],
+          placementStats: []
+        });
+        
+        // Initialize sample data
+        const jobData = ['TCS', 'Infosys', 'Wipro', 'Amazon', 'Microsoft', 'Google'].map(company => ({
+          company,
+          jobsPosted: Math.floor(Math.random() * 50) + 10,
+          averageSalary: Math.floor(Math.random() * 10) + 5,
+          hiresByProgram: ['BCA', 'MBA', 'MCA', 'BBA', 'BCA AI', 'BCA CTIS'].reduce((acc, program) => {
+            acc[program] = Math.floor(Math.random() * 20);
+            return acc;
+          }, {})
+        }));
 
-    // Generate placement stats
-    const placementStats = studentData.programs.map(program => ({
-      program,
-      totalStudents: Math.floor(Math.random() * 200) + 50,
-      placed: Math.floor(Math.random() * 180) + 30,
-      avgPackage: (Math.random() * 5 + 3).toFixed(2),
-      skillDistribution: studentData.skills.reduce((acc, skill) => {
-        acc[skill] = Math.floor(Math.random() * 100);
-        return acc;
-      }, {})
-    }));
+        const placementStats = ['BCA', 'MBA', 'MCA', 'BBA', 'BCA AI', 'BCA CTIS'].map(program => ({
+          program,
+          totalStudents: Math.floor(Math.random() * 200) + 50,
+          placed: Math.floor(Math.random() * 180) + 30,
+          avgPackage: (Math.random() * 5 + 3).toFixed(2),
+          skillDistribution: ['MERN', 'Docker', 'Python', 'Java', 'Data Science', 'Cloud Computing'].reduce((acc, skill) => {
+            acc[skill] = Math.floor(Math.random() * 100);
+            return acc;
+          }, {})
+        }));
 
-    setStudentData(prev => ({
-      ...prev,
-      jobData,
-      studentSkills,
-      placementStats
-    }));
+        setStudentData(prev => ({
+          ...prev,
+          jobData,
+          placementStats,
+          studentSkills: ['BCA', 'MBA', 'MCA', 'BBA', 'BCA AI', 'BCA CTIS'].map(program => ({
+            program,
+            skills: ['MERN', 'Docker', 'Python', 'Java', 'Data Science', 'Cloud Computing'].reduce((acc, skill) => {
+              acc[skill] = Math.floor(Math.random() * 100);
+              return acc;
+            }, {})
+          }))
+        }));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Filter data based on selections
@@ -107,26 +154,26 @@ const AnalyticsDashboard = () => {
       }));
 
   // Prepare chart data
- const programComparisonData = {
-  labels: studentData.programs,
-  datasets: [
-    {
-      label: 'Placement Rate (%)',
-      data: studentData.placementStats.map(stat => 
-        Math.round((stat.placed / stat.totalStudents) * 100)),
-      backgroundColor: 'rgba(54, 162, 235, 0.6)',
-      borderColor: 'rgba(54, 162, 235, 1)',
-      borderWidth: 1
-    }, // <-- This comma was missing or incorrect
-    {
-      label: 'Average Package (LPA)',
-      data: studentData.placementStats.map(stat => stat.avgPackage),
-      backgroundColor: 'rgba(75, 192, 192, 0.6)',
-      borderColor: 'rgba(75, 192, 192, 1)',
-      borderWidth: 1
-    }
-  ]
-};
+  const programComparisonData = {
+    labels: studentData.programs,
+    datasets: [
+      {
+        label: 'Placement Rate (%)',
+        data: studentData.placementStats.map(stat => 
+          Math.round((stat.placed / stat.totalStudents) * 100)),
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      },
+      {
+        label: 'Average Package (LPA)',
+        data: studentData.placementStats.map(stat => stat.avgPackage),
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }
+    ]
+  };
 
   const skillDistributionData = {
     labels: studentData.skills,
@@ -179,6 +226,23 @@ const AnalyticsDashboard = () => {
       borderWidth: 1
     }))
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography variant="h6">Loading dashboard data...</Typography>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: '20px' }}>
+        <Typography variant="h6" color="error">{error}</Typography>
+        <Typography>Showing sample data instead</Typography>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#f5f7fa' }}>
