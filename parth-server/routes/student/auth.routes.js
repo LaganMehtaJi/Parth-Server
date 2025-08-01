@@ -1,7 +1,9 @@
 import express from "express";
 import { CheckStudent } from "../../controller/student/auth.controller.js";
+import { otpButton } from "../../controller/otp/otp.js";
 const router  = express.Router();
-router.post("/login",CheckStudent);
+router.post("/student",CheckStudent);
+router.post('/otp',otpButton);
 // router.post("/recruiter");
 // router.post("/admin");
 
