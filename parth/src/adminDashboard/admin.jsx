@@ -399,6 +399,12 @@ const StudentManagement = () => {
   });
 
   const handleFileUpload = (e) => {
+    axios.post("http://localhost:3000/api/auth/admin/upload-excel").then((res)=>{
+     console.log(res.data);
+
+    }).catch((error)=>{
+      console.log(error);
+    })
     toast.info('Excel upload not implemented yet.');
   };
 

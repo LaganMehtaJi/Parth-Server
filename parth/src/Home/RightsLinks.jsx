@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FiCopy,
   FiDownload,
@@ -10,6 +11,7 @@ import {
 } from 'react-icons/fi';
 
 const RightLinks = () => {
+  
   const [copied, setCopied] = useState(null);
 
   const profileURL = "https://yourdomain.com/profile/chahat-sharma";
@@ -148,10 +150,10 @@ const RightLinks = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="block"
-          >
-            <Button icon={FiEye} color="blue">
+          ><Link to={"/dashboard"}>
+         <Button icon={FiEye} color="blue">
               View Dashboard
-            </Button>
+            </Button></Link>
           </a>
           <Button
             onClick={() => handleShare(dashboardURL, 'dashboard')}

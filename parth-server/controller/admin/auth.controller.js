@@ -13,10 +13,10 @@ const generateToken = (payload) => {
 };
 
 export const CheckAdmin = async (req, res) => {
-  const { email, adminacesscode, pass } = req.body;
+  const { email, adminCode, pass } = req.body;
 
   try {
-    if (!email || !adminacesscode || !pass) {
+    if (!email || !adminCode || !pass) {
       return res.status(401).json({ message: "Enter All Details" });
     }
 

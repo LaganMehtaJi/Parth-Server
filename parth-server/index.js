@@ -20,7 +20,7 @@ app.use("/api/student",Student);
 app.use("/api/auth/student",AuthStudent);
 app.use("/api/auth/admin",AuthAdmin);
 app.use("/api/auth/profile",StudentOpp);
-app.use("/api/auth/admin/upload-excel",AuthAdmin);
+app.use("/api/auth/admin",AuthAdmin);
 ConnectDb();
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');

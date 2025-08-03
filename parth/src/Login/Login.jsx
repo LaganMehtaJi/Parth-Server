@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaUser, FaIdCard, FaUniversity } from "react-icons/fa";
 import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import axios from "axios";
 import { useEffect } from 'react';
 
 const Login = () => {
+  const navigate = useNavigate();
   const { type } = useParams();
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
@@ -112,9 +113,10 @@ const Login = () => {
     validationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       localStorage.setItem(type, JSON.stringify(values)); // Fixed: removed curly braces around type
-      axios.post(`http://localhost:3000/api/auth/${type}`, values)
+      axios.post(`http://localhost:3000/api/auth/${type}/${type}`, values)
         .then((res) => {
           console.log(res.data.message);
+          navigate(`/home`);
           toast.success(` ${res.data.message}`, {
             position: "top-center",
             autoClose: 3000,

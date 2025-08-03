@@ -5,7 +5,7 @@ import { uploadStudents } from '../../controller/admin/student.controller.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
-router.post("/login", adminController.CheckAdmin);
+router.post("/admin", adminController.CheckAdmin);
 
 // POST /students/upload - Upload student data via Excel
 router.post('/upload-excel', upload.single('file'), uploadStudents);
