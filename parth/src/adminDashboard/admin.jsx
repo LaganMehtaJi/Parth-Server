@@ -373,6 +373,7 @@ const StudentManagement = () => {
       verify: false,
     },
     validationSchema: Yup.object({
+      
       registrationNo: Yup.string().required('Registration No is required'),
       rollNo: Yup.string().required('Roll No is required'),
       name: Yup.string().max(50, 'Full Name must be at most 50 characters').required('Full Name is required'),
