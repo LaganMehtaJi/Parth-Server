@@ -418,7 +418,6 @@ export default function ChatBotWithVoice() {
     if (synth.onvoiceschanged !== undefined) {
       synth.onvoiceschanged = setVoice;
     }
-
     if (synth.getVoices().length > 0) {
       setVoice();
     } else {
