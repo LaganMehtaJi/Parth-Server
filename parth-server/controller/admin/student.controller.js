@@ -38,7 +38,7 @@ export const AddStudent = async (req, res) => {
       email,
       phone,
       field,
-      password,
+      password:name,
       customField,
       batchYear,
       profilePic,

@@ -385,6 +385,7 @@ const StudentManagement = () => {
       address: Yup.string().required('Address is required'),
     }),
     onSubmit: async (values, { resetForm }) => {
+
       setIsLoading(true);
       try {
         const res = await axios.post('http://localhost:3000/api/student/send', values);
@@ -392,6 +393,7 @@ const StudentManagement = () => {
         resetForm();
         setIsModalOpen(false);
       } catch (error) {
+        console.log(error)
         toast.error(error.response?.data?.message || 'Error adding student');
       } finally {
         setIsLoading(false);
