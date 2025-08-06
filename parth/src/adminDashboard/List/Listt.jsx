@@ -1,106 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const StudentHistoryTracker = () => {
-  // Sample initial data
-  const [companies, setCompanies] = useState([
-    {
-      id: 1,
-      name: 'Tech Corp',
-      roles: [
-        {
-          id: 1,
-          name: 'Frontend Developer',
-          students: [1, 2],
-          currentRound: 1,
-          rounds: [
-            { number: 1, name: 'Technical Screening', date: '2023-05-15' },
-            { number: 2, name: 'Coding Challenge', date: '2023-05-22' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Data Systems',
-      roles: [
-        {
-          id: 1,
-          name: 'Backend Engineer',
-          students: [2],
-          currentRound: 2,
-          rounds: [
-            { number: 1, name: 'Resume Screening', date: '2023-05-10' },
-            { number: 2, name: 'Technical Interview', date: '2023-05-17' }
-          ]
-        }
-      ]
-    }
-  ]);
-
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      name: 'John Doe',
-      field: 'Frontend',
-      status: 'shortlisted',
-      history: [
-        {
-          companyId: 1,
-          companyName: 'Tech Corp',
-          roleId: 1,
-          roleName: 'Frontend Developer',
-          round: 1,
-          roundName: 'Technical Screening',
-          status: 'shortlisted',
-          date: '2023-05-15',
-          notes: 'Strong technical fundamentals'
-        },
-        {
-          companyId: 1,
-          companyName: 'Tech Corp',
-          roleId: 1,
-          roleName: 'Frontend Developer',
-          round: 2,
-          roundName: 'Coding Challenge',
-          status: 'pending',
-          date: '2023-05-22',
-          notes: 'Scheduled for next week'
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      field: 'Fullstack',
-      status: 'rejected',
-      history: [
-        {
-          companyId: 1,
-          companyName: 'Tech Corp',
-          roleId: 1,
-          roleName: 'Frontend Developer',
-          round: 1,
-          roundName: 'Technical Screening',
-          status: 'rejected',
-          date: '2023-05-15',
-          notes: 'Lacking frontend depth'
-        },
-        {
-          companyId: 2,
-          companyName: 'Data Systems',
-          roleId: 1,
-          roleName: 'Backend Engineer',
-          round: 2,
-          roundName: 'Technical Interview',
-          status: 'selected',
-          date: '2023-05-17',
-          notes: 'Excellent system design skills'
-        }
-      ]
-    }
-  ]);
-
-  const [activeCompanyId, setActiveCompanyId] = useState(1);
+const Listt = () => {
+  const [companies, setCompanies] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeCompanyId, setActiveCompanyId] = useState(null);
   const [activeStudentId, setActiveStudentId] = useState(null);
   const [newHistoryEntry, setNewHistoryEntry] = useState({
     companyId: '',
@@ -110,64 +16,138 @@ const StudentHistoryTracker = () => {
     notes: ''
   });
 
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Replace these with your actual API endpoints
+        const [companiesRes, studentsRes] = await Promise.all([
+          axios.get('https://localhost:5000/companies'),
+          axios.get('https://localhost:5000/students')
+        ]);
+        
+        setCompanies(companiesRes.data);
+        setStudents(studentsRes.data);
+        
+        // Set the first company as active if available
+        if (companiesRes.data.length > 0) {
+          setActiveCompanyId(companiesRes.data[0].id);
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // Get active company and student
   const activeCompany = companies.find(c => c.id === activeCompanyId);
   const activeStudent = students.find(s => s.id === activeStudentId);
 
   // Add new history entry
-  const addHistoryEntry = () => {
+  const addHistoryEntry = async () => {
     if (!activeStudentId || !newHistoryEntry.companyId || !newHistoryEntry.roleId) return;
 
-    const company = companies.find(c => c.id === parseInt(newHistoryEntry.companyId));
-    const role = company?.roles.find(r => r.id === parseInt(newHistoryEntry.roleId));
-    const round = role?.rounds.find(r => r.number === parseInt(newHistoryEntry.round));
+    try {
+      const company = companies.find(c => c.id === parseInt(newHistoryEntry.companyId));
+      const role = company?.roles.find(r => r.id === parseInt(newHistoryEntry.roleId));
+      const round = role?.rounds.find(r => r.number === parseInt(newHistoryEntry.round));
 
-    const entry = {
-      companyId: company.id,
-      companyName: company.name,
-      roleId: role.id,
-      roleName: role.name,
-      round: round?.number || role.currentRound,
-      roundName: round?.name || `Round ${role.currentRound}`,
-      status: newHistoryEntry.status,
-      date: new Date().toISOString().split('T')[0],
-      notes: newHistoryEntry.notes
-    };
+      const entry = {
+        companyId: company.id,
+        companyName: company.name,
+        roleId: role.id,
+        roleName: role.name,
+        round: round?.number || role.currentRound,
+        roundName: round?.name || `Round ${role.currentRound}`,
+        status: newHistoryEntry.status,
+        date: new Date().toISOString().split('T')[0],
+        notes: newHistoryEntry.notes
+      };
 
-    const updatedStudents = students.map(student => {
-      if (student.id === activeStudentId) {
-        return {
-          ...student,
-          status: newHistoryEntry.status,
-          history: [...student.history, entry]
-        };
-      }
-      return student;
-    });
+      // First update the UI optimistically
+      const updatedStudents = students.map(student => {
+        if (student.id === activeStudentId) {
+          return {
+            ...student,
+            status: newHistoryEntry.status,
+            history: [...student.history, entry]
+          };
+        }
+        return student;
+      });
+      setStudents(updatedStudents);
 
-    setStudents(updatedStudents);
-    setNewHistoryEntry({
-      companyId: '',
-      roleId: '',
-      round: '',
-      status: 'pending',
-      notes: ''
-    });
+      // Then send the update to the API
+      await axios.post(`https://localhost:5000/students/${activeStudentId}/history`, entry);
+
+      setNewHistoryEntry({
+        companyId: '',
+        roleId: '',
+        round: '',
+        status: 'pending',
+        notes: ''
+      });
+    } catch (err) {
+      console.error('Failed to add history entry:', err);
+      // Revert the UI change if the API call fails
+      setStudents(students);
+    }
   };
 
   // Update student status directly
-  const updateStudentStatus = (studentId, newStatus) => {
-    const updatedStudents = students.map(student => {
-      if (student.id === studentId) {
-        return {
-          ...student,
-          status: newStatus
-        };
-      }
-      return student;
-    });
-    setStudents(updatedStudents);
+  const updateStudentStatus = async (studentId, newStatus) => {
+    try {
+      // First update the UI optimistically
+      const updatedStudents = students.map(student => {
+        if (student.id === studentId) {
+          return {
+            ...student,
+            status: newStatus
+          };
+        }
+        return student;
+      });
+      setStudents(updatedStudents);
+
+      // Then send the update to the API
+      await axios.patch(`https://localhost:5000/students/${studentId}`, {
+        status: newStatus
+      });
+    } catch (err) {
+      console.error('Failed to update student status:', err);
+      // Revert the UI change if the API call fails
+      setStudents(students);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  
+
+  if (companies.length === 0 || students.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">No data available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -205,7 +185,7 @@ const StudentHistoryTracker = () => {
                 Clear Selection
               </button>
             </div>
-            
+           
             <div className="flex flex-wrap gap-2 mb-4">
               <button
                 onClick={() => activeStudentId && updateStudentStatus(activeStudentId, 'pending')}
@@ -327,7 +307,7 @@ const StudentHistoryTracker = () => {
                         <option value="">Select Role</option>
                         {companies
                           .find(c => c.id === parseInt(newHistoryEntry.companyId))
-                          .roles.map(role => (
+                          ?.roles.map(role => (
                             <option key={role.id} value={role.id}>{role.name}</option>
                           ))}
                       </select>
@@ -348,8 +328,8 @@ const StudentHistoryTracker = () => {
                           <option value="">Current Round</option>
                           {companies
                             .find(c => c.id === parseInt(newHistoryEntry.companyId))
-                            .roles.find(r => r.id === parseInt(newHistoryEntry.roleId))
-                            .rounds.map(round => (
+                            ?.roles.find(r => r.id === parseInt(newHistoryEntry.roleId))
+                            ?.rounds.map(round => (
                               <option key={round.number} value={round.number}>
                                 {round.number} - {round.name} ({round.date})
                               </option>
@@ -479,4 +459,4 @@ const StudentHistoryTracker = () => {
   );
 };
 
-export default StudentHistoryTracker;
+export default Listt;

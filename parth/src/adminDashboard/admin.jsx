@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import StudentCard from './StudentCard/index.jsx';
-import CompanyCard from './CompanyCard/index.jsx';
-import Comm from './Communications/index.jsx';
-import Anayltics from "./Anayltics/index.jsx";
-import ListComponent from "./List/index.jsx";
-import His from "./History/index.jsx";
+import React, { useState,useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BeatLoader } from 'react-spinners';
+import axios from "axios";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+// import { BeatLoader } from 'react-spinners';
+
+
 import { 
   FiHome, 
   FiUsers, 
@@ -32,7 +35,19 @@ import {
 } from 'react-icons/fi';
 import Lottie from 'react-lottie';
 import animationData from './loading-animation.json';
-import { TailSpin } from 'react-loader-spinner';
+import Companies from './Companies/Companies';
+import Comunication from './Comunication';
+import AnalyticsDashboard from './Anayltics/Anaytics';
+import Listt from './List/Listt';
+import StudentCardd from './StudentCard/StudentCardd';
+
+// Placeholder components - replace these with your actual components
+const StudentCard = () => <StudentCardd/>;
+const CompanyCard = () => <Companies/>;
+const Comm = () => <Comunication/>;
+const Anayltics = () => <AnalyticsDashboard/>;
+const ListComponent = () => <Listt/>;
+const His = () => <div>History</div>;
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -141,7 +156,7 @@ const AdminDashboard = () => {
               setMobileMenuOpen(false);
             }}
           />
-          <NavItem 
+          {/* <NavItem 
             icon={<FiSettings className="w-5 h-5" />} 
             text="History" 
             active={activeTab === 'History'}
@@ -149,7 +164,7 @@ const AdminDashboard = () => {
               setActiveTab('History');
               setMobileMenuOpen(false);
             }}
-          />
+          /> */}
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
@@ -228,7 +243,7 @@ const AdminDashboard = () => {
           {activeTab === 'list' && <List />}
           {activeTab === 'resume-templates' && <ResumeTemplates />}
           {activeTab === 'portfolio-templates' && <PortfolioTemplates />}
-          {activeTab === 'settings' && <Settings />}
+          {/* {activeTab === 'History' && <History />} */}
         </main>
       </div>
     </div>
@@ -339,124 +354,242 @@ const DashboardHome = () => (
     </div>
   </div>
 );
+const StudentManagement = () => {
+  const [isModalOpen, setIsModalOpen] = useState();
+   const [activeTab, setActiveTab] = useState('manual');
+  const [isLoading, setIsLoading] = useState(false);
 
-const StudentManagement = () => (
-  <div className="p-6 bg-white rounded-lg shadow-sm">
-    <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
-      <h3 className="text-lg font-semibold text-gray-800">Student Management</h3>
-      <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-3">
-        <button className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-          <FiPlus className="w-4 h-4 mr-2" />
-          Add Student
-        </button>
-        <div className="relative">
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search students..."
-            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+  const formik = useFormik({
+    initialValues: {
+      registrationNo: '',
+      rollNo: '',
+      name: '',
+      email: '',
+      phone: '',
+      field: '',
+      batchYear: '',
+      profilePic: '',
+      address: '',
+      verify: false,
+    },
+    validationSchema: Yup.object({
+      
+      registrationNo: Yup.string().required('Registration No is required'),
+      rollNo: Yup.string().required('Roll No is required'),
+      name: Yup.string().max(50, 'Full Name must be at most 50 characters').required('Full Name is required'),
+      email: Yup.string().email('Invalid email format').required('Email is required'),
+      phone: Yup.string().required('Phone number is required'),
+      field: Yup.string(),
+      batchYear: Yup.string().matches(/^\d{4}$/, 'Batch Year must be exactly 4 digits'),
+      profilePic: Yup.string().url('Must be a valid URL'),
+      address: Yup.string().required('Address is required'),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      setIsLoading(true);
+      try {
+        const res = await axios.post('http://localhost:3000/api/student/send', values);
+        toast.success('Student added successfully!');
+        resetForm();
+        setIsModalOpen(false);
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Error adding student');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
+
+  const handleFileUpload = (e) => {
+    axios.post("http://localhost:3000/api/auth/admin/upload-excel").then((res)=>{
+     console.log(res.data);
+
+    }).catch((error)=>{
+      console.log(error);
+    })
+    toast.info('Excel upload not implemented yet.');
+  };
+
+  return (
+    <div className="relative p-6 bg-white rounded-lg shadow-sm">
+      <ToastContainer />
+      
+      <div className="flex flex-col justify-between mb-6 space-y-4 md:flex-row md:items-center md:space-y-0">
+        <h3 className="text-lg font-semibold text-gray-800">Student Management</h3>
+        <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-3">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            disabled={isLoading}
+          >
+            {isLoading ? <BeatLoader size={8} color="#ffffff" /> : (
+              <>
+                <FiPlus className="w-4 h-4 mr-2" />
+                Add Student
+              </>
+            )}
+          </button>
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search students..."
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none"
+              disabled={isLoading}
+            />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      <StudentCard
-        image="https://randomuser.me/api/portraits/men/32.jpg"
-        name="Rahul Sharma"
-        rollNo="BCA21001"
-        email="rahul.sharma@example.com"
-        field="Full Stack Developer"
-        isVerified={true}
-        analyticsScore={88}
-        portfolioLink="https://rahul-portfolio.com"
-        dashboardLink="/dashboard/rahul"
-        resumeLink="/resumes/rahul.pdf"
-        resumeDownloadLink="/resumes/rahul.pdf"
-      />
-      {/* More StudentCards... */}
-    </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        <StudentCard />
+      </div>
 
-    {/* Pagination */}
-    <div className="flex items-center justify-between mt-6">
-      <div className="text-sm text-gray-500">
-        Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of <span className="font-medium">24</span> results
+      <div className="flex items-center justify-between mt-6">
+        <div className="text-sm text-gray-500">
+          Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of <span className="font-medium">24</span> results
+        </div>
+        <div className="flex space-x-2">
+          <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Previous</button>
+          <button className="px-3 py-1 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700">1</button>
+          <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">2</button>
+          <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Next</button>
+        </div>
       </div>
-      <div className="flex space-x-2">
-        <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-          Previous
-        </button>
-        <button className="px-3 py-1 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700">
-          1
-        </button>
-        <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-          2
-        </button>
-        <button className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-          Next
-        </button>
-      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {activeTab === 'manual' ? 'Add New Student' : 'Import Students'}
+              </h3>
+              <button
+                onClick={() => !isLoading && setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-500"
+                disabled={isLoading}
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-4">
+              <div className="flex border-b mb-4">
+                <button
+                  className={`px-4 py-2 font-medium ${activeTab === 'manual' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('manual')}
+                >
+                  Manual Entry
+                </button>
+                <button
+                  className={`px-4 py-2 font-medium ${activeTab === 'excel' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  onClick={() => setActiveTab('excel')}
+                >
+                  Import Excel
+                </button>
+              </div>
+
+              {activeTab === 'manual' ? (
+                <form onSubmit={formik.handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {[
+                      { name: 'registrationNo', label: 'Registration No', placeholder: 'REG2025001' },
+                      { name: 'rollNo', label: 'Roll No', placeholder: 'R001' },
+                      { name: 'name', label: 'Full Name', placeholder: 'Lagan Mehta' },
+                      { name: 'email', label: 'Email', placeholder: 'lagan@example.com', type: 'email' },
+                      { name: 'phone', label: 'Phone', placeholder: '9876543210' },
+                      { name: 'field', label: 'Field', placeholder: 'Web Developer' },
+                      { name: 'batchYear', label: 'Batch Year', placeholder: '2025' },
+                      { name: 'profilePic', label: 'Profile Picture URL', placeholder: 'https://example.com/profile.jpg' },
+                      { name: 'address', label: 'Address', placeholder: 'Yamunanagar, Haryana' },
+                    ].map(({ name, label, placeholder, type = 'text' }) => (
+                      <div key={name}>
+                        <label className="block text-sm font-medium text-gray-700">{label}</label>
+                        <input
+                          type={type}
+                          name={name}
+                          value={formik.values[name]}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                          placeholder={placeholder}
+                        />
+                        {formik.touched[name] && formik.errors[name] && (
+                          <p className="text-sm text-red-500">{formik.errors[name]}</p>
+                        )}
+                      </div>
+                    ))}
+
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="verify"
+                        checked={formik.values.verify}
+                        onChange={formik.handleChange}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label className="ml-2 block text-sm text-gray-700">Verified Student</label>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center min-w-[100px]"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <BeatLoader size={8} color="#fff" /> : 'Add Student'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="mt-4 text-center">
+                  <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
+                  <h4 className="mt-2 text-sm font-medium text-gray-700">Upload Excel File</h4>
+                  <p className="mt-1 text-xs text-gray-500">Supports .xlsx, .xls, or .csv file formats</p>
+                  <div className="mt-4">
+                    <label className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                      <input type="file" onChange={handleFileUpload} className="sr-only" />
+                      Select File
+                    </label>
+                  </div>
+                  <div className="mt-4 text-sm text-gray-500 flex items-center justify-center">
+                    <FiDownload className="mr-2" />
+                    <a href="#" className="text-blue-600 hover:text-blue-500">Download sample Excel template</a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
+
 
 const CompanyManagement = () => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-    <CompanyCard
-      logo="https://logo.clearbit.com/microsoft.com"
-      companyName="Microsoft India"
-      studentsApplied={120}
-      onDeleteCompany={() => console.log("Deleted Microsoft")}
-      onDeleteJob={(job) => console.log("Deleted Job from Microsoft:", job)}
-      onAddJobSubmit={(job) => console.log("New Microsoft Job:", job)}
-      jobs={[
-        {
-          title: "Frontend Developer",
-          requirements: ["React", "Tailwind", "Git"],
-          responsibilities: ["Build UI", "Collaborate with backend"],
-          resources: ["Figma", "Codebase Access"],
-        },
-        {
-          title: "Backend Engineer",
-          requirements: ["Node.js", "MongoDB"],
-          responsibilities: ["API Development", "Database Design"],
-          resources: ["DB Server", "API Docs"],
-        },
-      ]}
-    />
-    {/* More CompanyCards... */}
-  </div>
+  // <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <CompanyCard />
+  // </div>
 );
 
 const ResumeTemplates = () => {
   const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [templates, setTemplates] = useState([
-    {
-      id: 1,
-      name: 'Modern Professional',
-      category: 'Professional',
-      downloads: 1245,
-      score: 92,
-      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Modern+Professional',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-    {
-      id: 2,
-      name: 'Creative Designer',
-      category: 'Creative',
-      downloads: 892,
-      score: 85,
-      thumbnail: 'https://via.placeholder.com/300x400/10b981/ffffff?text=Creative+Designer',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-    // More templates...
-  ]);
-
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState('idle'); // 'idle', 'uploading', 'success', 'error'
+  const [uploadStatus, setUploadStatus] = useState('idle');
   const [newTemplate, setNewTemplate] = useState({
     name: '',
     category: 'Professional',
@@ -473,6 +606,23 @@ const ResumeTemplates = () => {
     }
   };
 
+  // Fetch templates from API
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('https://localhost:5000/templates'); // Replace with your API endpoint
+        setTemplates(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -488,29 +638,28 @@ const ResumeTemplates = () => {
     }
   };
 
-  const handleUpload = (e) => {
+  const handleUpload = async (e) => {
     e.preventDefault();
     if (!newTemplate.file) return;
     
     setUploadStatus('uploading');
     
-    // Simulate upload and testing process
-    setTimeout(() => {
-      const score = Math.floor(Math.random() * 21) + 80; // Random score between 80-100
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('name', newTemplate.name);
+      formData.append('category', newTemplate.category);
+      formData.append('file', newTemplate.file);
       
-      // Add new template to the list
-      const newTemplateObj = {
-        id: templates.length + 1,
-        name: newTemplate.name,
-        category: newTemplate.category,
-        downloads: 0,
-        score: score,
-        thumbnail: newTemplate.previewImage || 'https://via.placeholder.com/300x400',
-        previewUrl: '#',
-        downloadUrl: '#'
-      };
+      // Upload to API
+      const response = await axios.post('https://localhost:5000/templates', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       
-      setTemplates([...templates, newTemplateObj]);
+      // Add the new template to the list
+      setTemplates([...templates, response.data]);
       setUploadStatus('success');
       
       // Reset form after 3 seconds
@@ -524,8 +673,25 @@ const ResumeTemplates = () => {
           previewImage: null
         });
       }, 3000);
-    }, 3000);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      setUploadStatus('error');
+      setTimeout(() => setUploadStatus('idle'), 3000);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-white rounded-lg shadow-sm flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading templates...</p>
+        </div>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
@@ -540,7 +706,6 @@ const ResumeTemplates = () => {
         </button>
       </div>
 
-      {/* Category Filter */}
       <div className="mb-6 overflow-x-auto">
         <div className="flex space-x-2 pb-2">
           {categories.map(category => (
@@ -559,57 +724,61 @@ const ResumeTemplates = () => {
         </div>
       </div>
 
-      {/* Templates Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {templates
-          .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
-          .map(template => (
-            <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={template.thumbnail} 
-                  alt={template.name}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
-                  Score: {template.score}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
-                    {template.category}
-                  </span>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    {template.downloads.toLocaleString()}
+      {templates.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No templates found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {templates
+            .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
+            .map(template => (
+              <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={template.thumbnail} 
+                    alt={template.name}
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
+                    Score: {template.score}
                   </div>
                 </div>
-                <div className="flex mt-4 space-x-2">
-                  <a 
-                    href={template.previewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <FiExternalLink className="w-4 h-4 mr-1" />
-                    Preview
-                  </a>
-                  <a 
-                    href={template.downloadUrl}
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
-                  >
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    Download
-                  </a>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                      {template.category}
+                    </span>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      {template.downloads.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="flex mt-4 space-x-2">
+                    <a 
+                      href={template.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                      <FiExternalLink className="w-4 h-4 mr-1" />
+                      Preview
+                    </a>
+                    <a 
+                      href={template.downloadUrl}
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                    >
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      Download
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      )}
 
-      {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
@@ -618,6 +787,7 @@ const ResumeTemplates = () => {
                 {uploadStatus === 'idle' && 'Upload New Template'}
                 {uploadStatus === 'uploading' && 'Testing Your Template'}
                 {uploadStatus === 'success' && 'Upload Successful!'}
+                {uploadStatus === 'error' && 'Upload Failed'}
               </h3>
               {uploadStatus === 'idle' && (
                 <button 
@@ -706,18 +876,11 @@ const ResumeTemplates = () => {
 
             {uploadStatus === 'uploading' && (
               <div className="p-8 text-center">
-                <div className="flex justify-center mb-4">
-                  {/* You can use either Lottie or react-loader-spinner */}
-                  {/* Option 1: Lottie animation */}
-                  <Lottie 
-                    options={defaultOptions}
-                    height={150}
-                    width={150}
-                  />
-                  
-                  {/* Option 2: React loader spinner */}
-                  {/* <TailSpin color="#3B82F6" height={80} width={80} /> */}
-                </div>
+                <Lottie 
+                  options={defaultOptions}
+                  height={150}
+                  width={150}
+                />
                 <h4 className="text-lg font-medium text-gray-800 mb-2">Testing Your Template</h4>
                 <p className="text-gray-600">Our system is analyzing your template for quality and compatibility...</p>
               </div>
@@ -739,6 +902,26 @@ const ResumeTemplates = () => {
                 </p>
               </div>
             )}
+
+            {uploadStatus === 'error' && (
+              <div className="p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full">
+                    <FiX className="w-8 h-8 text-red-600" />
+                  </div>
+                </div>
+                <h4 className="text-lg font-medium text-gray-800 mb-2">Upload Failed</h4>
+                <p className="text-gray-600 mb-4">
+                  There was an error processing your template.
+                </p>
+                <button
+                  onClick={() => setUploadStatus('idle')}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -746,32 +929,42 @@ const ResumeTemplates = () => {
   );
 };
 
+
 const PortfolioTemplates = () => {
   const [categories] = useState(['All', 'Professional', 'Creative', 'Minimalist', 'Technical']);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [templates] = useState([
-    {
-      id: 1,
-      name: 'Portfolio Pro',
-      category: 'Professional',
-      downloads: 945,
-      score: 94,
-      thumbnail: 'https://via.placeholder.com/300x400/3b82f6/ffffff?text=Portfolio+Pro',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-    {
-      id: 2,
-      name: 'Design Showcase',
-      category: 'Creative',
-      downloads: 782,
-      score: 89,
-      thumbnail: 'https://via.placeholder.com/300x400/10b981/ffffff?text=Design+Showcase',
-      previewUrl: '#',
-      downloadUrl: '#'
-    },
-    // More templates...
-  ]);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch templates from API
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await axios.get('https://localhost:5000/portfolio-templates'); 
+        setTemplates(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-white rounded-lg shadow-sm flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading portfolio templates...</p>
+        </div>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-sm">
@@ -783,7 +976,6 @@ const PortfolioTemplates = () => {
         </button>
       </div>
 
-      {/* Category Filter */}
       <div className="mb-6 overflow-x-auto">
         <div className="flex space-x-2 pb-2">
           {categories.map(category => (
@@ -802,113 +994,73 @@ const PortfolioTemplates = () => {
         </div>
       </div>
 
-      {/* Templates Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {templates
-          .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
-          .map(template => (
-            <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={template.thumbnail} 
-                  alt={template.name}
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
-                  Score: {template.score}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
-                    {template.category}
-                  </span>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    {template.downloads.toLocaleString()}
+      {templates.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No portfolio templates found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {templates
+            .filter(template => selectedCategory === 'All' || template.category === selectedCategory)
+            .map(template => (
+              <div key={template.id} className="overflow-hidden transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg group">
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={template.thumbnail} 
+                    alt={template.name}
+                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src = 'https://via.placeholder.com/300x400?text=Template+Image';
+                    }}
+                  />
+                  <div className="absolute top-2 right-2 px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full">
+                    Score: {template.score}
                   </div>
                 </div>
-                <div className="flex mt-4 space-x-2">
-                  <a 
-                    href={template.previewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                  >
-                    <FiExternalLink className="w-4 h-4 mr-1" />
-                    Preview
-                  </a>
-                  <a 
-                    href={template.downloadUrl}
-                    className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
-                  >
-                    <FiDownload className="w-4 h-4 mr-1" />
-                    Download
-                  </a>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{template.name}</h3>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                      {template.category}
+                    </span>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      {template.downloads.toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="flex mt-4 space-x-2">
+                    <a 
+                      href={template.previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    >
+                      <FiExternalLink className="w-4 h-4 mr-1" />
+                      Preview
+                    </a>
+                    <a 
+                      href={template.downloadUrl}
+                      className="flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                    >
+                      <FiDownload className="w-4 h-4 mr-1" />
+                      Download
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
 
+
 const Communications = () => <Comm />;
 const Analytics = () => <Anayltics />;
 const List = () => <ListComponent />;
-const Settings = () => (
-  <div className="p-6 bg-white rounded-lg shadow-sm">
-    <h2 className="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
-    <div className="space-y-6">
-      <div className="p-4 border border-gray-200 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-3">Account Settings</h3>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              defaultValue="admin@parth.edu"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter new password"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-            Update Account
-          </button>
-        </div>
-      </div>
-
-      <div className="p-4 border border-gray-200 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-3">System Preferences</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Dark Mode</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Email Notifications</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+const History = () => <His />;
 
 // Helper Components
 const StatCard = ({ title, value, change, icon, color }) => {
@@ -963,20 +1115,6 @@ const ActionButton = ({ icon, text, color }) => {
       {icon}
       {text}
     </button>
-  );
-};
-
-const StatusBadge = ({ status }) => {
-  const statusClasses = {
-    Verified: 'bg-green-100 text-green-800',
-    Pending: 'bg-yellow-100 text-yellow-800',
-    Rejected: 'bg-red-100 text-red-800',
-  };
-
-  return (
-    <span className={`inline-flex px-2 py-1 text-xs font-semibold leading-4 rounded-full ${statusClasses[status]}`}>
-      {status}
-    </span>
   );
 };
 

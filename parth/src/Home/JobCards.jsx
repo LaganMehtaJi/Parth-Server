@@ -19,6 +19,13 @@ import Headerhome from './Headerhome';
 const JobCard = ({ job, onBookmark, isBookmarked }) => {
   const [expanded, setExpanded] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [showInterestModal, setShowInterestModal] = useState(false);
+  const [requirements, setRequirements] = useState({
+    resume: false,
+    coverLetter: false,
+    portfolio: false,
+    references: false
+  });
 
   const toggleExpand = () => {
     setExpanded(!expanded);
@@ -27,6 +34,31 @@ const JobCard = ({ job, onBookmark, isBookmarked }) => {
   const handleBookmark = (e) => {
     e.stopPropagation();
     onBookmark(job.id);
+  };
+
+  const handleInterestClick = (e) => {
+    e.stopPropagation();
+    setShowInterestModal(true);
+  };
+
+  const handleRequirementToggle = (req) => {
+    setRequirements(prev => ({
+      ...prev,
+      [req]: !prev[req]
+    }));
+  };
+
+  const handleSubmitInterest = () => {
+    // Here you would typically send the data to your backend
+    console.log('Submitted requirements:', requirements);
+    setShowInterestModal(false);
+    // Reset requirements
+    setRequirements({
+      resume: false,
+      coverLetter: false,
+      portfolio: false,
+      references: false
+    });
   };
 
   return (
@@ -191,18 +223,99 @@ const JobCard = ({ job, onBookmark, isBookmarked }) => {
             )}
           </button>
           <button 
-  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-  onClick={(e) => e.stopPropagation()}
->
-  <FiSend size={16} />
-  Interested
-</button>
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+            onClick={handleInterestClick}
+          >
+            <FiSend size={16} />
+            Interested
+          </button>
         </div>
       </div>
+
+      {/* Interest Modal */}
+      {showInterestModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div 
+            className="bg-white rounded-lg p-6 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Application Requirements</h3>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowInterestModal(false)}
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+            
+            <p className="text-gray-600 mb-4">Please confirm which documents you'll include with your application:</p>
+            
+            <div className="space-y-3 mb-6">
+              <div 
+                className={`flex items-center p-3 rounded-lg cursor-pointer ${requirements.resume ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100'}`}
+                onClick={() => handleRequirementToggle('resume')}
+              >
+                <div className={`w-5 h-5 rounded-md border flex items-center justify-center mr-3 ${requirements.resume ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                  {requirements.resume && <FiCheckCircle className="text-white" size={14} />}
+                </div>
+                <span className="font-medium">Resume/CV</span>
+              </div>
+              
+              <div 
+                className={`flex items-center p-3 rounded-lg cursor-pointer ${requirements.coverLetter ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100'}`}
+                onClick={() => handleRequirementToggle('coverLetter')}
+              >
+                <div className={`w-5 h-5 rounded-md border flex items-center justify-center mr-3 ${requirements.coverLetter ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                  {requirements.coverLetter && <FiCheckCircle className="text-white" size={14} />}
+                </div>
+                <span className="font-medium">Cover Letter</span>
+              </div>
+              
+              <div 
+                className={`flex items-center p-3 rounded-lg cursor-pointer ${requirements.portfolio ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100'}`}
+                onClick={() => handleRequirementToggle('portfolio')}
+              >
+                <div className={`w-5 h-5 rounded-md border flex items-center justify-center mr-3 ${requirements.portfolio ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                  {requirements.portfolio && <FiCheckCircle className="text-white" size={14} />}
+                </div>
+                <span className="font-medium">Portfolio</span>
+              </div>
+              
+              <div 
+                className={`flex items-center p-3 rounded-lg cursor-pointer ${requirements.references ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 hover:bg-gray-100'}`}
+                onClick={() => handleRequirementToggle('references')}
+              >
+                <div className={`w-5 h-5 rounded-md border flex items-center justify-center mr-3 ${requirements.references ? 'bg-blue-600 border-blue-600' : 'border-gray-300'}`}>
+                  {requirements.references && <FiCheckCircle className="text-white" size={14} />}
+                </div>
+                <span className="font-medium">References</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button 
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                onClick={() => setShowInterestModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSubmitInterest}
+                disabled={!requirements.resume} // At least resume is required
+              >
+                Submit Application
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
+// Rest of the code remains the same...
 const JobsCards = () => {
   const [jobs, setJobs] = useState([]);
   const [bookmarkedJobs, setBookmarkedJobs] = useState([]);
@@ -429,8 +542,6 @@ const JobsCards = () => {
           </button>
         </div>
       </div>
-
-      {/* Filters Panel */}
       {showFilters && (
         <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
           <div className="flex justify-between items-center mb-3">
@@ -490,8 +601,6 @@ const JobsCards = () => {
               </select>
             </div>
           </div>
-          
-          {/* Active filters */}
           {(filters.jobType || filters.location || filters.experience) && (
             <div className="mt-4 flex flex-wrap gap-2">
               {filters.jobType && (
@@ -542,7 +651,6 @@ const JobsCards = () => {
         </button>
       </div>
 
-      {/* Job Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredJobs.length > 0 ? (
           filteredJobs.map(job => (
@@ -566,8 +674,6 @@ const JobsCards = () => {
           </div>
         )}
       </div>
-
-      {/* View More */}
       {filteredJobs.length > 0 && (
         <div className="mt-6 text-center">
           <button className="text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center gap-2 mx-auto">

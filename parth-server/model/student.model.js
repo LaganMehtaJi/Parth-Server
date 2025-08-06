@@ -4,6 +4,8 @@ const { Schema } = mongoose;
 // ==============================
 // 🧑‍🎓 Student Schema
 // ==============================
+
+
 const studentSchema = new Schema({
   registrationNo: {
     type: String,
@@ -11,6 +13,10 @@ const studentSchema = new Schema({
     unique: true,
     trim: true,
     maxlength: 20
+  },
+  password:{
+    type: String,
+    required: true,
   },
   rollNo: {
     type: String,
@@ -39,22 +45,15 @@ const studentSchema = new Schema({
  field: {
     type: String,
     default: "Web-Developer",
-    enum: ["Web-Developer", "App-Developer", "Data-Science", "AI-ML", "Cyber-Security", "Other"],
-  },
-  customField: {
-    type: String,
-    default: "",  // optional: only filled if field = "Other"
   },
   batchYear: {
     type: Number,
     required: true,
-    min: 2000,
-    max: new Date().getFullYear() + 5
+    default: new Date().getFullYear()
   },
   profilePic: {
     type: String,
-    default: "https://example.com/default-profile.jpg",
-    validate: v => /^https?:\/\/.+\.(jpg|jpeg|png|webp|svg|gif)?$/i.test(v)
+    default: "https://res.cloudinary.com/dbeqhfbpk/image/upload/v1753455162/logoBlack_fwyfer.png",
   },
   verify: {
     type: Boolean,

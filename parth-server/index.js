@@ -1,21 +1,27 @@
-<<<<<<< HEAD:index.js
-=======
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import ConnectDb from "./config/db.js";
-import Comapny from "./routes/student/apply.routes.js";
+import StudentOpp from "./routes/student/profile.routes.js";
+import Student from "./routes/admin/student.routes.js";
+import AuthStudent from "./routes/student/auth.routes.js";
+import AuthAdmin from "./routes/admin/auth.routes.js";
+
+
+
 const app = express();
 dotenv.config();
-app.use(cors());
+app.use(cors("http://localhost:5173"));
 app.use(morgan('dev'));
 app.use(express.json());
-app.use("/api/company",Comapny);
-
->>>>>>> 7286c04f945917f3f0e0a50f96a683bbe1ef42c5:parth-server/index.js
-
-
+app.use("/api/student",Student);
+app.use("/api/auth/student",AuthStudent);
+app.use("/api/auth/admin",AuthAdmin);
+app.use("/api/auth/profile",StudentOpp);
+app.use("/api/auth/admin",AuthAdmin);
+ConnectDb();
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
 });
