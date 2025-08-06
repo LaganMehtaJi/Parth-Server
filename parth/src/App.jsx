@@ -20,6 +20,8 @@ import Experience from './dashboard/Experince/Experince.jsx';
 import Jobs from './dashboard/Job/Jobs.jsx';
 import OTP from './Login/Otp.jsx';
 import History from './dashboard/History/History.jsx';
+import Portfilio from './dashboard/Portfilio/Portfilio.jsx';
+import ColorSelector from './dashboard/Portfilio/ColorSelection.jsx';
 
 function App() {
   return (
@@ -33,7 +35,7 @@ function App() {
       <Route path='/messaging' element={<Message />} />
       <Route path='/notifications' element={<Notifications />} />
       <Route path="/otp"element={<OTP/>}/>
-     
+      <Route path="/color"element={<ColorSelector/>}/>
 
     
       <Route path='/dashboard' element={<Dashboard />}>
@@ -47,6 +49,7 @@ function App() {
         <Route path="experience"element={<Experience/>}/>
         <Route path="job"element={<Jobs/>}/>
          <Route path="setting"element={<History/>}/>
+         <Route path="portfolio"element={<Portfilio/>}/>
 
       </Route>
     </Routes>

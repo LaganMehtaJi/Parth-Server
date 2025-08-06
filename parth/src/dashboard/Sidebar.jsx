@@ -36,7 +36,7 @@ const Sidebar = () => {
   const navItems = [
     { name: "Dashboard", path: '/', icon: <RiDashboardFill size={20} /> },
     { name: "Resume Builder", path: '/dashboard/resumeBuilder', icon: <FiFileText size={20} /> },
-    { name: "Portfolio Builder", path: '/Portfolio', icon: <FiUser size={20} /> },
+    { name: "Portfolio Builder", path: '/dashboard/portfolio', icon: <FiUser size={20} /> },
     { name: "Job Updates", path: '/dashboard/job', icon: <FiBriefcase size={20} /> },
     { name: "Projects", path: '/dashboard/projects', icon: <FaProjectDiagram size={20} /> },
     { name: "Certificates", path: '/dashboard/certificates', icon: <FaCertificate size={20} /> },
