@@ -40,6 +40,7 @@ import Comunication from './Comunication';
 import AnalyticsDashboard from './Anayltics/Anaytics';
 import Listt from './List/Listt';
 import StudentCardd from './StudentCard/StudentCardd';
+import StudentList from './StudentCard/StudentList';
 
 // Placeholder components - replace these with your actual components
 const StudentCard = () => <StudentCardd/>;
@@ -358,6 +359,7 @@ const StudentManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState();
    const [activeTab, setActiveTab] = useState('manual');
   const [isLoading, setIsLoading] = useState(false);
+  const [flag,setFlag] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -392,6 +394,7 @@ const StudentManagement = () => {
         toast.success('Student added successfully!');
         resetForm();
         setIsModalOpen(false);
+        setFlag(prev => !prev);
       } catch (error) {
         console.log(error)
         toast.error(error.response?.data?.message || 'Error adding student');
@@ -430,6 +433,7 @@ const StudentManagement = () => {
               </>
             )}
           </button>
+          {/* <StudentList refresh={flag} /> */}
           <div className="relative">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -442,9 +446,7 @@ const StudentManagement = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-        <StudentCard />
-      </div>
+     <StudentList refresh={flag} />
 
       <div className="flex items-center justify-between mt-6">
         <div className="text-sm text-gray-500">
@@ -546,6 +548,7 @@ const StudentManagement = () => {
                       type="submit"
                       className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center min-w-[100px]"
                       disabled={isLoading}
+                      onClick={(e)=>{setFlag(!flag)}}
                     >
                       {isLoading ? <BeatLoader size={8} color="#fff" /> : 'Add Student'}
                     </button>
