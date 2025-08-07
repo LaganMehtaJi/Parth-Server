@@ -24,20 +24,18 @@ const AppContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  min-height: 20vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `;
 
 const ChatBox = styled.div`
-  width: 100%;
+  width: 90%;
   max-width: 1200px;
-  height: 90vh;
-  min-height: 600px;
+  height:70vh;
+  min-height:60%;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+//   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   display: flex;
   overflow: hidden;
   position: relative;
@@ -67,12 +65,7 @@ const Messages = styled.div`
 
   &::-webkit-scrollbar {
     width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 3px;
-  }
+}
 `;
 
 const InputBar = styled.form`
@@ -82,14 +75,9 @@ const InputBar = styled.form`
   padding: 8px 8px 8px 20px;
   background: white;
   border-radius: 30px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
 
-  &:focus-within {
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
-    border-color: rgba(102, 126, 234, 0.3);
-  }
 
   input {
     flex: 1;
@@ -115,7 +103,6 @@ const InputBar = styled.form`
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     font-family: 'Inter', sans-serif;
     display: flex;
     align-items: center;
@@ -142,7 +129,7 @@ const Message = styled.div`
   color: ${props => props.isUser ? 'white' : '#4a5568'};
   align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
   animation: ${fadeIn} 0.3s ease-out;
-  box-shadow: ${props => props.isUser ? '0 4px 15px rgba(102, 126, 234, 0.2)' : '0 4px 15px rgba(0,0,0,0.05)'};
+ 
   line-height: 1.5;
   font-size: 15px;
   border: ${props => !props.isUser && '1px solid #edf2f7'};
@@ -178,10 +165,9 @@ const Message = styled.div`
 `;
 
 const ImagePanel = styled.div`
-  width: 400px; // Increased width
-  min-width: 400px; // Prevent shrinking
-  background: linear-gradient(180deg, #667eea, #764ba2);
-  display: flex;
+  width: 400px;
+  min-width: 400px;
+ 
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -514,10 +500,10 @@ export default function ChatBotWithVoice() {
           text: "Thank you for sharing those impressive details! I'm truly inspired by your experience. I'm now preparing your portfolio presentation...", 
           isUser: false 
         };
-        // Navigate to new page after 2 seconds
+      
         setTimeout(() => {
           navigate('/color');
-        }, 5000);
+        }, 7000);
       }
       
       setMessages(prev => [...prev, reply]);
@@ -528,7 +514,7 @@ export default function ChatBotWithVoice() {
   return (
     <AppContainer>
       <ChatBox>
-        <MessagePanel>
+        <MessagePanel style={{backgroundColor:"white"}}>
           <StatusIndicator isActive={voiceReady}>
             <span></span>
             {voiceReady ? 'Assistant Ready' : 'Initializing...'}
@@ -573,7 +559,7 @@ export default function ChatBotWithVoice() {
               placeholder="Type your message here..."
               autoFocus
             />
-            <button type="submit">
+            <button type="submit" >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -600,6 +586,7 @@ export default function ChatBotWithVoice() {
       src="https://lottie.host/3e2b7a7b-b193-420e-a6a8-36abb1ea2cc2/sikVMmp8HU.lottie"
       loop
       autoplay
+      style={{width:"90%" ,height:"100%", paddingTop:"35%"}}
     />
                 </div>
                 

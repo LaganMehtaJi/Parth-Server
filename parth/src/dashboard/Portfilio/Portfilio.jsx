@@ -7,13 +7,15 @@ export default function Portfilio() {
     <div className="App">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">
+          <h3 className=" fixed bottom text-3xl font-bold">
             My <strong style={{ color: 'blue' }}>Portfolio</strong> Builder
-          </h1>
+          </h3>
         </div>
       </div>
       
-      <InteractiveCharacter />
+    <div className="fixed bottom-5 right-5 z-50 w-230">
+  <InteractiveCharacter />
+</div>
     </div>
   );
 }

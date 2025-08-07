@@ -23,6 +23,8 @@ import History from './dashboard/History/History.jsx';
 import Portfilio from './dashboard/Portfilio/Portfilio.jsx';
 import ColorSelector from './dashboard/Portfilio/ColorSelection.jsx';
 
+import TemplateSelector from './dashboard/Portfilio/TemplateSelector.jsx';
+
 function App() {
   return (
     <Routes>
@@ -36,6 +38,7 @@ function App() {
       <Route path='/notifications' element={<Notifications />} />
       <Route path="/otp"element={<OTP/>}/>
       <Route path="/color"element={<ColorSelector/>}/>
+      <Route path="/template"element={<TemplateSelector/>}/>
 
     
       <Route path='/dashboard' element={<Dashboard />}>
@@ -50,6 +53,7 @@ function App() {
         <Route path="job"element={<Jobs/>}/>
          <Route path="setting"element={<History/>}/>
          <Route path="portfolio"element={<Portfilio/>}/>
+         
 
       </Route>
     </Routes>
