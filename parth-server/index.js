@@ -13,7 +13,7 @@ import AuthAdmin from "./routes/admin/auth.routes.js";
 
 const app = express();
 dotenv.config();
-app.use(cors("http://localhost:5173"));
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use("/api/student",Student);

@@ -100,7 +100,6 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: ${gradient} 8s ease infinite;
   padding: 0.5rem;
   letter-spacing: -0.5px;
   line-height: 1.2;
@@ -125,14 +124,14 @@ const Title = styled.h1`
   }
 `;
 const Subtitle = styled.p`
-  font-size: 1.1rem;
-  color: #4a5568;
- 
+   font-size: 1.1rem;
+  color: #718096;
+  margin-bottom: 30px;
+  max-width: 600px;
+  text-align: center;
   line-height: 1.6;
-
-  @media (max-width: 768px) {
-    text-align: center;
-  }
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const ContentSection = styled.div`
