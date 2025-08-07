@@ -325,7 +325,7 @@ export default function ChatBotWithVoice() {
       // Initial greeting if no messages
       if (messages.length === 0) {
         const welcomeMsg = { 
-          text: "Hello parth!please tell me about urself.", 
+          text: "Hello parth!Tell me about Yourself...", 
           isUser: false 
         };
         setMessages([welcomeMsg]);
@@ -392,11 +392,11 @@ export default function ChatBotWithVoice() {
   };
 
   const validateInput = (text) => {
-    if (messages.length === 1) { // Only validate for the "tell about yourself" question
-      if (text.length < 20) {
+    if (messages.length === 1) { 
+      if (text.length < 10) {
         setValidationError("Please provide at least 20 characters");
         return false;
-      } else if (text.length > 40) {
+      } else if (text.length > 60) {
         setValidationError("Please keep your response under 40 characters");
         return false;
       }
@@ -446,8 +446,9 @@ export default function ChatBotWithVoice() {
         };
       
         setTimeout(() => {
+          
           navigate('/color');
-        }, 7000);
+        }, 4000);
       }
       
       setMessages(prev => [...prev, reply]);

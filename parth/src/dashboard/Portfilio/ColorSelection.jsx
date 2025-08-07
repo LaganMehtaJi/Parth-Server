@@ -203,7 +203,7 @@ const paletteNames = [
   "Muted Earth"
 ];
 
-const ColorPaletteSelector = () => {
+const ColorSelector = () => {
   const [selectedPalette, setSelectedPalette] = useState(null);
   const [currentSpeech, setCurrentSpeech] = useState('');
   const voiceRef = useRef(null);
@@ -310,7 +310,7 @@ const ColorPaletteSelector = () => {
     // Navigate to next page after a short delay
     setTimeout(() => {
       navigate('/Template'); 
-    }, 8000); // Longer delay to allow voice to finish
+    }, 10000); // Longer delay to allow voice to finish
   };
 
   return (
@@ -363,4 +363,4 @@ const ColorPaletteSelector = () => {
   );
 };
 
-export default ColorPaletteSelector;
+export default ColorSelector;

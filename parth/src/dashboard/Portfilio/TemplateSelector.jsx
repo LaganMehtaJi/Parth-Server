@@ -328,7 +328,7 @@ const TemplateSelector = () => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = voiceRef.current;
     utterance.rate = 0.9;
-    utterance.pitch = 1.1; // Slightly higher pitch for female voice
+    utterance.pitch = 1.1; 
     utterance.volume = 1;
     
     window.speechSynthesis.cancel();
@@ -336,7 +336,7 @@ const TemplateSelector = () => {
 
     setTimeout(() => {
       setShowSpeech(false);
-    }, 4000);
+    }, 6000);
   };
 
   const handleTemplateSelect = (templateId) => {
@@ -356,7 +356,7 @@ const TemplateSelector = () => {
       <HeaderContainer>
         <HeaderContent>
           <Title style={{justifyContent:"center",marginTop:"15%"}}>Find Your Perfect Template</Title>
-          <span>Select Template that reflect your personal style</span>
+          <span style={{fontWeight:"bold", fontSize:"130%"}}>Select Template that reflect your personal style</span>
           <Subtitle>
             Select from our professionally designed templates to showcase your work in the best light.
             Each template is optimized for different professional needs.
