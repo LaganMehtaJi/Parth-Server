@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
-import Lottie from 'react-lottie';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-// import animationData from './assistant-animation.json'; 
+
+// Animations
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -24,20 +24,17 @@ const AppContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  min-height: 20vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `;
 
 const ChatBox = styled.div`
-  width: 100%;
+  width: 90%;
   max-width: 1200px;
-  height: 90vh;
-  min-height: 600px;
+  height:70vh;
+  min-height:60%;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   display: flex;
   overflow: hidden;
   position: relative;
@@ -55,7 +52,7 @@ const MessagePanel = styled.div`
   display: flex;
   flex-direction: column;
   background: #f8fafc;
-  min-width: 0; // Allows flex item to shrink below content size
+  min-width: 0;
 `;
 
 const Messages = styled.div`
@@ -68,11 +65,6 @@ const Messages = styled.div`
   &::-webkit-scrollbar {
     width: 6px;
   }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 3px;
-  }
 `;
 
 const InputBar = styled.form`
@@ -82,14 +74,8 @@ const InputBar = styled.form`
   padding: 8px 8px 8px 20px;
   background: white;
   border-radius: 30px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
-
-  &:focus-within {
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
-    border-color: rgba(102, 126, 234, 0.3);
-  }
 
   input {
     flex: 1;
@@ -115,7 +101,6 @@ const InputBar = styled.form`
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     font-family: 'Inter', sans-serif;
     display: flex;
     align-items: center;
@@ -142,7 +127,6 @@ const Message = styled.div`
   color: ${props => props.isUser ? 'white' : '#4a5568'};
   align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
   animation: ${fadeIn} 0.3s ease-out;
-  box-shadow: ${props => props.isUser ? '0 4px 15px rgba(102, 126, 234, 0.2)' : '0 4px 15px rgba(0,0,0,0.05)'};
   line-height: 1.5;
   font-size: 15px;
   border: ${props => !props.isUser && '1px solid #edf2f7'};
@@ -175,50 +159,6 @@ const Message = styled.div`
       border-left: 8px solid #667eea;
     }
   `}
-`;
-
-const ImagePanel = styled.div`
-  width: 400px; // Increased width
-  min-width: 400px; // Prevent shrinking
-  background: linear-gradient(180deg, #667eea, #764ba2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    min-width: 100%;
-    height: 300px;
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-    animation: rotate 20s linear infinite;
-
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  }
-`;
-
-const AnimationContainer = styled.div`
-  width: 100%;
-  height: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
 `;
 
 const TypingIndicator = styled.div`
@@ -312,20 +252,19 @@ const StatusIndicator = styled.div`
   }
 `;
 
-const ComplimentBubble = styled.div`
+const ValidationMessage = styled.div`
   position: absolute;
-  top: 40px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
-  background: white;
-  padding: 10px 15px;
+  background: #ff4d4f;
+  color: white;
+  padding: 8px 16px;
   border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  font-size: 13px;
-  color: #4a5568;
-  z-index: 2;
-  animation: ${fadeIn} 0.5s ease-out;
+  font-size: 14px;
+  animation: ${fadeIn} 0.3s ease-out;
   white-space: nowrap;
+  z-index: 10;
 
   &::after {
     content: '';
@@ -335,9 +274,9 @@ const ComplimentBubble = styled.div`
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid white;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #ff4d4f;
   }
 `;
 
@@ -347,33 +286,12 @@ export default function ChatBotWithVoice() {
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [voiceReady, setVoiceReady] = useState(false);
-  const [showCompliment, setShowCompliment] = useState(false);
-  const [compliment, setCompliment] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const [showValidation, setShowValidation] = useState(false);
   const voiceRef = useRef(null);
   const messageEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
-
-  const compliments = [
-    "You have an amazing personality!",
-    "Your creativity is inspiring!",
-    "You're doing fantastic work!",
-    "Your energy is contagious!",
-    "You have great taste!",
-    "You're an incredible communicator!",
-    "Your ideas are brilliant!",
-    "You make this so enjoyable!"
-  ];
-
-  // Lottie animation options
-//   const defaultOptions = {
-//     loop: true,
-//     autoplay: true, 
-//     animationData: animationData,
-//     rendererSettings: {
-//       preserveAspectRatio: 'xMidYMid slice'
-//     }
-//   };
 
   useEffect(() => {
     // Load Inter font
@@ -407,7 +325,7 @@ export default function ChatBotWithVoice() {
       // Initial greeting if no messages
       if (messages.length === 0) {
         const welcomeMsg = { 
-          text: "Hello Parth! I'm your AI assistant. What would you like to explore today?", 
+          text: "Hello parth!Tell me about Yourself...", 
           isUser: false 
         };
         setMessages([welcomeMsg]);
@@ -443,7 +361,6 @@ export default function ChatBotWithVoice() {
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
-        showRandomCompliment();
       };
     }
 
@@ -458,13 +375,6 @@ export default function ChatBotWithVoice() {
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
-
-  const showRandomCompliment = () => {
-    const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
-    setCompliment(randomCompliment);
-    setShowCompliment(true);
-    setTimeout(() => setShowCompliment(false), 3000);
-  };
 
   const speakText = (text) => {
     if (!voiceRef.current || !text || !voiceReady) return;
@@ -481,10 +391,23 @@ export default function ChatBotWithVoice() {
     window.speechSynthesis.speak(utterance);
   };
 
+  const validateInput = (text) => {
+    if (messages.length === 1) { 
+      if (text.length < 10) {
+        setValidationError("Please provide at least 20 characters");
+        return false;
+      } else if (text.length > 60) {
+        setValidationError("Please keep your response under 40 characters");
+        return false;
+      }
+    }
+    setValidationError('');
+    return true;
+  };
+
   const startListening = () => {
     if (recognitionRef.current) {
       recognitionRef.current.start();
-      showRandomCompliment();
     }
   };
 
@@ -492,12 +415,19 @@ export default function ChatBotWithVoice() {
     e.preventDefault();
     if (!input.trim()) return;
 
+    // Validate input for the "tell about yourself" question
+    if (messages.length === 1 && !validateInput(input)) {
+      setShowValidation(true);
+      speakText(validationError);
+      setTimeout(() => setShowValidation(false), 3000);
+      return;
+    }
+
     // Add user message
     const newMsg = { text: input, isUser: true };
     setMessages(prev => [...prev, newMsg]);
     setInput('');
     setIsTyping(true);
-    showRandomCompliment();
 
     // Bot response after delay
     setTimeout(() => {
@@ -506,18 +436,19 @@ export default function ChatBotWithVoice() {
       let reply;
       if (messages.length === 1) {
         reply = { 
-          text: "That's wonderful to hear! You have such great energy. Could you tell me more about your professional background and skills?", 
+          text: "Thank you for sharing! Now I'll help you create your portfolio.", 
           isUser: false 
         };
       } else {
         reply = { 
-          text: "Thank you for sharing those impressive details! I'm truly inspired by your experience. I'm now preparing your portfolio presentation...", 
+          text: "I'm now preparing your portfolio presentation...", 
           isUser: false 
         };
-        // Navigate to new page after 2 seconds
+      
         setTimeout(() => {
+          
           navigate('/color');
-        }, 5000);
+        }, 4000);
       }
       
       setMessages(prev => [...prev, reply]);
@@ -528,7 +459,7 @@ export default function ChatBotWithVoice() {
   return (
     <AppContainer>
       <ChatBox>
-        <MessagePanel>
+        <MessagePanel style={{backgroundColor:"white"}}>
           <StatusIndicator isActive={voiceReady}>
             <span></span>
             {voiceReady ? 'Assistant Ready' : 'Initializing...'}
@@ -581,28 +512,18 @@ export default function ChatBotWithVoice() {
               Send
             </button>
           </InputBar>
+
+          {showValidation && <ValidationMessage>{validationError}</ValidationMessage>}
         </MessagePanel>
 
-        {/* <ImagePanel>
-          {showCompliment && <ComplimentBubble>{compliment}</ComplimentBubble>}
-          <AnimationContainer>
-            <Lottie 
-              options={defaultOptions}
-              height={300}
-              width={300}
-              isStopped={false}
-              isPaused={false}
-            />
-          </AnimationContainer>
-        </ImagePanel> */}
         <div className="w-full md:w-1/2 flex justify-center -mt-35">
-                    <DotLottieReact
-      src="https://lottie.host/3e2b7a7b-b193-420e-a6a8-36abb1ea2cc2/sikVMmp8HU.lottie"
-      loop
-      autoplay
-    />
-                </div>
-                
+          <DotLottieReact
+            src="https://lottie.host/3e2b7a7b-b193-420e-a6a8-36abb1ea2cc2/sikVMmp8HU.lottie"
+            loop
+            autoplay
+            style={{width:"90%", height:"100%", paddingTop:"35%"}}
+          />
+        </div>
       </ChatBox>
     </AppContainer>
   );
