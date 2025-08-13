@@ -232,80 +232,6 @@ const volunteeringSchema = new mongoose.Schema({
 }, {
   timestamps: true // adds createdAt & updatedAt
 });
-// ==============================
-// 🏢 Company Schema
-// ==============================
-const companySchema = new Schema({
-  name: { type: String, required: true },
-  logoUrl: {
-    type: String,
-    validate: v => /^https?:\/\/.+\.(jpg|jpeg|png|webp|svg|gif)?$/i.test(v)
-  },
-  description: String
-}, { timestamps: true });
-
-// ==============================
-// 📄 Job Schema
-// ==============================
-const jobSchema = new Schema({
-  name: { type: String, required: true },
-  description: String
-}, { timestamps: true });
-
-// ==============================
-// 📊 Application Count Schemas
-// ==============================
-const applyCompanyCountSchema = new Schema({
-  company: { type: Schema.Types.ObjectId, ref: 'Company', unique: true },
-  count: { type: Number, default: 0 }
-});
-const applyJobCountSchema = new Schema({
-  job: { type: Schema.Types.ObjectId, ref: 'Job', unique: true },
-  count: { type: Number, default: 0 }
-});
-
-// ==============================
-// 📋 Responsibility / Requirement / Resource
-// ==============================
-const requirementSchema = new Schema({
-  job: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
-  requirement: { type: String, required: true }
-});
-
-const resourceSchema = new Schema({
-  job: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
-  resource: { type: String, required: true },
-  link: {
-    type: String,
-    validate: v => /^https?:\/\/.+/.test(v)
-  }
-});
-
-const responsibilitySchema = new Schema({
-  company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
-  responsibility: { type: String, required: true }
-});
-
-// ==============================
-// 🧪 Round Schema
-// ==============================
-const roundSchema = new Schema({
-  companyId: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
-  name: { type: String, required: true, trim: true },
-  roundType: {
-    type: String,
-    enum: ['Online Test', 'Technical Interview', 'HR Interview', 'Group Discussion', 'Managerial', 'Final'],
-    default: 'Technical Interview'
-  },
-  description: String,
-  roundDate: Date,
-  duration: String,
-  mode: {
-    type: String,
-    enum: ['Online', 'Offline', 'Hybrid'],
-    default: 'Online'
-  }
-}, { timestamps: true });
 
 
 const certificateSchema = new mongoose.Schema(
@@ -406,14 +332,6 @@ const Education = mongoose.model("Education", educationSchema);
 const Project = mongoose.model("Project", projectSchema);        //done
 const Experience = mongoose.model("Experience", experienceSchema);
 const Volunteering = mongoose.model("Volunteering", volunteeringSchema);
-const Company = mongoose.model("Company", companySchema);
-const Job = mongoose.model("Job", jobSchema);
-const Round = mongoose.model("Round", roundSchema);
-const ApplyCompanyCount = mongoose.model("ApplyCompanyCount", applyCompanyCountSchema);
-const ApplyJobCount = mongoose.model("ApplyJobCount", applyJobCountSchema);
-const Requirement = mongoose.model("Requirement", requirementSchema);
-const Resource = mongoose.model("Resource", resourceSchema);
-const Responsibility = mongoose.model("Responsibility", responsibilitySchema);
 const Certificate = mongoose.model("Certificate", certificateSchema);
 
 // ==============================
@@ -427,13 +345,5 @@ export {
   Education,
   Project,
   Experience,
-  Volunteering,
-  Company,
-  Job,
-  Round,
-  ApplyCompanyCount,
-  ApplyJobCount,
-  Requirement,
-  Resource,
-  Responsibility
+  Volunteering
 };
