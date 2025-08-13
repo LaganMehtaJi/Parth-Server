@@ -40,7 +40,7 @@ const Team = [
   },
   { 
     id: 4, 
-    name: "CHAHAT SHARMA", 
+    name: "CHAHAT ", 
     image: "./CHAHAT_Hero.jpg", 
     role: "UI/UX Specialist",
     contributions: [
@@ -50,18 +50,18 @@ const Team = [
       "Ensured responsive layouts"
     ]
   },
-  // { 
-  //   id: 5, 
-  //   name: "MEHAK", 
-  //   image: "/images/mehak.jpg", 
-  //   role: "UI/UX Designer",
-  //   contributions: [
-  //     "Designed all Figma prototypes",
-  //     "Created visual style guide",
-  //     "Defined user flows",
-  //     "Ensured design consistency"
-  //   ]
-  // }
+  { 
+    id: 5, 
+    name: "MEHAK", 
+    image: "./mehak.jpg", 
+    role: "UI/UX Designer",
+    contributions: [
+      "Designed all Figma prototypes",
+      "Created visual style guide",
+      "Defined user flows",
+      "Ensured design consistency"
+    ]
+  }
 ];
 
 const containerVariants = {
