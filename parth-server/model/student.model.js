@@ -153,16 +153,42 @@ const projectSchema = new Schema({
 // ==============================
 // 💼 Experience Schema
 // ==============================
-const experienceSchema = new Schema({
-  registrationNo: { type: String, required: true, ref: "Student" },
-  title: String,
-  company: String,
-  location: String,
-  startDate: Date,
-  endDate: Date,
-  description: String
-}, { timestamps: true });
-
+const experienceSchema = new mongoose.Schema(
+  {
+   registrationNo: { type: String, required: true, ref: "Student" },
+    title: {
+      type: String,
+      required: [true, "Job title is required"],
+      trim: true,
+    },
+    company: {
+      type: String,
+      required: [true, "Company name is required"],
+      trim: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    startDate: {
+      type: Date,
+      required: [true, "Start date is required"],
+    },
+    endDate: {
+      type: Date,
+    },
+    currentlyWorking: {
+      type: Boolean,
+      default: false,
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+      trim: true,
+    },
+  },
+  { timestamps: true } // will create createdAt and updatedAt automatically
+);
 // ==============================
 // 🤝 Volunteering Schema
 // ==============================
