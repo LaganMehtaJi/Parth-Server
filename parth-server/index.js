@@ -21,6 +21,7 @@ import CertificateRoutes from "./routes/student/certification.routes.js";
 import exprenceRoutes from "./routes/student/expreence.routes.js";
 import studentsettingRoutes from "./routes/student/studentsetting.routes.js";
 import { initSocket } from "./soket.js";
+import Company from "./routes/admin/Company.routes.js"
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ const app = express();
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Create HTTP & Socket.IO server BEFORE routes
 const server = http.createServer(app);
@@ -56,6 +58,7 @@ app.use("/api/education",EducationRoutes);
 app.use("/api/certificate",CertificateRoutes);
 app.use("/api/experience",exprenceRoutes);
 app.use("/api/update",studentsettingRoutes);
+app.use("/api/company",Company);
 // Connect to DB
 ConnectDb();
 
