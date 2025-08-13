@@ -1,63 +1,102 @@
 import React, { useEffect, useState } from "react";
 import { BsPatchCheckFill } from "react-icons/bs";
-
 import axios from "axios";
-const profile = {
-  name: "Chahat Sharma",
-  title: "Student at MAIMT",
-  location: "Jagadhri, Haryana, India",
-  image: "/chahat.jpg",
-  coverImage: "/maimt-background.jpg", 
-  description:"Aspiring Software developer",
-  verified: true,
-  field: "BCA || MCA",
-  College: "MAIMT",
-  skills: [
-    { name: "JavaScript", endorsements: 12 },
-    { name: "React.js", endorsements: 8 },
-    { name: "Node.js", endorsements: 5 },
-    { name: "Python", endorsements: 3 },
-    { name: "MongoDB", endorsements: 2 }
-  ],
-  socialLinks: {
-    github: "#",
-    linkedin: "#",
-    twitter: "#"
-  }
-};
 
 const Profilesection = () => {
-    
-  // useEffect(()=>{
-  //   axios.get(`http://localhost:3000/api/profile/get/${12345678}`).the((response)=>{
-  //     console.log(response.data);
-  //   }).catch((error)=>{
-  //     console.log(error);
-  //   })
-  // })
-
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAllSkills, setShowAllSkills] = useState(false);
+  const [registrationNo, setRegistrationNo] = useState(null);
+
+  useEffect(() => {
+    // Get registrationNo from localStorage
+    const regNo = localStorage.getItem('registrationNo');
+    setRegistrationNo(regNo);
+
+    const fetchProfile = async () => {
+      if (!regNo) {
+        setError("Registration number not found in localStorage");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`http://localhost:3000/api/profile/get/${regNo}`);
+        setProfile(response.data);
+      } catch (err) {
+        setError("Failed to fetch profile data");
+        console.error("Error fetching profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 p-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-24 bg-gray-300 rounded-t-lg"></div>
+          <div className="flex justify-start -mt-12">
+            <div className="w-24 h-24 rounded-full bg-gray-300 border-4 border-white"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+            <div className="h-3 bg-gray-300 rounded w-2/3"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex justify-between">
+                <div className="h-3 bg-gray-300 rounded w-1/3"></div>
+                <div className="h-3 bg-gray-300 rounded w-1/4"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 p-4 text-center text-red-500">
+        {error}
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 p-4 text-center">
+        No profile data available
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 transform transition-all duration-300 hover:shadow-xl">
       {/* Cover Photo */}
-<div className="h-24 bg-gradient-to-r from-sky-400 to-blue-500 relative rounded-t-lg shadow-md">
-<div className="h-24 flex items-center px-6 bg-blue">
-  <img
-    src="/maimtlogo.jpg"
-    alt="MAIMT Logo"
-    className="absolute inset-0 w-full h-full object-cover"
-  />
-</div>
-
-</div>
+      <div className="h-24 bg-gradient-to-r from-sky-400 to-blue-500 relative rounded-t-lg shadow-md">
+        <div className="h-24 flex items-center px-6 bg-blue">
+          <img
+            src="/maimtlogo.jpg"
+            alt="MAIMT Logo"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
+      </div>
       
       {/* Profile Photo and Basic Info */}
       <div className="px-4 pb-4 relative">
         <div className="flex justify-start -mt-12 mb-3 relative">
           <div className="relative group">
             <img
-              src={profile.image}
+              src={profile.studentProfile.profilePic || "https://res.cloudinary.com/dbeqhfbpk/image/upload/v1753455162/logoBlack_fwyfer.png"}
               alt="Profile"
               className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
             />
@@ -65,23 +104,24 @@ const Profilesection = () => {
         </div>
         
         <div className="text-center">
-         <div className="flex justify-left items-center">
-  <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-    {profile.name}
-    {profile.verified && (
-      <BsPatchCheckFill className="text-blue-500 w-4 h-4" title="Verified" />
-    )}
-  </h2>
-</div>
-          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">{profile.title}</p>
-          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left"><strong>{profile.description}</strong></p>
+          <div className="flex justify-left items-center">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              {profile.studentProfile.name}
+              {profile.studentProfile.verify && (
+                <BsPatchCheckFill className="text-blue-500 w-4 h-4" title="Verified" />
+              )}
+            </h2>
+          </div>
+          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">{profile.studentProfile.field}</p>
+          <p className="text-sm text-gray-600 mt-1 flex items-center justify-left">
+            <strong>{profile.studentProfile.description}</strong>
+          </p>
           <p className="text-xs text-gray-500 mt-1 flex items-center justify-left">
             <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
-            {profile.location}
+            {profile.studentProfile.address}
           </p>
-        
         </div>
       </div>
       
@@ -92,10 +132,10 @@ const Profilesection = () => {
       <div className="px-4 py-3">
         <h3 className="text-sm font-semibold text-gray-700 mb-2">Skills</h3>
         <div className="space-y-2">
-          {(showAllSkills ? profile.skills : profile.skills.slice(0, 3)).map((skill, index) => (
+          {(showAllSkills ? profile.studentProfile.skills : profile.skills.slice(0, 3)).map((skill, index) => (
             <div key={index} className="flex justify-between items-center group">
-              <span className="text-sm text-blue-600 hover:underline cursor-pointer">{skill.name}</span>
-              <span className="text-xs text-gray-500">{skill.endorsements} endorsements</span>
+              <span className="text-sm text-blue-600 hover:underline cursor-pointer">{skill.skill}</span>
+              <span className="text-xs text-gray-500">{skill.proficiency} Proficiency</span>
             </div>
           ))}
         </div>
@@ -122,57 +162,56 @@ const Profilesection = () => {
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-gray-800">{profile.field}</h4>
-            <p className="text-xs text-gray-600">{profile.university}</p>
+            <h4 className="text-sm font-medium text-gray-800">{profile.studentProfile.field}</h4>
+            <p className="text-xs text-gray-600">{profile.studentProfile.College}</p>
           </div>
         </div>
       </div>
       
       {/* Action Buttons */}
       <div className="px-4 py-3 space-y-2">
-        
         <button className="w-full rounded-full py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 border border-blue-300 transition-all duration-300">
           Message
         </button>
         
-         {profile.verified ? (
-    <div className="w-full rounded-full py-1.5 text-sm font-medium text-green-600 bg-green-100 border border-green-300 flex items-center justify-center">
-      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-        <path
-          fillRule="evenodd"
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-          clipRule="evenodd"
-        />
-      </svg>
-      Verification Done
-    </div>
-  ) : (
-    <button className="w-full rounded-full py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-300 transition-all duration-300 flex items-center justify-center">
-      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-        <path
-          fillRule="evenodd"
-          d="M5 8a1 1 0 011-1h2V5a1 1 0 112 0v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2H6a1 1 0 01-1-1z"
-          clipRule="evenodd"
-        />
-      </svg>
-      Edit Your Profile
-    </button>
-  )}
+        {profile.studentProfile.verify ? (
+          <div className="w-full rounded-full py-1.5 text-sm font-medium text-green-600 bg-green-100 border border-green-300 flex items-center justify-center">
+            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Verification Done
+          </div>
+        ) : (
+          <button className="w-full rounded-full py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-300 transition-all duration-300 flex items-center justify-center">
+            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M5 8a1 1 0 011-1h2V5a1 1 0 112 0v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2H6a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Edit Your Profile
+          </button>
+        )}
       </div>
       
       {/* Social Links */}
       <div className="bg-gray-50 px-4 py-3 flex justify-center space-x-4">
-        <a href={profile.socialLinks.linkedin} className="text-gray-600 hover:text-blue-700 transition-colors duration-300">
+        <a href={profile.studentProfile.socialLinks?.linkedin || "#"} className="text-gray-600 hover:text-blue-700 transition-colors duration-300">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
           </svg>
         </a>
-        <a href={profile.socialLinks.github} className="text-gray-600 hover:text-gray-900 transition-colors duration-300">
+        <a href={profile.studentProfile.socialLinks?.github || "#"} className="text-gray-600 hover:text-gray-900 transition-colors duration-300">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
           </svg>
         </a>
-        <a href={profile.socialLinks.twitter} className="text-gray-600 hover:text-blue-400 transition-colors duration-300">
+        <a href={profile.studentProfile.socialLinks?.twitter || "#"} className="text-gray-600 hover:text-blue-400 transition-colors duration-300">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
           </svg>

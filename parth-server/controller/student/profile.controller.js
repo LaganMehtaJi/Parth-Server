@@ -17,12 +17,13 @@ export const GetStudentProfile = async (req, res) => {
       return res.status(404).json({ message: "Student profile not found" });
     }
 
-    const [skills, education, projects, experiences, volunteering] = await Promise.all([
+    const [skills, education, projects, experiences, volunteering ,StudentSetting] = await Promise.all([
       StudentObj.Skill.find({ registrationNo }),
       StudentObj.Education.find({ registrationNo }),
       StudentObj.Project.find({ registrationNo }),
       StudentObj.Experience.find({ registrationNo }),
-      StudentObj.Volunteering.find({ registrationNo })
+      StudentObj.Volunteering.find({ registrationNo }),
+      StudentObj.StudentSetting.find({registrationNo})
     ]);
 
     return res.status(200).json({
@@ -32,7 +33,8 @@ export const GetStudentProfile = async (req, res) => {
       education,
       projects,
       experiences,
-      volunteering
+      volunteering,
+      StudentSetting
     });
 
   } catch (error) {

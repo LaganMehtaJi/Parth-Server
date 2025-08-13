@@ -1,8 +1,8 @@
-import { companyData } from "../../model/company.model";
+import { companyData } from "../../model/company.model.js";
 
 export const addCompany = async (req, res) => {
   try {
-    const { name, description } = req.params;
+    const { name, description } = req.body;
 
     if (!name || !description) {
       return res.status(400).json({ message: "Name and description are required" });
