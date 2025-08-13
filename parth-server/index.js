@@ -13,6 +13,7 @@ import AuthStudent from "./routes/student/auth.routes.js";
 import AuthAdmin from "./routes/admin/auth.routes.js";
 import notificationRoutes from "./routes/student/notification.js";
 import ProjectRoutes from "./routes/student/projects.routes.js";
+import SkillRoutes from "./routes/student/skill.routes.js";
 import { initSocket } from "./soket.js";
 
 dotenv.config();
@@ -42,7 +43,7 @@ app.use("/api/auth/student", AuthStudent);
 app.use("/api/auth/admin", AuthAdmin);
 app.use("/api/auth/profile", StudentOpp);
 app.use("/api/project",ProjectRoutes);
-
+app.use("/api/skill",SkillRoutes);
 // Connect to DB
 ConnectDb();
 

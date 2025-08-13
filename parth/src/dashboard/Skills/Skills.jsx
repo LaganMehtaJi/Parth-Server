@@ -3,8 +3,20 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSkills,addSkill,deleteSkill,updateSkill } from "../../redux/SkillSlice";
+import axios from "axios";
 
 export default function Skills() {
+  const [ registrationNo,setRegistrationNo] = useState("");
+  useEffect(()=>{
+    setRegistrationNo(JSON.parse(localStorage.getItem('registrationNo')));
+   axios.get(`http://localhost:3000/api/project/delete/${registrationNo}`).then((res)=>{
+    console.log(res.data);
+   }).catch((error)=>{
+    console.log(error.data);
+   })
+
+  });
+
   const dispatch = useDispatch();
   const { items: skills, status, error } = useSelector((state) => state.skills);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -184,20 +196,9 @@ export default function Skills() {
                 <input
                   type="text"
                   name="registrationNo"
-                  value={formik.values.registrationNo}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className={`w-full border ${
-                    formik.touched.registrationNo && formik.errors.registrationNo
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded px-3 py-2`}
+                  value={registrationNo}
                 />
-                {formik.touched.registrationNo && formik.errors.registrationNo ? (
-                  <div className="text-red-500 text-sm mt-1">
-                    {formik.errors.registrationNo}
-                  </div>
-                ) : null}
+                
               </div>
 
               <div className="flex justify-end space-x-3 pt-2">
