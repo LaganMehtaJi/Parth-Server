@@ -12,6 +12,7 @@ import Student from "./routes/admin/student.routes.js";
 import AuthStudent from "./routes/student/auth.routes.js";
 import AuthAdmin from "./routes/admin/auth.routes.js";
 import notificationRoutes from "./routes/student/notification.js";
+import ProjectRoutes from "./routes/student/projects.routes.js";
 import { initSocket } from "./soket.js";
 
 dotenv.config();
@@ -27,7 +28,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST","PUT","PATCH"],
   },
 });
 
@@ -40,6 +41,7 @@ app.use("/api/student", Student);
 app.use("/api/auth/student", AuthStudent);
 app.use("/api/auth/admin", AuthAdmin);
 app.use("/api/auth/profile", StudentOpp);
+app.use("/api/project",ProjectRoutes);
 
 // Connect to DB
 ConnectDb();

@@ -1,31 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  FiEdit2,
-  FiTrash2,
-  FiLink,
-  FiPlus,
-  FiX,
-  FiCheck,
-  FiExternalLink,
-  FiShare2,
-  FiStar,
+  FiEdit2, FiTrash2, FiLink, FiPlus, FiX, FiCheck,
+  FiExternalLink, FiShare2, FiStar
 } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  addProject,
-  updateProject,
-  deleteProject,
-  toggleFeatured,
-} from '../../redux/ProjectsSlice';
+import axios from 'axios';
 
-const Index = () => {
-  const dispatch = useDispatch();
-  const { projects } = useSelector((state) => state.projects);
-
+const ProjectsPage = () => {
+  const [projects, setProjects] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
-    id: null,
     title: '',
     description: '',
     techStack: '',
@@ -35,10 +19,38 @@ const Index = () => {
     date: new Date().toISOString().split('T')[0],
   });
   const [copiedId, setCopiedId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [registrationNo, setRegistrationNo] = useState('');
+
+  // Initialize registrationNo and fetch projects
+  useEffect(() => {
+    const registrationNo = localStorage.getItem('registrationNo');
+    if (!registrationNo) {
+      setError('Registration number not found in localStorage');
+      return;
+    }
+    setRegistrationNo(registrationNo);
+    fetchProjects(registrationNo);
+  }, []);
+
+  const fetchProjects = async (registrationNo) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:3000/api/project/get/${registrationNo}`);
+      setProjects(response.data);
+    } catch (err) {
+      setError('Failed to fetch projects');
+      console.error('Error fetching projects:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+ 
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
@@ -46,7 +58,6 @@ const Index = () => {
 
   const handleAddClick = () => {
     setFormData({
-      id: null,
       title: '',
       description: '',
       techStack: '',
@@ -57,27 +68,95 @@ const Index = () => {
     });
     setEditMode(false);
     setIsFormOpen(true);
+    setError(null);
   };
 
   const handleEditClick = (project) => {
     setFormData(project);
     setEditMode(true);
     setIsFormOpen(true);
+    setError(null);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (editMode) {
-      dispatch(updateProject(formData));
-    } else {
-      dispatch(addProject(formData));
+    if (!registrationNo) {
+      setError('Registration number not found');
+      return;
     }
-    setIsFormOpen(false);
+
+    setIsLoading(true);
+    
+    try {
+      if (editMode) {
+        // Update project
+        const response = await axios.post(
+          `http://localhost:3000/api/project/update/${registrationNo}/${formData._id}`,
+          formData
+        );
+        setProjects(projects.map(p => p._id === formData._id ? response.data : p));
+      } else {
+        // Add new project
+        const response = await axios.post(
+          `http://localhost:3000/api/project/add/${registrationNo}`,
+          formData
+        );
+        setProjects([...projects, response.data]);
+      }
+      setIsFormOpen(false);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to save project');
+      console.error('Error saving project:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteProject = (id) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      dispatch(deleteProject(id));
+  const handleDeleteProject = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) return;
+    
+    if (!registrationNo) {
+      setError('Registration number not found');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await axios.post(`http://localhost:3000/api/project/delete/${registrationNo}/${id}`);
+      setProjects(projects.filter(project => project._id !== id));
+    } catch (err) {
+      setError('Failed to delete project');
+      console.error('Error deleting project:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleToggleFeatured = async (id) => {
+    if (!registrationNo) {
+      setError('Registration number not found');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const project = projects.find(p => p._id === id);
+      const updatedProject = { 
+        ...project, 
+        featured: !project.featured 
+      };
+      
+      const response = await axios.post(
+        `http://localhost:300/api/project/update/${registrationNo}/${id}`,
+        updatedProject
+      );
+      
+      setProjects(projects.map(p => p._id === id ? response.data : p));
+    } catch (err) {
+      setError('Failed to update project');
+      console.error('Error updating project:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,13 +176,21 @@ const Index = () => {
         });
       } else {
         await navigator.clipboard.writeText(project.link);
-        setCopiedId(project.id);
+        setCopiedId(project._id);
         setTimeout(() => setCopiedId(null), 2000);
       }
     } catch (err) {
       console.error('Error sharing:', err);
     }
   };
+
+  if (isLoading && projects.length === 0) {
+    return (
+      <div className="max-w-6xl mx-auto p-4 md:p-6 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
@@ -115,10 +202,17 @@ const Index = () => {
         <button
           onClick={handleAddClick}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg transition-all duration-200 hover:shadow-md"
+          disabled={isLoading}
         >
           <FiPlus className="text-lg" /> Add Project
         </button>
       </div>
+
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       {projects.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
@@ -130,6 +224,7 @@ const Index = () => {
           <button
             onClick={handleAddClick}
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            disabled={isLoading}
           >
             <FiPlus /> Add Project
           </button>
@@ -138,11 +233,9 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {projects.map((project) => (
             <div
-              key={project.id}
+              key={project._id}
               className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border ${
-                project.featured 
-                  ? 'border-yellow-400 bg-yellow-50' 
-                  : 'border-gray-200 bg-white'
+                project.featured ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200 bg-white'
               }`}
             >
               {project.featured && (
@@ -174,11 +267,10 @@ const Index = () => {
                         {project.title}
                       </h2>
                       <button 
-                        onClick={() => dispatch(toggleFeatured(project.id))}
+                        onClick={() => handleToggleFeatured(project._id)}
+                        disabled={isLoading}
                         className={`p-1.5 rounded-full ${
-                          project.featured 
-                            ? 'text-yellow-500 hover:text-yellow-600' 
-                            : 'text-gray-400 hover:text-gray-600'
+                          project.featured ? 'text-yellow-500 hover:text-yellow-600' : 'text-gray-400 hover:text-gray-600'
                         }`}
                         aria-label={project.featured ? 'Unfeature project' : 'Feature project'}
                       >
@@ -192,10 +284,7 @@ const Index = () => {
                     {project.techStack && (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {project.techStack.split(',').map((tech, index) => (
-                          <span 
-                            key={index} 
-                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
-                          >
+                          <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                             {tech.trim()}
                           </span>
                         ))}
@@ -217,17 +306,19 @@ const Index = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEditClick(project)}
+                      disabled={isLoading}
                       className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
                       aria-label="Edit project"
                     >
                       <FiEdit2 className="text-sm" />
                     </button>
                     <button
-                      onClick={() => handleCopyLink(project.link, project.id)}
+                      onClick={() => handleCopyLink(project.link, project._id)}
+                      disabled={isLoading}
                       className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative"
                       aria-label="Copy link"
                     >
-                      {copiedId === project.id ? (
+                      {copiedId === project._id ? (
                         <FiCheck className="text-sm text-green-500" />
                       ) : (
                         <FiLink className="text-sm" />
@@ -235,13 +326,15 @@ const Index = () => {
                     </button>
                     <button
                       onClick={() => handleShare(project)}
+                      disabled={isLoading}
                       className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
                       aria-label="Share project"
                     >
                       <FiShare2 className="text-sm" />
                     </button>
                     <button
-                      onClick={() => handleDeleteProject(project.id)}
+                      onClick={() => handleDeleteProject(project._id)}
+                      disabled={isLoading}
                       className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
                       aria-label="Delete project"
                     >
@@ -263,9 +356,8 @@ const Index = () => {
         </div>
       )}
 
-      {/* Project Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex justify-center items-center z-50 p-4">
           <div 
             className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -278,12 +370,19 @@ const Index = () => {
                 onClick={() => setIsFormOpen(false)}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
                 aria-label="Close modal"
+                disabled={isLoading}
               >
                 <FiX className="text-xl" />
               </button>
             </div>
             
             <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
+              {error && (
+                <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Project Title*</label>
                 <input
@@ -292,7 +391,8 @@ const Index = () => {
                   value={formData.title}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100"
                 />
               </div>
               
@@ -305,7 +405,8 @@ const Index = () => {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100"
                 />
               </div>
               
@@ -317,7 +418,8 @@ const Index = () => {
                   value={formData.techStack}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100"
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate technologies with commas</p>
               </div>
@@ -330,7 +432,8 @@ const Index = () => {
                   value={formData.link}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100"
                 />
               </div>
               
@@ -341,7 +444,8 @@ const Index = () => {
                   placeholder="https://example.com/logo.png"
                   value={formData.logo}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100"
                 />
               </div>
               
@@ -354,7 +458,8 @@ const Index = () => {
                     value={formData.date}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    disabled={isLoading}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100"
                   />
                 </div>
                 
@@ -365,7 +470,8 @@ const Index = () => {
                       name="featured"
                       checked={formData.featured}
                       onChange={handleInputChange}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      disabled={isLoading}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:bg-gray-100"
                     />
                   </div>
                   <label className="ml-2 text-sm text-gray-700">
@@ -378,15 +484,27 @@ const Index = () => {
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  disabled={isLoading}
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors"
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-32"
                 >
-                  {editMode ? 'Update Project' : 'Add Project'}
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {editMode ? 'Updating...' : 'Adding...'}
+                    </>
+                  ) : (
+                    editMode ? 'Update Project' : 'Add Project'
+                  )}
                 </button>
               </div>
             </form>
@@ -397,4 +515,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default ProjectsPage;

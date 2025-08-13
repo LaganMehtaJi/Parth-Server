@@ -1,10 +1,10 @@
 import XLSX from 'xlsx';
-
-import * as StudentObj  from "../../model/student.model.js"; 
+import * as StudentObj from "../../model/student.model.js";
 
 export const AddStudent = async (req, res) => {
   console.log("API Call");
- console.log(req.body);
+  console.log(req.body);
+
   const {
     registrationNo,
     rollNo,
@@ -17,20 +17,24 @@ export const AddStudent = async (req, res) => {
     profilePic,
     verify,
     address,
-    password 
+    password
   } = req.body;
- console.log(rollNo)
-  if(!registrationNo){
-     res.status(202).json({ message: "Enter  All Details" });
-    }
-  try {
-    
 
+  if (!registrationNo) {
+    return res.status(202).json({ message: "Enter All Details" });
+  }
+
+  try {
     const found = await StudentObj.Student.findOne({ registrationNo });
-    console.log(found);
-    if(found) {
+    if (found) {
       return res.status(404).json({ message: "User Already Exists" });
     }
+
+    // ✅ Format password (lowercase, no spaces, fallback to name)
+    const formattedPassword = (password || name || "")
+      .toLowerCase()
+      .replace(/\s+/g, "");
+
     const newStudent = await StudentObj.Student.create({
       registrationNo,
       rollNo,
@@ -38,7 +42,7 @@ export const AddStudent = async (req, res) => {
       email,
       phone,
       field,
-      password:name,
+      password: formattedPassword,
       customField,
       batchYear,
       profilePic,
@@ -46,17 +50,20 @@ export const AddStudent = async (req, res) => {
       address
     });
 
-    return res.status(201).json({ message: "Student Added Successfully", student: newStudent });
+    return res.status(201).json({
+      message: "Student Added Successfully",
+      student: newStudent
+    });
 
   } catch (error) {
     console.error("Error while adding student:", error);
     return res.status(500).json({ message: "Internal Server Error", error });
   }
 };
+
 export const uploadStudents = async (req, res) => {
   try {
     const file = req.file;
-
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
@@ -69,10 +76,18 @@ export const uploadStudents = async (req, res) => {
       return res.status(400).json({ message: "Excel file is empty" });
     }
 
-    const inserted = await StudentObj.Student.insertMany(studentData);
+    // ✅ Transform passwords for bulk upload
+    const formattedData = studentData.map(student => ({
+      ...student,
+      password: (student.password || student.name || "")
+        .toLowerCase()
+        .replace(/\s+/g, "")
+    }));
+
+    const inserted = await StudentObj.Student.insertMany(formattedData);
     res.status(201).json({
       message: 'Students uploaded successfully',
-      data: inserted,
+      data: inserted
     });
 
   } catch (error) {
@@ -81,23 +96,12 @@ export const uploadStudents = async (req, res) => {
   }
 };
 
-
-export const StudentShow=async(req,res)=>
-{
-  try{
-  const studentData=await StudentObj.Student.find({})
-  res.status(200).json({
-    message:studentData
-  })
+export const StudentShow = async (req, res) => {
+  try {
+    const studentData = await StudentObj.Student.find({});
+    res.status(200).json({ message: studentData });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error });
   }
-  catch(error)
-  {
-    console.log(error)
-    res.status(400).json({
-      error:error
-    })
-  }
-  
-
-
-}
+};

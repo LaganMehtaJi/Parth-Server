@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Headerhome from './Headerhome';
 import Profilesection from './Profilesection';
 import JobSuggestions from './JobSuggestions';

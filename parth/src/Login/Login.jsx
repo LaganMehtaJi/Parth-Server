@@ -116,6 +116,7 @@ const Login = () => {
       axios.post(`http://localhost:3000/api/auth/${type}/${type}`, values)
         .then((res) => {
           console.log(res.data.message);
+          localStorage.setItem('registrationNo',res.data.Studentdata.registrationNo);
           navigate(`/home`);
           toast.success(` ${res.data.message}`, {
             position: "top-center",

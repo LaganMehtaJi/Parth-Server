@@ -104,15 +104,17 @@ const educationSchema = new Schema({
 // ==============================
 const projectSchema = new Schema({
   registrationNo: { type: String, required: true, ref: "Student" },
-  title: String,
-  description: String,
-  link: {
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  techStack: { type: String, required: true },
+  link: { type: String, required: true },
+  logo: {
     type: String,
-    validate: v => /^https?:\/\/.+/.test(v)
+    default: 'https://res.cloudinary.com/dbeqhfbpk/image/upload/v1753455162/logoBlack_fwyfer.png',
   },
-  technologies: [String],
-  startDate: Date,
-  endDate: Date
+  featured: { type: Boolean, default: false },
+  date: { type: Date, default: Date.now }
+  
 }, { timestamps: true });
 
 // ==============================
@@ -222,7 +224,7 @@ const roundSchema = new Schema({
 const Student = mongoose.model("Student", studentSchema);
 const Skill = mongoose.model("Skill", skillSchema);
 const Education = mongoose.model("Education", educationSchema);
-const Project = mongoose.model("Project", projectSchema);
+const Project = mongoose.model("Project", projectSchema);        //done
 const Experience = mongoose.model("Experience", experienceSchema);
 const Volunteering = mongoose.model("Volunteering", volunteeringSchema);
 const Company = mongoose.model("Company", companySchema);
