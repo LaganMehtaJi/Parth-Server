@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/LaganMehtaJi/Parth-Server#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

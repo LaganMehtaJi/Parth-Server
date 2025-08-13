@@ -354,10 +354,53 @@ const certificateSchema = new mongoose.Schema(
 );
 
 
+const studentSettingsSchema = new mongoose.Schema(
+  {
+    registrationNo: { type: String, required: true, ref: "Student" },
+    linkedin: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    github: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    twitter: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    portfolio: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    email: {
+      type: String,
+      trim: true,
+      default: "",
+      lowercase: true
+    },
+    emailPassword: {
+      type: String,
+      default: "" // Will store hashed password instead of plain text
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+
+
+
 // ==============================
 // 📦 Model Exports
 // ==============================
 const Student = mongoose.model("Student", studentSchema);
+const StudentSetting  = mongoose.model("StudentSettings", studentSettingsSchema);
 const Skill = mongoose.model("Skill", skillSchema);
 const Education = mongoose.model("Education", educationSchema);
 const Project = mongoose.model("Project", projectSchema);        //done
@@ -377,6 +420,7 @@ const Certificate = mongoose.model("Certificate", certificateSchema);
 // 📤 Export All
 // ==============================
 export {
+  StudentSetting,
   Certificate,
   Student,
   Skill,

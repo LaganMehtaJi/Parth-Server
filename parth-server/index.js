@@ -19,6 +19,7 @@ import VoluntaryRoutes from "./routes/student/voluntary.routes.js";
 import EducationRoutes from "./routes/student/education.routes.js";
 import CertificateRoutes from "./routes/student/certification.routes.js";
 import exprenceRoutes from "./routes/student/expreence.routes.js";
+import studentsettingRoutes from "./routes/student/studentsetting.routes.js";
 import { initSocket } from "./soket.js";
 
 dotenv.config();
@@ -54,6 +55,7 @@ app.use("/api/voluntary",VoluntaryRoutes);
 app.use("/api/education",EducationRoutes);
 app.use("/api/certificate",CertificateRoutes);
 app.use("/api/experience",exprenceRoutes);
+app.use("/api/update",studentsettingRoutes);
 // Connect to DB
 ConnectDb();
 
