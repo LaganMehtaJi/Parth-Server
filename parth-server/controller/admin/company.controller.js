@@ -1,38 +1,84 @@
+// controllers/company.controller.js
+import {Company} from "../../model/company.model.js";
+import cloudinary from "../../util/cloudinary.js";
 
-export const createCompany = async (req, res) => {
-    console.log(res.data);
-    res.status(201).json({ message: "Company created successfully" });
+// GET: Fetch all companies
+export const getCompanies = async (req, res) => {
+  try {
+    const companies = await Company.find().sort({ createdAt: -1 });
+    res.json(companies);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch companies", error: error.message });
+  }
 };
-export const getAllCompany = async (req, res) => {
-    try {
-        // const data = await Company.find();
-        data = [
-            {
-                id: 1,
-                name: "Tech Innovators",
-                description: "Leading the way in tech solutions",
-                location: "San Francisco, CA",
-                jobsAvailable: 5,
-            },
-            {
-                id: 2,
-                name: "Green Energy Corp",
-                description: "Pioneering sustainable energy solutions",
-                location: "Austin, TX",
-                jobsAvailable: 3,
-            },
-            {
-                id: 3,
-                name: "HealthPlus",
-                description: "Innovating healthcare for a better tomorrow",
-                location: "New York, NY",
-                jobsAvailable: 2,
-            }
-        ]
-        res.send(data);
-    } catch (error) {
-        console.error("Error getting companies:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
+
+// POST: Add company
+export const addCompany = async (req, res) => {
+  try {
+    const data = req.body;
+
+    // If file uploaded, Cloudinary URL will be available at req.file.path
+    if (req.file && req.file.path) {
+      data.logoImage = req.file.path;
     }
+
+    const newCompany = new Company(data);
+    await newCompany.save();
+
+    res.status(201).json(newCompany);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add company", error: error.message });
+  }
 };
 
+// PUT: Update company
+export const updateCompany = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    if (req.file && req.file.path) {
+      data.logoImage = req.file.path;
+    }
+
+    const updated = await Company.findByIdAndUpdate(id, data, { new: true });
+
+    if (!updated) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update company", error: error.message });
+  }
+};
+
+// DELETE: Delete company
+export const deleteCompany = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const record = await Company.findById(id);
+    if (!record) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    // Delete logo from Cloudinary if present
+    if (record.logoImage) {
+      try {
+        const imageParts = record.logoImage.split("/");
+        const filename = imageParts.pop();
+        const publicId = filename.split(".")[0];
+        await cloudinary.v2.uploader.destroy(`company_logos/${publicId}`);
+      } catch (cloudErr) {
+        console.warn("Cloudinary deletion failed:", cloudErr.message);
+      }
+    }
+
+    await Company.findByIdAndDelete(id);
+
+    return res.json({ message: "Company deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete company", error: error.message });
+  }
+};
