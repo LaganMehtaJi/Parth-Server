@@ -1,305 +1,301 @@
-import React, { useState } from 'react';
-import { FaLinkedin, FaGithub, FaTwitter, FaKey, FaEye, FaEyeSlash, FaPlus, FaTrash } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaLinkedin, FaGithub, FaTwitter, FaKey, FaEye, FaEyeSlash, FaEnvelope, FaSave } from 'react-icons/fa';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const History = () => {
-  // Social media links state
-  const [socialLinks, setSocialLinks] = useState({
+const StudentSettings = () => {
+  const [settings, setSettings] = useState({
     linkedin: '',
     github: '',
     twitter: '',
-    portfolio: ''
+    portfolio: '',
+    email: '',
+    emailPassword: ''
   });
-
-  // App passwords state
-  const [appPasswords, setAppPasswords] = useState([
-    { id: 1, name: 'Job Portal API', password: '••••••••', visible: false, created: '2023-05-15' },
-    { id: 2, name: 'Resume Builder', password: '••••••••', visible: false, created: '2023-06-20' }
-  ]);
   
-  const [newAppName, setNewAppName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [registrationNo, setRegistrationNo] = useState("");
 
-  const handleSocialLinkChange = (e) => {
-    const { name, value } = e.target;
-    setSocialLinks(prev => ({ ...prev, [name]: value }));
-  };
+  // Get registrationNo from localStorage
+  useEffect(() => {
+    const regNo = localStorage.getItem('registrationNo');
+    if (regNo) {
+      setRegistrationNo(regNo);
+    }
+  }, []);
 
-  const togglePasswordVisibility = (id) => {
-    setAppPasswords(prev => prev.map(pw => 
-      pw.id === id ? { ...pw, visible: !pw.visible } : pw
-    ));
-  };
+  // Fetch settings when registrationNo changes
+  useEffect(() => {
+    if (!registrationNo) return;
 
-  const generateNewPassword = () => {
-    if (!newAppName.trim()) return;
-    
-    const newPassword = Math.random().toString(36).slice(-12); // Simple random string
-    const newApp = {
-      id: Date.now(),
-      name: newAppName,
-      password: newPassword,
-      visible: true,
-      created: new Date().toISOString().split('T')[0]
+    const fetchSettings = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`http://localhost:3000/api/update/settings/${registrationNo}`);
+        setSettings(response.data);
+        console.log(response.data);
+      } catch (error) {
+        toast.error('Failed to load settings', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
     
-    setAppPasswords(prev => [...prev, newApp]);
-    setNewAppName('');
+    fetchSettings();
+  }, [registrationNo]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSettings(prev => ({ ...prev, [name]: value }));
   };
 
-  const deleteAppPassword = (id) => {
-    setAppPasswords(prev => prev.filter(pw => pw.id !== id));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      // Update all settings
+      await axios.post(`http://localhost:3000/api/update/linkedin/${registrationNo}`, { linkedin: settings.linkedin });
+      await axios.post(`http://localhost:3000/api/update/github/${registrationNo}`, { github: settings.github });
+      await axios.post(`http://localhost:3000/api/update/twitter/${registrationNo}`, { twitter: settings.twitter });
+      await axios.post(`http://localhost:3000/api/update/portfolio/${registrationNo}`, { portfolio: settings.portfolio });
+      await axios.post(`http://localhost:3000/api/update/email/${registrationNo}`, { 
+        email: settings.email,
+        emailPassword: settings.emailPassword 
+      });
+      
+      toast.success('Settings updated successfully!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error) {
+      toast.error('Failed to update settings', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const saveChanges = () => {
-    // API calls to save both social links and app passwords
-    console.log('Saving:', { socialLinks, appPasswords });
-    alert('Settings saved successfully!');
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
+
+  const maskedPassword = settings.emailPassword ? '•'.repeat(8) : '';
 
   return (
-    <div className="student-app-settings">
-      <h2><FaKey /> Application Settings</h2>
-      
-      {/* Social Media Links Section */}
-      <div className="settings-section">
-        <h3>Social Media Links</h3>
-        <div className="social-links-grid">
-          <div className="form-group">
-            <label><FaLinkedin /> LinkedIn</label>
-            <input
-              type="url"
-              name="linkedin"
-              value={socialLinks.linkedin}
-              onChange={handleSocialLinkChange}
-              placeholder="https://linkedin.com/in/yourprofile"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label><FaGithub /> GitHub</label>
-            <input
-              type="url"
-              name="github"
-              value={socialLinks.github}
-              onChange={handleSocialLinkChange}
-              placeholder="https://github.com/yourusername"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label><FaTwitter /> Twitter</label>
-            <input
-              type="url"
-              name="twitter"
-              value={socialLinks.twitter}
-              onChange={handleSocialLinkChange}
-              placeholder="https://twitter.com/yourhandle"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Portfolio Website</label>
-            <input
-              type="url"
-              name="portfolio"
-              value={socialLinks.portfolio}
-              onChange={handleSocialLinkChange}
-              placeholder="https://yourportfolio.com"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* App Passwords Section */}
-      <div className="settings-section">
-        <h3>Application Passwords</h3>
-        <p className="info-text">
-          These passwords allow external applications to access your placement portal data.
-        </p>
-        
-        <div className="app-passwords-list">
-          {appPasswords.map(app => (
-            <div key={app.id} className="app-password-item">
-              <div className="app-info">
-                <span className="app-name">{app.name}</span>
-                <span className="app-created">Created: {app.created}</span>
-              </div>
-              <div className="password-display">
-                {app.visible ? (
-                  <span className="password-text">{app.password}</span>
-                ) : (
-                  <span className="password-dots">••••••••</span>
-                )}
-                <button 
-                  onClick={() => togglePasswordVisibility(app.id)}
-                  className="toggle-password"
-                >
-                  {app.visible ? <FaEyeSlash /> : <FaEye />}
-                </button>
-                <button 
-                  onClick={() => deleteAppPassword(app.id)}
-                  className="delete-btn"
-                >
-                  <FaTrash />
-                </button>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-blue-600 px-6 py-4 text-white">
+            <div className="flex items-center">
+              <FaKey className="h-6 w-6 mr-2" />
+              <div>
+                <h2 className="text-xl font-bold">Student Settings</h2>
+                <p className="text-blue-100">Update your profile information</p>
               </div>
             </div>
-          ))}
-        </div>
-        
-        <div className="new-app-password">
-          <input
-            type="text"
-            value={newAppName}
-            onChange={(e) => setNewAppName(e.target.value)}
-            placeholder="Enter application name"
-          />
-          <button onClick={generateNewPassword} className="generate-btn">
-            <FaPlus /> Generate New Password
-          </button>
+          </div>
+          
+          {/* Form */}
+          <div className="px-6 py-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Social Media Section */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 mb-4">
+                  Social Media Links
+                </h3>
+                
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  {/* LinkedIn */}
+                  <div>
+                    <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 flex items-center">
+                      <FaLinkedin className="mr-2 text-blue-700" />
+                      LinkedIn URL
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="url"
+                        id="linkedin"
+                        name="linkedin"
+                        value={settings.linkedin}
+                        onChange={handleChange}
+                        placeholder="https://linkedin.com/in/yourprofile"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* GitHub */}
+                  <div>
+                    <label htmlFor="github" className="block text-sm font-medium text-gray-700 flex items-center">
+                      <FaGithub className="mr-2 text-gray-800" />
+                      GitHub URL
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="url"
+                        id="github"
+                        name="github"
+                        value={settings.github}
+                        onChange={handleChange}
+                        placeholder="https://github.com/yourusername"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Twitter */}
+                  <div>
+                    <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 flex items-center">
+                      <FaTwitter className="mr-2 text-blue-400" />
+                      Twitter URL
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="url"
+                        id="twitter"
+                        name="twitter"
+                        value={settings.twitter}
+                        onChange={handleChange}
+                        placeholder="https://twitter.com/yourhandle"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Portfolio */}
+                  <div>
+                    <label htmlFor="portfolio" className="block text-sm font-medium text-gray-700">
+                      Portfolio Website
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="url"
+                        id="portfolio"
+                        name="portfolio"
+                        value={settings.portfolio}
+                        onChange={handleChange}
+                        placeholder="https://yourportfolio.com"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Email Credentials Section */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 mb-4 flex items-center">
+                  <FaEnvelope className="mr-2 text-gray-600" />
+                  Email Credentials
+                </h3>
+                
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  {/* Email */}
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                      Email Address
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={settings.email}
+                        onChange={handleChange}
+                        placeholder="your.email@example.com"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Password */}
+                  <div>
+                    <label htmlFor="emailPassword" className="block text-sm font-medium text-gray-700">
+                      Email Password
+                    </label>
+                    <div className="mt-1 relative rounded-md shadow-sm">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        id="emailPassword"
+                        name="emailPassword"
+                        value={showPassword ? settings.emailPassword : maskedPassword}
+                        onChange={handleChange}
+                        placeholder="Enter password"
+                        className="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? (
+                          <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-500" />
+                        ) : (
+                          <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-500" />
+                        )}
+                      </button>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Password is masked for security
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FaSave className="-ml-1 mr-2 h-5 w-5" />
+                      Save Changes
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-
-      <button onClick={saveChanges} className="save-btn">
-        Save All Changes
-      </button>
-
-      {/* CSS would go here or in a separate file */}
-      <style jsx>{`
-        .student-app-settings {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 20px;
-          background: white;
-          border-radius: 8px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h2, h3 {
-          color: #2c3e50;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        
-        .settings-section {
-          margin-bottom: 30px;
-          padding-bottom: 20px;
-          border-bottom: 1px solid #eee;
-        }
-        
-        .social-links-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 15px;
-        }
-        
-        .form-group {
-          margin-bottom: 15px;
-        }
-        
-        label {
-          display: block;
-          margin-bottom: 5px;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        
-        input[type="url"],
-        input[type="text"] {
-          width: 100%;
-          padding: 8px 12px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
-        
-        .app-passwords-list {
-          margin-top: 20px;
-        }
-        
-        .app-password-item {
-          background: #f8f9fa;
-          padding: 12px 15px;
-          border-radius: 4px;
-          margin-bottom: 10px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        
-        .app-info {
-          display: flex;
-          flex-direction: column;
-        }
-        
-        .app-name {
-          font-weight: 500;
-        }
-        
-        .app-created {
-          font-size: 0.8em;
-          color: #666;
-        }
-        
-        .password-display {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        
-        .password-text, .password-dots {
-          font-family: monospace;
-        }
-        
-        .toggle-password, .delete-btn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #666;
-        }
-        
-        .delete-btn:hover {
-          color: #e74c3c;
-        }
-        
-        .new-app-password {
-          display: flex;
-          gap: 10px;
-          margin-top: 20px;
-        }
-        
-        .generate-btn {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          background: #3498db;
-          color: white;
-          border: none;
-          padding: 8px 15px;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-        
-        .save-btn {
-          background: #2ecc71;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 1em;
-          margin-top: 20px;
-        }
-        
-        .info-text {
-          color: #666;
-          font-size: 0.9em;
-          margin-bottom: 15px;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default History;
+export default StudentSettings;
