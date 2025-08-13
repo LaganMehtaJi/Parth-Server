@@ -2,28 +2,41 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import StudentCard from "./StudentCardd";
 
-
-const StudentList = ({refresh}) => {
+const StudentList = ({ refresh }) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+   
 
-  
-    const fetchStudents = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/student/data");
-        setStudents(response.data.message); // Assuming message is array of students
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  const fetchStudents = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/student/data");
+      setStudents(response.data.message);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     fetchStudents();
   }, [refresh]);
+  
 
+  const handleUpdateStudent = (updatedStudent) => {
+    setStudents(prevStudents =>
+      prevStudents.map(student =>
+        student._id === updatedStudent._id ? updatedStudent : student
+      )
+    );
+  };
+
+  const handleDeleteStudent = (studentId) => {
+    setStudents(prevStudents =>
+      prevStudents.filter(student => student._id !== studentId)
+    );
+  };
 
   if (loading) {
     return (
@@ -51,7 +64,13 @@ const StudentList = ({refresh}) => {
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {students.map((student) => (
-          <StudentCard key={student._id} studentData={student} />
+          <StudentCard
+            key={student._id}
+            studentData={student}
+            onUpdate={handleUpdateStudent}
+            onDelete={handleDeleteStudent}
+            refresh1={fetchStudents}
+          />
         ))}
       </div>
     </div>
