@@ -2,7 +2,7 @@ import express from "express";
 import * as StudentObj from "../../model/student.model.js";
 
 export const GetStudentProfile = async (req, res) => {
-  const { registrationNo } = req.body;
+  const { registrationNo } = req.params;
 
   console.log("Registration No:", registrationNo);
 

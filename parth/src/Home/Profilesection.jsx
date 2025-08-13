@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsPatchCheckFill } from "react-icons/bs";
 
+import axios from "axios";
 const profile = {
   name: "Chahat Sharma",
   title: "Student at MAIMT",
@@ -26,6 +27,15 @@ const profile = {
 };
 
 const Profilesection = () => {
+    
+  // useEffect(()=>{
+  //   axios.get(`http://localhost:3000/api/profile/get/${12345678}`).the((response)=>{
+  //     console.log(response.data);
+  //   }).catch((error)=>{
+  //     console.log(error);
+  //   })
+  // })
+
   const [showAllSkills, setShowAllSkills] = useState(false);
 
   return (

@@ -1,84 +1,141 @@
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchSkills,addSkill,deleteSkill,updateSkill } from "../../redux/SkillSlice";
 import axios from "axios";
+import {
+  FiEdit2,
+  FiTrash2,
+  FiPlus,
+  FiX,
+} from "react-icons/fi";
 
 export default function Skills() {
-  const [ registrationNo,setRegistrationNo] = useState("");
-  useEffect(()=>{
-    setRegistrationNo(JSON.parse(localStorage.getItem('registrationNo')));
-   axios.get(`http://localhost:3000/api/project/delete/${registrationNo}`).then((res)=>{
-    console.log(res.data);
-   }).catch((error)=>{
-    console.log(error.data);
-   })
-
-  });
-
-  const dispatch = useDispatch();
-  const { items: skills, status, error } = useSelector((state) => state.skills);
+  const [skills, setSkills] = useState([]);
+  const [registrationNo, setRegistrationNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  // Initialize registrationNo and fetch skills
+  useEffect(() => {
+    const regNo = localStorage.getItem('registrationNo');
+    if (!regNo) {
+      setError('Registration number not found in localStorage');
+      return;
+    }
+    setRegistrationNo(regNo);
+    fetchSkills(regNo);
+  }, []);
+
+  const fetchSkills = async (regNo) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:3000/api/skill/get/${regNo}`);
+      setSkills(response.data);
+    } catch (err) {
+      setError('Failed to fetch skills');
+      console.error('Error fetching skills:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const skillSchema = Yup.object().shape({
     skill: Yup.string().required("Skill name is required"),
     proficiency: Yup.string().required("Proficiency level is required"),
-    registrationNo: Yup.string().required("Registration number is required"),
   });
 
   const formik = useFormik({
     initialValues: {
       skill: "",
       proficiency: "",
-      registrationNo: "",
     },
     validationSchema: skillSchema,
     onSubmit: async (values, { resetForm }) => {
+      if (!registrationNo) {
+        setError('Registration number not found');
+        return;
+      }
+
+      setIsLoading(true);
       try {
+        const skillData = {
+          ...values,
+          registrationNo
+        };
+
         if (editingId) {
-          await dispatch(updateSkill({ id: editingId, ...values })).unwrap();
+          // Update skill
+          const response = await axios.post(
+            `http://localhost:3000/api/skill/update/${registrationNo}/${editingId}`,
+            skillData
+          );
+          setSkills(skills.map(skill => 
+            skill._id === editingId ? response.data : skill
+          ));
         } else {
-          await dispatch(addSkill(values)).unwrap();
+          // Add new skill
+          const response = await axios.post(
+            `http://localhost:3000/api/skill/add/${registrationNo}`,
+            skillData
+          );
+          setSkills([...skills, response.data]);
         }
         resetForm();
         setIsModalOpen(false);
         setEditingId(null);
       } catch (err) {
-        console.error("Error submitting form:", err);
+        setError(err.response?.data?.message || 'Failed to save skill');
+        console.error('Error submitting form:', err);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
-
-  useEffect(() => {
-    dispatch(fetchSkills());
-  }, [dispatch]);
 
   const handleEdit = (item) => {
     formik.setValues({
       skill: item.skill,
       proficiency: item.proficiency,
-      registrationNo: item.registrationNo,
     });
     setEditingId(item._id);
     setIsModalOpen(true);
+    setError(null);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this skill?")) return;
+    if (!registrationNo) {
+      setError('Registration number not found');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      await dispatch(deleteSkill(id)).unwrap();
+      await axios.post(`http://localhost:3000/api/skill/delete/${registrationNo}/${id}`);
+      setSkills(skills.filter(skill => skill._id !== id));
     } catch (err) {
-      console.error("Error deleting skill:", err);
+      setError('Failed to delete skill');
+      console.error('Error deleting skill:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const resetForm = () => {
     formik.resetForm();
     setEditingId(null);
+    setError(null);
   };
+
+  if (isLoading && skills.length === 0) {
+    return (
+      <div className="max-w-6xl mx-auto p-4 md:p-6 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -87,76 +144,144 @@ export default function Skills() {
           My<span className="text-blue-600"> Skills</span>
         </h1>
 
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         <div className="mt-8 flex justify-center">
           <button
             onClick={() => {
               resetForm();
               setIsModalOpen(true);
             }}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md"
+            disabled={isLoading}
           >
-            + Add Skill
+            <FiPlus /> Add Skill
           </button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mt-10">
-          {skills.map((item) => (
-            <div
-              key={item._id}
-              className="bg-white rounded-xl shadow-md p-4 relative border border-gray-100 group transform hover:scale-105 transition-transform duration-300"
-            >
-              <div className="mt-4">
-                <h2 className="text-xl font-semibold">{item.skill}</h2>
-                <p className="text-gray-700 mt-2">
-                  Proficiency:{" "}
-                  <span className="font-medium">{item.proficiency}</span>
-                </p>
-                <p className="text-gray-500 text-sm mt-1">
-                  Registration No: {item.registrationNo}
-                </p>
-              </div>
-
-              <div className="absolute top-2 right-2 flex gap-2">
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="text-blue-600 text-sm hover:underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(item._id)}
-                  className="text-red-600 text-sm hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
+        {skills.length === 0 ? (
+          <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 mt-10">
+            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <FiPlus className="text-blue-600 text-2xl" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-lg font-medium text-gray-700">No skills yet</h3>
+            <p className="text-gray-500 mb-4">Get started by adding your first skill</p>
+            <button
+              onClick={() => {
+                resetForm();
+                setIsModalOpen(true);
+              }}
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              disabled={isLoading}
+            >
+              <FiPlus /> Add Skill
+            </button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6 mt-10">
+            {skills.map((item) => (
+              <div
+                key={item._id}
+                className="bg-white rounded-xl shadow-md p-6 relative border border-gray-100 hover:shadow-lg transition-shadow duration-300"
+              >
+                <div className="mt-4">
+                  <h2 className="text-xl font-semibold">{item.skill}</h2>
+                  <div className="mt-3">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium text-gray-700">Proficiency:</span>
+                      <span className="text-sm font-medium">{item.proficiency}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className={`h-2.5 rounded-full ${
+                          item.proficiency === 'Beginner' ? 'bg-blue-300' :
+                          item.proficiency === 'Intermediate' ? 'bg-blue-400' :
+                          item.proficiency === 'Advanced' ? 'bg-blue-500' : 'bg-blue-600'
+                        }`}
+                        style={{
+                          width: 
+                            item.proficiency === 'Beginner' ? '25%' :
+                            item.proficiency === 'Intermediate' ? '50%' :
+                            item.proficiency === 'Advanced' ? '75%' : '100%'
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    disabled={isLoading}
+                    className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-full transition-colors"
+                    aria-label="Edit skill"
+                  >
+                    <FiEdit2 />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item._id)}
+                    disabled={isLoading}
+                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                    aria-label="Delete skill"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-            <h2 className="text-xl font-bold mb-4">
-              {editingId ? "Edit Skill" : "Add Skill"}
-            </h2>
-
-            <form onSubmit={formik.handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div 
+            className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800">
+                {editingId ? 'Edit Skill' : 'Add Skill'}
+              </h2>
+              <button 
+                onClick={() => {
+                  resetForm();
+                  setIsModalOpen(false);
+                }}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
+                aria-label="Close modal"
+                disabled={isLoading}
+              >
+                <FiX className="text-xl" />
+              </button>
+            </div>
+            
+            <form onSubmit={formik.handleSubmit} className="p-6 space-y-4">
+              {error && (
+                <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {error}
+                </div>
+              )}
+              
               <div>
-                <label className="block font-medium">Skill</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Skill*</label>
                 <input
                   type="text"
                   name="skill"
                   value={formik.values.skill}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className={`w-full border ${
+                  disabled={isLoading}
+                  className={`w-full px-4 py-2 border ${
                     formik.touched.skill && formik.errors.skill
                       ? "border-red-500"
                       : "border-gray-300"
-                  } rounded px-3 py-2`}
+                  } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100`}
                 />
                 {formik.touched.skill && formik.errors.skill ? (
                   <div className="text-red-500 text-sm mt-1">
@@ -166,19 +291,20 @@ export default function Skills() {
               </div>
 
               <div>
-                <label className="block font-medium">Proficiency</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Proficiency*</label>
                 <select
                   name="proficiency"
                   value={formik.values.proficiency}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className={`w-full border ${
+                  disabled={isLoading}
+                  className={`w-full px-4 py-2 border ${
                     formik.touched.proficiency && formik.errors.proficiency
                       ? "border-red-500"
                       : "border-gray-300"
-                  } rounded px-3 py-2`}
+                  } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition disabled:bg-gray-100`}
                 >
-                  <option value="">Select</option>
+                  <option value="">Select proficiency</option>
                   <option value="Beginner">Beginner</option>
                   <option value="Intermediate">Intermediate</option>
                   <option value="Advanced">Advanced</option>
@@ -191,37 +317,34 @@ export default function Skills() {
                 ) : null}
               </div>
 
-              <div>
-                <label className="block font-medium">Registration No</label>
-                <input
-                  type="text"
-                  name="registrationNo"
-                  value={registrationNo}
-                />
-                
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-2">
+              <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => {
                     resetForm();
                     setIsModalOpen(false);
                   }}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                  disabled={isLoading}
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  disabled={status === 'loading'}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-32"
                 >
-                  {status === 'loading'
-                    ? "Processing..."
-                    : editingId
-                    ? "Update"
-                    : "Add"}
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {editingId ? 'Updating...' : 'Adding...'}
+                    </>
+                  ) : (
+                    editingId ? 'Update Skill' : 'Add Skill'
+                  )}
                 </button>
               </div>
             </form>

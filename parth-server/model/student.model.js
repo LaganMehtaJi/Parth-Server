@@ -133,16 +133,46 @@ const experienceSchema = new Schema({
 // ==============================
 // 🤝 Volunteering Schema
 // ==============================
-const volunteeringSchema = new Schema({
+const volunteeringSchema = new mongoose.Schema({
   registrationNo: { type: String, required: true, ref: "Student" },
-  organization: String,
-  role: String,
-  cause: String,
-  startDate: Date,
-  endDate: Date,
-  description: String
-}, { timestamps: true });
-
+  title: {
+    type: String,
+    required: [true, "Title is required"]
+  },
+  description: {
+    type: String,
+    required: [true, "Description is required"]
+  },
+  organization: {
+    type: String,
+    required: [true, "Organization is required"]
+  },
+  date: {
+    type: String, // keeping string because your form sends YYYY-MM-DD as string
+    required: [true, "Date is required"]
+  },
+  category: {
+    type: String,
+    enum: ["Health", "Education", "Environment", "Community", "Disaster Relief"],
+    required: [true, "Category is required"]
+  },
+  link: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        if (!v) return true; // allow empty
+        return /^https?:\/\/.+\..+/.test(v);
+      },
+      message: "Must be a valid URL"
+    }
+  },
+  image: {
+    type: String, // will store URL or local path
+    required: [true, "Image is required"]
+  },
+}, {
+  timestamps: true // adds createdAt & updatedAt
+});
 // ==============================
 // 🏢 Company Schema
 // ==============================

@@ -96,6 +96,9 @@ export const uploadStudents = async (req, res) => {
   }
 };
 
+
+
+
 export const StudentShow = async (req, res) => {
   try {
     const studentData = await StudentObj.Student.find({});

@@ -1,5 +1,5 @@
+import * as ProfileController from "../../controller/student/profile.controller.js";
 import express from "express";
 const router = express.Router();
-import * as StudentObj from "../../controller/student/profile.controller.js";
-router.get("/getStudentProfile", StudentObj.GetStudentProfile);
+router.get("/get/:registrationNo",ProfileController.GetStudentProfile);
 export default router;
