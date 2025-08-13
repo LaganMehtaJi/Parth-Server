@@ -14,6 +14,16 @@ const studentSchema = new Schema({
     trim: true,
     maxlength: 20
   },
+  class:{
+    type: String,
+    required: true,
+    trim: true
+  },
+  discription:{
+    type: String,
+    required: true,
+    trim: true
+  },
   password:{
     type: String,
     required: true,
