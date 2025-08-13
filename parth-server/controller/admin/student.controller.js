@@ -16,11 +16,11 @@ export const AddStudent = async (req, res) => {
     field,
     customField,
     batchYear,
-    profilePic,
     verify,
     address,
-    password
+    password,profilePic
   } = req.body;
+  const logoUrl = req.file?.path || "";
 
   if (!registrationNo) {
     return res.status(202).json({ message: "Enter All Details" });
@@ -36,20 +36,21 @@ export const AddStudent = async (req, res) => {
     const formattedPassword = (password || name || "")
       .toLowerCase()
       .replace(/\s+/g, "");
+      
 
     const newStudent = await StudentObj.Student.create({
       registrationNo,
       rollNo,
       name,
       email,
-      clas,
+      class:clas,
       description,
       phone,
       field,
       password: formattedPassword,
       customField,
       batchYear,
-      profilePic,
+      profilePic:logoUrl,
       verify,
       address
     });
