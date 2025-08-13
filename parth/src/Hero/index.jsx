@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
-import {
-  FiUser, FiLogIn, FiArrowDown
-} from 'react-icons/fi';
+import { FiUser, FiLogIn, FiArrowDown } from 'react-icons/fi';
 import Footer from './Footer';
 import Marquee from './Marquee';
 import HowItStarts from './HowItStarts';
 import Services from './Services';
 import OurTeam from './OurTeam';
 import Parth from './WhatisParth';
+import Docs from './Docs';
 
 const ParthPlacement = () => {
   const navigate = useNavigate();
@@ -22,8 +21,9 @@ const ParthPlacement = () => {
     { id: 'hero', label: 'Home' },
     { id: 'Services', label: 'Services' },
     { id: 'Features', label: 'Features' },
-    { id: 'Why Parth?', label: 'Why Parth?' },
-    { id: 'Our Team', label: 'Our Team' }
+    { id: 'Why-Parth', label: 'About Parth' },
+    { id: 'Our-Team', label: 'Our Team' },
+    {id: 'Docs',label:'Docs'}
   ];
 
   useEffect(() => {
@@ -31,15 +31,14 @@ const ParthPlacement = () => {
       const isScrolled = window.scrollY > 50;
       setScrolled(isScrolled);
 
-      // Bookmark-style section detection
       const scrollPosition = window.scrollY + 150;
-      
+
       for (const item of navItems) {
         const element = document.getElementById(item.id);
         if (element) {
           const offsetTop = element.offsetTop;
           const offsetHeight = element.offsetHeight;
-          
+
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(item.id);
             break;
@@ -55,9 +54,8 @@ const ParthPlacement = () => {
   const handleLogin = (role) => {
     setUser({ name: 'Demo User', role });
     setIsLoginOpen(false);
-    
-    // Navigate to the corresponding route based on role
-    switch(role.toLowerCase()) {
+
+    switch (role.toLowerCase()) {
       case 'student':
         navigate('/student');
         break;
@@ -86,8 +84,8 @@ const ParthPlacement = () => {
   return (
     <>
       <div className='w-full bg-cover bg-center'>
-        {/* Bookmark Navigation Bar */}
-        <motion.nav 
+        {/* Navigation Bar */}
+        <motion.nav
           className={`fixed top-0 z-50 w-full px-6 py-3 ${scrolled ? 'bg-white shadow-lg' : 'bg-white/90 backdrop-blur-sm'}`}
           initial={{ y: -100 }}
           animate={{ y: 0 }}
@@ -100,7 +98,7 @@ const ParthPlacement = () => {
               onClick={() => scrollTo('hero')}
             >
               <img src="/images/logo.png" alt="Logo" className='h-8 w-auto md:h-12 lg:h-16' />
-              <motion.span 
+              <motion.span
                 className="text-2xl font-sans text-violet-950 tracking-wide"
                 whileHover={{ color: '#7c3aed' }}
               >
@@ -112,19 +110,19 @@ const ParthPlacement = () => {
               {navItems.map((item) => (
                 <motion.button
                   key={item.id}
-                  whileHover={{ 
+                  whileHover={{
                     y: -2,
                     color: '#7c3aed'
                   }}
                   whileTap={{ scale: 0.95 }}
-                  className={`relative px-4 py-2 rounded-full ${activeSection === item.id ? 
-                    'bg-violet-100 text-violet-700 font-semibold' : 
+                  className={`relative px-4 py-2 rounded-full ${activeSection === item.id ?
+                    'bg-violet-100 text-violet-700 font-semibold' :
                     'text-violet-900 hover:bg-violet-50'}`}
                   onClick={() => scrollTo(item.id)}
                 >
                   {item.label}
                   {activeSection === item.id && (
-                    <motion.span 
+                    <motion.span
                       className="absolute -bottom-1 left-1/2 w-4 h-1 bg-violet-600 rounded-full"
                       style={{ x: '-50%' }}
                       layoutId="navBookmark"
@@ -170,15 +168,15 @@ const ParthPlacement = () => {
                         {['Student', 'Admin', 'Recruiter'].map((role) => (
                           <motion.button
                             key={role}
-                            whileHover={{ 
+                            whileHover={{
                               x: 5,
                               backgroundColor: '#f3f4f6'
                             }}
                             whileTap={{ scale: 0.98 }}
                             className="w-full text-left px-4 py-2 flex items-center transition-colors"
-                            onClick={() => handleLogin(role.toLowerCase())}
+                            onClick={() => handleLogin(role)}
                           >
-                            <FiUser className="mr-2 text-violet-600" /> 
+                            <FiUser className="mr-2 text-violet-600" />
                             <span className="text-violet-900">{role}</span>
                           </motion.button>
                         ))}
@@ -227,8 +225,8 @@ const ParthPlacement = () => {
                   PARTH, a solution for all your requirements.
                 </motion.span>
               </h1>
-              
-              <motion.p 
+
+              <motion.p
                 className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -249,7 +247,7 @@ const ParthPlacement = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="px-8 py-3 bg-black text-white text-xl rounded-sm shadow-lg hover:bg-violet-700 transition-colors"
-                  onClick={() => navigate('/student')} // Default to student signup
+                  onClick={() => navigate('/student')}
                 >
                   Get Started
                 </motion.button>
@@ -287,11 +285,22 @@ const ParthPlacement = () => {
           </div>
         </section>
 
-        {/* Other Sections */}
-        <Services id="Services" />
-        <HowItStarts id="Features" />
-        <Parth id="Why Parth?" />
-        <OurTeam id="Our Team" />
+        {/* Sections */}
+        <section id="Services">
+          <Services />
+        </section>
+        <section id="Features">
+          <HowItStarts />
+        </section>
+        <section id="Why-Parth">
+          <Parth />
+        </section>
+        <section id="Our-Team">
+          <OurTeam />
+        </section>
+        <section id="Docs">
+          <Docs/>
+        </section>
         <Marquee />
         <Footer />
       </div>

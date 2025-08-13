@@ -5,19 +5,20 @@ const Team = [
   { 
     id: 1, 
     name: "JAGRITI GABA", 
-    image: "/images/jagriti.jpg", 
+    image: "./jagriti.jpg", 
     role: "UI Developer",
     contributions: [
       "Designed hero page using React",
       "Implemented key feature components",
-      "Collaborated on UI/UX design"
+      "Collaborated within agile teams",
+      "Participated in design reviews"
     ]
   },
   { 
     id: 2, 
     name: "LAGAN MEHTA", 
     image: "./LaganMehta.png", 
-    role: "Scrum Master & Team Lead",
+    role: "Team Lead",
     contributions: [
       "Managed 15 Agile sprints",
       "Architected major features",
@@ -28,7 +29,7 @@ const Team = [
   { 
     id: 3, 
     name: "PANKAJ", 
-    image: "/images/pankaj.jpg", 
+    image: "./Pankaj.jpg", 
     role: "Full Stack Developer",
     contributions: [
       "Developed database architecture",
@@ -40,7 +41,7 @@ const Team = [
   { 
     id: 4, 
     name: "CHAHAT SHARMA", 
-    image: "/images/chahat.jpg", 
+    image: "./CHAHAT_Hero.jpg", 
     role: "UI/UX Specialist",
     contributions: [
       "Created home/dashboard designs",
@@ -49,18 +50,18 @@ const Team = [
       "Ensured responsive layouts"
     ]
   },
-  { 
-    id: 5, 
-    name: "MEHAK", 
-    image: "/images/mehak.jpg", 
-    role: "UI/UX Designer",
-    contributions: [
-      "Designed all Figma prototypes",
-      "Created visual style guide",
-      "Defined user flows",
-      "Ensured design consistency"
-    ]
-  }
+  // { 
+  //   id: 5, 
+  //   name: "MEHAK", 
+  //   image: "/images/mehak.jpg", 
+  //   role: "UI/UX Designer",
+  //   contributions: [
+  //     "Designed all Figma prototypes",
+  //     "Created visual style guide",
+  //     "Defined user flows",
+  //     "Ensured design consistency"
+  //   ]
+  // }
 ];
 
 const containerVariants = {
@@ -114,7 +115,7 @@ export default function OurTeam() {
             The PARTH Development Team
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-4">
-            MAIMT students revolutionizing campus placements through technology
+            MAIMT students revolutionizing campus placements through technology and innovation.
           </p>
         </motion.div>
 
@@ -197,5 +198,5 @@ export default function OurTeam() {
         </motion.div>
       </motion.div>
     </section>
-  );
+  );
 }
