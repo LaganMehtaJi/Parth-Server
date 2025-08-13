@@ -64,21 +64,35 @@ export const deleteVoluntaryWork = async (req, res) => {
   try {
     const { registrationNo, id } = req.params;
 
+    if (!id || !registrationNo) {
+      return res.status(400).json({ message: "Missing id or registrationNo" });
+    }
+
     const record = await Voluntary.Volunteering.findOne({ _id: id, registrationNo });
     if (!record) {
       return res.status(404).json({ message: "Voluntary work not found" });
     }
 
-    // Optionally delete image from Cloudinary
+    // Delete image from Cloudinary if present
     if (record.image) {
-      const publicId = record.image.split("/").pop().split(".")[0];
-      await cloudinary.v2.uploader.destroy(`voluntary_work/${publicId}`);
+      try {
+        const imageParts = record.image.split("/");
+        const filename = imageParts.pop();
+        const publicId = filename.split(".")[0];
+        await cloudinary.v2.uploader.destroy(`voluntary_work/${publicId}`);
+      } catch (cloudErr) {
+        console.warn("Cloudinary deletion failed:", cloudErr.message);
+      }
     }
 
     await Voluntary.Volunteering.deleteOne({ _id: id, registrationNo });
 
-    res.json({ message: "Voluntary work deleted successfully" });
+    return res.json({ message: "Voluntary work deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete voluntary work", error: error.message });
+    console.error("Error deleting voluntary work:", error);
+    return res.status(500).json({
+      message: "Failed to delete voluntary work",
+      error: error.message,
+    });
   }
 };

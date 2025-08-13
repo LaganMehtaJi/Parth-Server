@@ -15,7 +15,9 @@ import notificationRoutes from "./routes/student/notification.js";
 import ProjectRoutes from "./routes/student/projects.routes.js";
 import SkillRoutes from "./routes/student/skill.routes.js";
 import ProfileRoutes from "./routes/student/profile.routes.js";
-import VoluntaryRoutes from "./routes/student/voluntary.routes.js";;
+import VoluntaryRoutes from "./routes/student/voluntary.routes.js";
+import EducationRoutes from "./routes/student/education.routes.js";
+import CertificateRoutes from "./routes/student/certification.routes.js";
 import { initSocket } from "./soket.js";
 
 dotenv.config();
@@ -48,6 +50,8 @@ app.use("/api/project",ProjectRoutes);
 app.use("/api/skill",SkillRoutes);
 app.use("/api/profile",ProfileRoutes);
 app.use("/api/voluntary",VoluntaryRoutes);
+app.use("/api/education",EducationRoutes);
+app.use("/api/certificate",CertificateRoutes);
 // Connect to DB
 ConnectDb();
 

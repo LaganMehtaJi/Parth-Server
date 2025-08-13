@@ -13,6 +13,8 @@ export default function Skills() {
   const [skills, setSkills] = useState([]);
   const [registrationNo, setRegistrationNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -104,22 +106,29 @@ export default function Skills() {
     setError(null);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this skill?")) return;
+  const handleDeleteClick = (id) => {
+    setDeletingId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
     if (!registrationNo) {
       setError('Registration number not found');
+      setIsDeleteModalOpen(false);
       return;
     }
 
     setIsLoading(true);
     try {
-      await axios.post(`http://localhost:3000/api/skill/delete/${registrationNo}/${id}`);
-      setSkills(skills.filter(skill => skill._id !== id));
+      await axios.post(`http://localhost:3000/api/skill/delete/${registrationNo}/${deletingId}`);
+      setSkills(skills.filter(skill => skill._id !== deletingId));
     } catch (err) {
       setError('Failed to delete skill');
       console.error('Error deleting skill:', err);
     } finally {
       setIsLoading(false);
+      setIsDeleteModalOpen(false);
+      setDeletingId(null);
     }
   };
 
@@ -223,7 +232,7 @@ export default function Skills() {
                     <FiEdit2 />
                   </button>
                   <button
-                    onClick={() => handleDelete(item._id)}
+                    onClick={() => handleDeleteClick(item._id)}
                     disabled={isLoading}
                     className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
                     aria-label="Delete skill"
@@ -237,7 +246,7 @@ export default function Skills() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Add/Edit Skill Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex justify-center items-center z-50 p-4">
           <div 
@@ -348,6 +357,63 @@ export default function Skills() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div 
+            className="bg-white rounded-xl shadow-xl w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800">
+                Confirm Deletion
+              </h2>
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
+                aria-label="Close modal"
+                disabled={isLoading}
+              >
+                <FiX className="text-xl" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <p className="text-gray-700">Are you sure you want to delete this skill? This action cannot be undone.</p>
+              
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  disabled={isLoading}
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-32"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete Skill'
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

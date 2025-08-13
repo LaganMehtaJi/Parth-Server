@@ -87,17 +87,50 @@ const skillSchema = new Schema({
 // ==============================
 // 🎓 Education Schema
 // ==============================
-const educationSchema = new Schema({
-  registrationNo: { type: String, required: true, ref: "Student" },
-  institution: String,
-  degree: String,
-  fieldOfStudy: String,
-  startDate: Date,
-  endDate: Date,
-  grade: String,
-  description: String,
-  batchYear: Number
-}, { timestamps: true });
+const educationSchema = new mongoose.Schema({
+ registrationNo: { type: String, required: true, ref: "Student" },
+  institution: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  degree: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  fieldOfStudy: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  startDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+    required: false // can be null for "Present"
+  },
+  grade: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  description: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  batchYear: {
+    type: String,
+    required: true,
+    trim: true
+  }
+}, {
+  timestamps: true // adds createdAt & updatedAt
+});
+
 
 // ==============================
 // 💼 Project Schema
@@ -248,6 +281,53 @@ const roundSchema = new Schema({
   }
 }, { timestamps: true });
 
+
+const certificateSchema = new mongoose.Schema(
+  {
+   registrationNo: { type: String, required: true, ref: "Student" },
+    title: {
+      type: String,
+      required: [true, "Certificate title is required"],
+      trim: true
+    },
+    description: {
+      type: String,
+      required: [true, "Certificate description is required"],
+      trim: true
+    },
+    image: {
+      type: String, // Store image URL from upload
+      required: [true, "Certificate image is required"]
+    },
+    link: {
+      type: String, // Verification link
+      required: [true, "Verification link is required"],
+      validate: {
+        validator: (v) => /^https?:\/\/.+\..+/.test(v),
+        message: "Invalid URL format"
+      }
+    },
+    date: {
+      type: String, // MM/YYYY format
+      required: [true, "Certificate date is required"]
+    },
+    issuer: {
+      type: String,
+      required: [true, "Certificate issuer is required"],
+      trim: true
+    },
+    category: {
+      type: String,
+      enum: ["Business", "Technology", "Cloud Computing", "Design", "Marketing"],
+      default: "Technology"
+    }
+  },
+  {
+    timestamps: true // Adds createdAt and updatedAt
+  }
+);
+
+
 // ==============================
 // 📦 Model Exports
 // ==============================
@@ -265,11 +345,13 @@ const ApplyJobCount = mongoose.model("ApplyJobCount", applyJobCountSchema);
 const Requirement = mongoose.model("Requirement", requirementSchema);
 const Resource = mongoose.model("Resource", resourceSchema);
 const Responsibility = mongoose.model("Responsibility", responsibilitySchema);
+const Certificate = mongoose.model("Certificate", certificateSchema);
 
 // ==============================
 // 📤 Export All
 // ==============================
 export {
+  Certificate,
   Student,
   Skill,
   Education,
