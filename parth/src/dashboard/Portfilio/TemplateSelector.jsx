@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // Animations
 const fadeIn = keyframes`
@@ -24,24 +24,54 @@ const scaleIn = keyframes`
 const templates = [
   {
     id: 1,
-    name: "Minimal Portfolio",
+    name: "Ui-Ux designer",
     description: "Clean and professional design with focus on your work",
     image: "/portfilio.png",
-    colors: ['#2D3748', '#4A5568', '#CBD5E0', '#F7FAFC']
+    colors: ['#2D3748', '#4A5568', '#CBD5E0', '#F7FAFC'],
+    demoContent: {
+      name: "Sarah Johnson",
+      title: "Senior UI/UX Designer",
+      about: "Specializing in creating intuitive user experiences with 8+ years of industry experience.",
+      skills: ["User Research", "Wireframing", "Prototyping", "UI Design", "UX Strategy"],
+      projects: [
+        { name: "E-commerce Platform", description: "Redesigned checkout flow increased conversions by 32%" },
+        { name: "Mobile Banking App", description: "Created award-winning interface for financial services" }
+      ]
+    }
   },
   {
     id: 2,
-    name: "Creative Showcase",
+    name: "Software Developer",
     description: "Vibrant layout perfect for designers and artists",
     image: "/portfilio.png",
-    colors: ['#F56565', '#ED8936', '#ECC94B', '#48BB78']
+    colors: ['#F56565', '#ED8936', '#ECC94B', '#48BB78'],
+    demoContent: {
+      name: "Michael Chen",
+      title: "Full Stack Developer",
+      about: "Building scalable web applications with modern technologies.",
+      skills: ["JavaScript", "React", "Node.js", "Python", "AWS"],
+      projects: [
+        { name: "Social Media Dashboard", description: "Built real-time analytics platform for influencers" },
+        { name: "Inventory System", description: "Developed cloud-based solution for retail chain" }
+      ]
+    }
   },
   {
     id: 3,
-    name: "Modern Resume",
+    name: "Business Development",
     description: "Sleek template ideal for professionals and developers",
     image: "/portfilio.png",
-    colors: ['#4299E1', '#3182CE', '#63B3ED', '#EBF8FF']
+    colors: ['#4299E1', '#3182CE', '#63B3ED', '#EBF8FF'],
+    demoContent: {
+      name: "David Wilson",
+      title: "Business Development Executive",
+      about: "Driving growth through strategic partnerships and market expansion.",
+      skills: ["Sales Strategy", "Market Research", "Negotiation", "CRM", "Lead Generation"],
+      projects: [
+        { name: "Market Expansion", description: "Led entry into 3 new international markets" },
+        { name: "Partner Program", description: "Developed ecosystem that increased revenue by 45%" }
+      ]
+    }
   }
 ];
 
@@ -51,7 +81,6 @@ const Container = styled.div`
   flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
-
   min-height: 100vh;
 `;
 
@@ -60,7 +89,7 @@ const HeaderContainer = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: 3rem;
-  marign-top:5%;
+  margin-top: 5%;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -69,13 +98,13 @@ const HeaderContainer = styled.div`
 `;
 
 const HeaderContent = styled.div`
-   display: flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-top:2px;
-  `;
+  margin-top: 2px;
+`;
 
 const AnimationSection = styled.div`
   width: 350px;
@@ -91,7 +120,7 @@ const AnimationSection = styled.div`
 `;
 
 const Title = styled.h1`
-   font-size: 3rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
   font-weight: 700;
   text-align: center;
@@ -123,8 +152,9 @@ const Title = styled.h1`
     }
   }
 `;
+
 const Subtitle = styled.p`
-   font-size: 1.1rem;
+  font-size: 1.1rem;
   color: #718096;
   margin-bottom: 30px;
   max-width: 600px;
@@ -136,7 +166,7 @@ const Subtitle = styled.p`
 
 const ContentSection = styled.div`
   width: 100%;
-  margin-top:0;
+  margin-top: 0;
 `;
 
 const TemplateGrid = styled.div`
@@ -163,7 +193,7 @@ const TemplateCard = styled.div`
   border: 2px solid ${({ $selected }) => $selected ? '#667eea' : 'transparent'};
   position: relative;
   overflow: hidden;
-  margin-top:0;
+  margin-top: 0;
 
   &:hover {
     transform: translateY(-8px);
@@ -278,30 +308,27 @@ const SpeechBubble = styled.div`
 `;
 
 const TemplateSelector = () => {
+  const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [studentData, setStudentData] = useState(null);
+  const [regNumber, setRegNumber] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [speechText, setSpeechText] = useState('');
   const [showSpeech, setShowSpeech] = useState(false);
   const voiceRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const synth = window.speechSynthesis;
-    
     const setVoice = () => {
       const voices = synth.getVoices();
-      // Prioritize female voices (common names: Zira, Samantha, Karen, Tessa, etc.)
       voiceRef.current = voices.find(v => 
         v.lang.includes('en-') && 
         (v.name.includes('Female') || 
          v.name.includes('Zira') || 
-         v.name.includes('Samantha') || 
-         v.name.includes('Karen') || 
-         v.name.includes('Tessa') ||
-         v.name.includes('woman') ||
-         v.name.toLowerCase().includes('female'))
+         v.name.includes('Samantha'))
       ) || voices[0];
-      
-      speakText("Welcome! Please select your preferred template");
+      speakText("Welcome! Please enter your registration number and select a template");
     };
 
     if (synth.onvoiceschanged !== undefined) {
@@ -328,8 +355,7 @@ const TemplateSelector = () => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = voiceRef.current;
     utterance.rate = 0.9;
-    utterance.pitch = 1.1; 
-    utterance.volume = 1;
+    utterance.pitch = 1.1;
     
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
@@ -339,27 +365,242 @@ const TemplateSelector = () => {
     }, 6000);
   };
 
-  const handleTemplateSelect = (templateId) => {
-    setSelectedTemplate(templateId);
-    const template = templates.find(t => t.id === templateId);
-    speakText(`Excellent choice! The ${template.name} template is perfect for ${template.description.toLowerCase()}`);
+  const fetchStudentData = async () => {
+    if (!regNumber) {
+      setError('Please enter a registration number');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
     
-    localStorage.setItem('selectedTemplate', JSON.stringify(template));
+    try {
+      const response = await axios.get(`/api/students/${regNumber}`);
+      setStudentData(response.data);
+      speakText(`Student data loaded for ${response.data.name}`);
+    } catch (err) {
+      setError('Student not found. Please check registration number');
+      console.error('Error fetching student:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const openTemplatePreview = (template) => {
+    if (!studentData) {
+      setError('Please load student data first');
+      return;
+    }
+
+    setSelectedTemplate(template.id);
+    speakText(`Opening ${template.name} template for ${studentData.name}`);
+
+    const templateWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes');
     
-    setTimeout(() => {
-      navigate('/next-page');
-    }, 3500);
+    templateWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${studentData.name}'s ${template.name} Portfolio</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+          }
+          body {
+            background-color: #f8fafc;
+            color: #1a202c;
+          }
+          .app-container {
+            display: flex;
+            min-height: 100vh;
+          }
+          .customization-panel {
+            width: 300px;
+            padding: 2rem;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+          }
+          .template-preview {
+            flex: 1;
+            margin-left: 300px;
+            padding: 2rem;
+          }
+          .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+          }
+          .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+          }
+          .color-option:hover {
+            transform: scale(1.1);
+          }
+          .color-option.selected {
+            border-color: #1a202c;
+            transform: scale(1.1);
+          }
+          h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+          }
+          h2 {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.5rem;
+            color: #1a202c;
+          }
+          .template-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+          }
+          .template-header {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+          }
+          .template-content {
+            padding: 2rem;
+          }
+          .template-section {
+            margin-bottom: 2rem;
+          }
+          .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .btn-primary {
+            background: #4f46e5;
+            color: white;
+          }
+          .btn-primary:hover {
+            background: #4338ca;
+          }
+          .skill-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #e2e8f0;
+            border-radius: 999px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+          }
+          .project-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #edf2f7;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="app-container">
+          <div class="customization-panel">
+            <h1>${studentData.name}'s Portfolio</h1>
+            <h2>Color Scheme</h2>
+            <div class="color-options" id="colorOptions">
+              ${template.colors.map(color => `
+                <div class="color-option" 
+                     style="background: ${color}" 
+                     data-color="${color}"
+                     onclick="setTemplateColor('${color}')"></div>
+              `).join('')}
+            </div>
+            <button class="btn btn-primary" style="margin-top: 2rem;" onclick="window.close()">
+              Close Preview
+            </button>
+          </div>
+          
+          <div class="template-preview">
+            <div class="template-container" id="templateContainer">
+              <div class="template-header" id="templateHeader">
+                <div>
+                  <h1>${studentData.name}</h1>
+                  <p>${studentData.program} - ${studentData.year}</p>
+                </div>
+              </div>
+              <div class="template-content">
+                <div class="template-section">
+                  <h2>About</h2>
+                  <p>${studentData.bio || 'No bio available'}</p>
+                </div>
+                <div class="template-section">
+                  <h2>Skills</h2>
+                  <div>
+                    ${studentData.skills?.map(skill => `
+                      <span class="skill-tag">${skill}</span>
+                    `).join('') || 'No skills listed'}
+                  </div>
+                </div>
+                <div class="template-section">
+                  <h2>Projects</h2>
+                  ${studentData.projects?.map(project => `
+                    <div class="project-item">
+                      <h3>${project.title}</h3>
+                      <p>${project.description}</p>
+                    </div>
+                  `).join('') || 'No projects listed'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function setTemplateColor(color) {
+            document.querySelectorAll('.color-option').forEach(option => {
+              option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Apply color to template elements
+            document.getElementById('templateHeader').style.background = color;
+            document.querySelector('.btn-primary').style.background = color;
+          }
+          
+          // Select first color by default
+          setTimeout(() => {
+            document.querySelector('.color-option').click();
+          }, 100);
+        </script>
+      </body>
+      </html>
+    `);
+    
+    templateWindow.document.close();
   };
 
   return (
     <Container>
       <HeaderContainer>
         <HeaderContent>
-          <Title style={{justifyContent:"center",marginTop:"15%"}}>Find Your Perfect Template</Title>
-          <span style={{fontWeight:"bold", fontSize:"130%"}}>Select Template that reflect your personal style</span>
+          <Title style={{justifyContent:"center",marginTop:"15%"}}>Student Portfolio Builder</Title>
+          <span style={{fontWeight:"bold", fontSize:"130%"}}>Create your personalized portfolio</span>
           <Subtitle>
-            Select from our professionally designed templates to showcase your work in the best light.
-            Each template is optimized for different professional needs.
+            Enter your registration number and select a template to preview your portfolio
           </Subtitle>
         </HeaderContent>
 
@@ -377,6 +618,58 @@ const TemplateSelector = () => {
       </HeaderContainer>
 
       <ContentSection>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          marginBottom: '2rem',
+          gap: '1rem'
+        }}>
+          <div style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '500px' }}>
+            <input
+              type="text"
+              value={regNumber}
+              onChange={(e) => setRegNumber(e.target.value)}
+              placeholder="Enter registration number"
+              style={{
+                flex: 1,
+                padding: '0.75rem 1rem',
+                borderRadius: '8px',
+                border: '1px solid #e2e8f0',
+                fontSize: '1rem'
+              }}
+            />
+            <button
+              onClick={fetchStudentData}
+              disabled={isLoading}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: '#4f46e5',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                opacity: isLoading ? 0.7 : 1
+              }}
+            >
+              {isLoading ? 'Loading...' : 'Load Data'}
+            </button>
+          </div>
+          {error && <p style={{ color: '#e53e3e' }}>{error}</p>}
+          {studentData && (
+            <div style={{ 
+              background: '#f0fff4',
+              padding: '1rem',
+              borderRadius: '8px',
+              border: '1px solid #c6f6d5',
+              marginTop: '1rem'
+            }}>
+              <p>Loaded: <strong>{studentData.name}</strong> ({studentData.regNumber})</p>
+            </div>
+          )}
+        </div>
+
         <TemplateGrid>
           {templates.map((template, index) => (
             <TemplateCard 
@@ -384,7 +677,7 @@ const TemplateSelector = () => {
               $index={index}
               $selected={selectedTemplate === template.id}
               $colors={template.colors}
-              onClick={() => handleTemplateSelect(template.id)}
+              onClick={() => openTemplatePreview(template)}
             >
               <TemplateImage $image={template.image} />
               <TemplateName>{template.name}</TemplateName>
@@ -397,7 +690,7 @@ const TemplateSelector = () => {
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   )}
                 </svg>
-                {selectedTemplate === template.id ? 'Selected!' : 'Select Template'}
+                {selectedTemplate === template.id ? 'Previewing' : 'Preview'}
               </SelectButton>
             </TemplateCard>
           ))}
