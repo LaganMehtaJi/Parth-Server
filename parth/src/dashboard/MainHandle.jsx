@@ -34,6 +34,7 @@ export const MainHandler = () => {
         <Route path="job"element={<Jobs/>}/>
         <Route path="setting"element={<History/>}/>
         <Route path="portfilio"element={<Portfilio/>}/>
+        <Route path="resume"element={<R/>}/></Routes>
         
 
       

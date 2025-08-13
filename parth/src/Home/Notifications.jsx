@@ -1,175 +1,141 @@
-import React, { useState, useEffect } from "react";
-import { FiMoreHorizontal, FiSearch, FiSettings } from "react-icons/fi";
-import Headerhome from "./Headerhome";
-import Profilesection from "./Profilesection";
-import io from "socket.io-client";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Headerhome from './Headerhome';
+import Profilesection from './Profilesection';
 
-const socket = io("http://localhost:3000", { transports: ["websocket"] });
+const HomeNotifications = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-const NotificationCard = ({ notification, onMarkAsRead }) => {
-  const [showOptions, setShowOptions] = useState(false);
+  useEffect(() => {
+    const fetchAllNotifications = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:3000/api/notifications');
 
-  const handleMarkAsRead = () => {
-    onMarkAsRead(notification._id, !notification.read);
-    setShowOptions(false);
-  };
+        let data = [];
+        if (Array.isArray(response.data)) {
+          data = response.data;
+        } else if (response.data?.data) {
+          data = response.data.data;
+        } else if (response.data?.notifications) {
+          data = response.data.notifications;
+        }
 
-  return (
-    <div
-      className={`flex items-start gap-3 p-4 border-b hover:bg-gray-50 relative transition-colors duration-150 ${
-        !notification.read ? "bg-blue-50" : ""
-      }`}
-    >
-      <div className="flex-shrink-0">
-        <img
-          src={notification.icon || notification.image || "/default-profile.png"}
-          alt="icon"
-          className="w-10 h-10 object-cover rounded-full"
-        />
-      </div>
+        const sortedNotifications = [...data].sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.time);
+          const dateB = new Date(b.createdAt || b.time);
+          return dateB - dateA;
+        });
 
-      <div className="flex-1 min-w-0">
-        <div
-          className={`text-sm ${
-            !notification.read ? "font-semibold" : "font-medium"
-          } text-gray-800`}
-        >
-          {notification.title || "New Notification"}
-        </div>
-        {notification.content && (
-          <div className="bg-gray-100 text-sm text-gray-700 p-2 mt-1 rounded-md">
-            {notification.content}
+        setNotifications(sortedNotifications);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.response?.data?.message || err.message);
+        setNotifications([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllNotifications();
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="bg-gray-100 min-h-screen">
+        <Headerhome />
+        <div className="flex flex-col lg:flex-row gap-6 px-4 py-4">
+          <div className="w-full lg:max-w-xs lg:sticky lg:top-20 self-start">
+            <Profilesection />
           </div>
-        )}
-      </div>
-
-      <div className="flex flex-col items-end">
-        <div className="text-xs text-gray-500 whitespace-nowrap pl-2">
-          {notification.createdAt
-            ? new Date(notification.createdAt).toLocaleTimeString()
-            : ""}
-        </div>
-        <div className="relative">
-          <button
-            className="mt-1 text-gray-400 hover:text-gray-600"
-            onClick={() => setShowOptions(!showOptions)}
-          >
-            <FiMoreHorizontal size={18} />
-          </button>
-          {showOptions && (
-            <div className="absolute right-0 mt-1 w-40 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-              <button
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={handleMarkAsRead}
-              >
-                {notification.read ? "Mark as unread" : "Mark as read"}
-              </button>
-            </div>
-          )}
+          <div className="flex-1 p-4 text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            <p className="mt-2 text-gray-500">Loading announcements...</p>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-const Notifications = () => {
-  const [notificationsList, setNotificationsList] = useState([]);
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-
- useEffect(() => {
-  axios
-    .get("http://localhost:3000/api/notifications")
-    .then((res) => {
-      setNotificationsList(Array.isArray(res.data) ? res.data : []);
-    })
-    .catch((err) => {
-      console.error("Error fetching notifications:", err);
-      setNotificationsList([]);
-    });
-
-  socket.on("pushNotification", (data) => {
-    setNotificationsList((prev) => [data, ...prev]);
-  });
-
-  socket.on("notificationUpdated", (updated) => {
-    setNotificationsList((prev) =>
-      prev.map((n) => (n._id === updated._id ? updated : n))
     );
-  });
+  }
 
-  socket.on("notificationDeleted", (deletedId) => {
-    setNotificationsList((prev) => prev.filter((n) => n._id !== deletedId));
-  });
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-gray-100 min-h-screen">
+        <Headerhome />
+        <div className="flex flex-col lg:flex-row gap-6 px-4 py-4">
+          <div className="w-full lg:max-w-xs lg:sticky lg:top-20 self-start">
+            <Profilesection />
+          </div>
+          <div className="flex-1 p-4 text-center text-red-500">
+            <p>Failed to load announcements</p>
+            <p className="text-sm">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  return () => {
-    socket.off("pushNotification");
-    socket.off("notificationUpdated");
-    socket.off("notificationDeleted");
-  };
-}, []);
-
-
-  const markAsRead = async (id, readStatus) => {
-    try {
-      const { data } = await axios.patch(
-        `http://localhost:3000/api/notifications/${id}`,
-        { read: readStatus }
-      );
-      // Update will also come via socket, but we update here for instant feedback
-      setNotificationsList((prev) =>
-        prev.map((n) => (n._id === id ? data : n))
-      );
-    } catch (err) {
-      console.error("Error updating notification", err);
-    }
-  };
-
-  const filteredNotifications = notificationsList.filter((n) => {
-    if (activeFilter !== "all" && n.type !== activeFilter) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return (
-        n.title?.toLowerCase().includes(q) ||
-        n.content?.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
-
+  // Success state
   return (
     <div className="bg-gray-100 min-h-screen">
       <Headerhome />
-      <div className="flex flex-col md:flex-row gap-6 px-4 mt-4 max-w-7xl mx-auto">
-        <div className="w-full md:max-w-xs hidden md:block">
+      <div className="flex flex-col lg:flex-row gap-6 px-4 py-4">
+        <div className="w-full lg:max-w-xs lg:sticky lg:top-20 self-start">
           <Profilesection />
         </div>
-        <div className="w-full flex-1">
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
-            <div className="p-4 border-b flex justify-between items-center">
-              <h1 className="text-xl font-semibold">Notifications</h1>
-              <button
-                className="text-sm text-blue-600"
-                onClick={() =>
-                  notificationsList.forEach((n) => markAsRead(n._id, true))
-                }
-              >
-                Mark all as read
-              </button>
+
+        <div className="flex-1">
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">All Announcements</h3>
+              <span className="text-sm text-gray-500">
+                {notifications.length} total
+              </span>
             </div>
 
-            {filteredNotifications.length > 0 ? (
-              filteredNotifications.map((n) => (
-                <NotificationCard
-                  key={n._id}
-                  notification={n}
-                  onMarkAsRead={markAsRead}
-                />
-              ))
+            {notifications.length > 0 ? (
+              <div className="space-y-4">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification._id}
+                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-medium text-gray-800">
+                        {notification.title}
+                      </h4>
+                      <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">
+                        {new Date(notification.createdAt || notification.time).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{notification.content}</p>
+                    {notification.sender && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        From: {notification.sender}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
             ) : (
-              <div className="p-8 text-center text-gray-500">
-                No notifications found
+              <div className="text-center py-8">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1}
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                  />
+                </svg>
+                <p className="mt-2 text-gray-500">No announcements available</p>
               </div>
             )}
           </div>
@@ -179,4 +145,4 @@ const Notifications = () => {
   );
 };
 
-export default Notifications;
+export default HomeNotifications;
