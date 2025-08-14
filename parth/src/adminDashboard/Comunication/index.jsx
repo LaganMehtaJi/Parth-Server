@@ -50,7 +50,7 @@ const Communication = () => {
     console.log("Sending:", newMessage); // Debug log
     
     const response = await axios.post(
-      'http://localhost:3000/api/notifications',
+      'http://localhost:3000/api/notifications/send',
       newMessage,
       {
         headers: {
