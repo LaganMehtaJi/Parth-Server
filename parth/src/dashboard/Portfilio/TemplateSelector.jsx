@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 // Animations
 const fadeIn = keyframes`
@@ -20,62 +21,62 @@ const scaleIn = keyframes`
   to { opacity: 1; transform: scale(1); }
 `;
 
-// Template data
+// Robot-themed template data
 const templates = [
   {
     id: 1,
-    name: "Ui-Ux designer",
-    description: "Clean and professional design with focus on your work",
-    image: "/portfilio.png",
-    colors: ['#2D3748', '#4A5568', '#CBD5E0', '#F7FAFC'],
+    name: "UI-UX Designer",
+    description: "UI refers to the visual elements and interactive components of a product that users interact with. It’s all about how the product looks and feels.",
+    image: "./portfolio1.png",
+    colors: ['#3B82F6', '#1E40AF', '#93C5FD', '#EFF6FF'],
     demoContent: {
-      name: "Sarah Johnson",
-      title: "Senior UI/UX Designer",
-      about: "Specializing in creating intuitive user experiences with 8+ years of industry experience.",
-      skills: ["User Research", "Wireframing", "Prototyping", "UI Design", "UX Strategy"],
+      name: "UI-UX Developer",
+      title: "Robotics Engineer",
+      about: "Specializing in AI and automation with 5+ years of experience in industrial robotics.",
+      skills: ["Python", "ROS", "Computer Vision", "Machine Learning", "Embedded Systems"],
       projects: [
-        { name: "E-commerce Platform", description: "Redesigned checkout flow increased conversions by 32%" },
-        { name: "Mobile Banking App", description: "Created award-winning interface for financial services" }
+        { name: "Autonomous Delivery Bot", description: "Designed navigation system for warehouse robots" },
+        { name: "AI Assistant", description: "Created voice-controlled home automation system" }
       ]
     }
   },
   {
     id: 2,
     name: "Software Developer",
-    description: "Vibrant layout perfect for designers and artists",
-    image: "/portfilio.png",
-    colors: ['#F56565', '#ED8936', '#ECC94B', '#48BB78'],
+    description: "Industrial robot aesthetic with bld colors and mechanical elements",
+    image: "./portfolio2.png",
+    colors: ['#10B981', '#047857', '#6EE7B7', '#ECFDF5'],
     demoContent: {
-      name: "Michael Chen",
-      title: "Full Stack Developer",
-      about: "Building scalable web applications with modern technologies.",
-      skills: ["JavaScript", "React", "Node.js", "Python", "AWS"],
+      name: "Sam Cybernetics",
+      title: "Cybersecurity Specialist",
+      about: "Protecting systems from threats with advanced AI monitoring solutions.",
+      skills: ["Network Security", "Ethical Hacking", "Cryptography", "AI Defense", "Risk Assessment"],
       projects: [
-        { name: "Social Media Dashboard", description: "Built real-time analytics platform for influencers" },
-        { name: "Inventory System", description: "Developed cloud-based solution for retail chain" }
+        { name: "AI Firewall", description: "Developed neural network-based intrusion detection" },
+        { name: "Quantum Encryption", description: "Implemented post-quantum cryptography protocols" }
       ]
     }
   },
   {
     id: 3,
-    name: "Business Development",
-    description: "Sleek template ideal for professionals and developers",
-    image: "/portfilio.png",
-    colors: ['#4299E1', '#3182CE', '#63B3ED', '#EBF8FF'],
+    name: "Digital Marketing",
+    description: "Glowing neon elements with dark mode for a sleek modern look",
+    image: "./portfolio3.png",
+    colors: ['#8B5CF6', '#6D28D9', '#C4B5FD', '#F5F3FF'],
     demoContent: {
-      name: "David Wilson",
-      title: "Business Development Executive",
-      about: "Driving growth through strategic partnerships and market expansion.",
-      skills: ["Sales Strategy", "Market Research", "Negotiation", "CRM", "Lead Generation"],
+      name: "Taylor Android",
+      title: "Android Developer",
+      about: "Creating next-generation mobile experiences with AI integration.",
+      skills: ["Kotlin", "Jetpack Compose", "ML Kit", "ARCore", "Firebase"],
       projects: [
-        { name: "Market Expansion", description: "Led entry into 3 new international markets" },
-        { name: "Partner Program", description: "Developed ecosystem that increased revenue by 45%" }
+        { name: "AI Camera App", description: "Developed real-time object recognition camera" },
+        { name: "AR Navigation", description: "Created indoor navigation using AR markers" }
       ]
     }
   }
 ];
 
-// Styled Components
+// Styled Components (same as before, just with robot-themed colors)
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -124,7 +125,7 @@ const Title = styled.h1`
   margin-bottom: 1rem;
   font-weight: 700;
   text-align: center;
-  background: linear-gradient(135deg, #667eea, #764ba2, #F15B2A, #F0C14B);
+  background: linear-gradient(135deg, #3B82F6, #10B981, #8B5CF6);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -190,7 +191,7 @@ const TemplateCard = styled.div`
   animation-fill-mode: both;
   animation-delay: ${({ $index }) => $index * 0.1}s;
   cursor: pointer;
-  border: 2px solid ${({ $selected }) => $selected ? '#667eea' : 'transparent'};
+  border: 2px solid ${({ $selected }) => $selected ? '#3B82F6' : 'transparent'};
   position: relative;
   overflow: hidden;
   margin-top: 0;
@@ -208,7 +209,7 @@ const TemplateCard = styled.div`
     right: 0;
     height: 5px;
     background: ${({ $selected, $colors }) => 
-      $selected ? '#667eea' : `linear-gradient(90deg, ${$colors[0]}, ${$colors[1]})`};
+      $selected ? '#3B82F6' : `linear-gradient(90deg, ${$colors[0]}, ${$colors[1]})`};
   }
 `;
 
@@ -245,7 +246,7 @@ const SelectButton = styled.button`
   font-size: 1rem;
   border-radius: 12px;
   border: none;
-  background: ${({ $selected }) => $selected ? 'linear-gradient(135deg, #48BB78, #38A169)' : 'linear-gradient(135deg, #667eea, #764ba2)'};
+  background: ${({ $selected }) => $selected ? 'linear-gradient(135deg, #10B981, #047857)' : 'linear-gradient(135deg, #3B82F6, #8B5CF6)'};
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -308,7 +309,12 @@ const SpeechBubble = styled.div`
 `;
 
 const TemplateSelector = () => {
-  const [templates, setTemplates] = useState([]);
+  const  [registrationNo,setRegistrationNo] = useState("");
+  useEffect(()=>{
+    setRegistrationNo(localStorage.getItem('registrationNo'));
+    console.log(registrationNo);  
+  })
+
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [studentData, setStudentData] = useState(null);
   const [regNumber, setRegNumber] = useState('');
@@ -328,7 +334,7 @@ const TemplateSelector = () => {
          v.name.includes('Zira') || 
          v.name.includes('Samantha'))
       ) || voices[0];
-      speakText("Welcome! Please enter your registration number and select a template");
+      speakText("Welcome to RoboPortfolio! Please enter your registration number and select a template");
     };
 
     if (synth.onvoiceschanged !== undefined) {
@@ -494,11 +500,11 @@ const TemplateSelector = () => {
             transition: all 0.2s ease;
           }
           .btn-primary {
-            background: #4f46e5;
+            background: #3B82F6;
             color: white;
           }
           .btn-primary:hover {
-            background: #4338ca;
+            background: #2563EB;
           }
           .skill-tag {
             display: inline-block;
@@ -597,10 +603,10 @@ const TemplateSelector = () => {
     <Container>
       <HeaderContainer>
         <HeaderContent>
-          <Title style={{justifyContent:"center",marginTop:"15%"}}>Student Portfolio Builder</Title>
-          <span style={{fontWeight:"bold", fontSize:"130%"}}>Create your personalized portfolio</span>
+          <Title style={{justifyContent:"center",marginTop:"15%"}}>RoboPortfolio Builder</Title>
+          <span style={{fontWeight:"bold", fontSize:"130%"}}>Create your futuristic portfolio</span>
           <Subtitle>
-            Enter your registration number and select a template to preview your portfolio
+            Enter your registration number and select a robot-themed template
           </Subtitle>
         </HeaderContent>
 
@@ -644,7 +650,7 @@ const TemplateSelector = () => {
               disabled={isLoading}
               style={{
                 padding: '0.75rem 1.5rem',
-                background: '#4f46e5',
+                background: '#3B82F6',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
@@ -677,12 +683,12 @@ const TemplateSelector = () => {
               $index={index}
               $selected={selectedTemplate === template.id}
               $colors={template.colors}
-              onClick={() => openTemplatePreview(template)}
+              // onClick={() => openTemplatePreview(template)}
             >
               <TemplateImage $image={template.image} />
               <TemplateName>{template.name}</TemplateName>
               <TemplateDescription>{template.description}</TemplateDescription>
-              <SelectButton $selected={selectedTemplate === template.id}>
+              <Link to={`http://localhost:3001/preview/template${template.id}/${registrationNo}`}><SelectButton $selected={selectedTemplate === template.id}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   {selectedTemplate === template.id ? (
                     <path d="M5 13l4 4L19 7" />
@@ -691,7 +697,7 @@ const TemplateSelector = () => {
                   )}
                 </svg>
                 {selectedTemplate === template.id ? 'Previewing' : 'Preview'}
-              </SelectButton>
+              </SelectButton></Link>
             </TemplateCard>
           ))}
         </TemplateGrid>
