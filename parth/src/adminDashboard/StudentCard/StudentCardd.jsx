@@ -97,7 +97,7 @@ const StudentCard = ({ studentData, onUpdate, onDelete,refresh1 }) => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this student?")) return;
+    if (!window.confirm("Are you sure you want to delete  student?")) return;
     
     setIsLoading(true);
     setError(null);
