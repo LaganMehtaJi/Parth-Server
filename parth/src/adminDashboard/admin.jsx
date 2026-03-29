@@ -361,43 +361,65 @@ const StudentManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [flag,setFlag] = useState(false);
 
-  const formik = useFormik({
+   const formik = useFormik({
     initialValues: {
-      registrationNo: '',
-      rollNo: '',
-      name: '',
-      email: '',
-      phone: '',
-      field: '',
-      batchYear: '',
-      profilePic: '',
-      address: '',
+      registrationNo: "",
+      rollNo: "",
+      name: "",
+      email: "",
+      phone: "",
+      field: "",
+      batchYear: "",
+      profilePic: null, // file object
+      address: "",
+      clas: "",
+      description: "",
       verify: false,
     },
     validationSchema: Yup.object({
-      
-      registrationNo: Yup.string().required('Registration No is required'),
-      rollNo: Yup.string().required('Roll No is required'),
-      name: Yup.string().max(50, 'Full Name must be at most 50 characters').required('Full Name is required'),
-      email: Yup.string().email('Invalid email format').required('Email is required'),
-      phone: Yup.string().required('Phone number is required'),
+      registrationNo: Yup.string().required("Registration No is required"),
+      rollNo: Yup.string().required("Roll No is required"),
+      name: Yup.string()
+        .max(50, "Full Name must be at most 50 characters")
+        .required("Full Name is required"),
+      email: Yup.string()
+        .email("Invalid email format")
+        .required("Email is required"),
+      phone: Yup.string().required("Phone number is required"),
       field: Yup.string(),
-      batchYear: Yup.string().matches(/^\d{4}$/, 'Batch Year must be exactly 4 digits'),
-      profilePic: Yup.string().url('Must be a valid URL'),
-      address: Yup.string().required('Address is required'),
+      batchYear: Yup.string().matches(
+        /^\d{4}$/,
+        "Batch Year must be exactly 4 digits"
+      ),
+      profilePic: Yup.mixed().required("Profile picture is required"),
+      address: Yup.string().required("Address is required"),
+      clas: Yup.string().required("Class is required"),
+      description: Yup.string()
+        .required("Description is required")
+        .max(200, "Description must be at most 200 characters"),
     }),
     onSubmit: async (values, { resetForm }) => {
-
       setIsLoading(true);
       try {
-        const res = await axios.post('http://localhost:3000/api/student/send', values);
-        toast.success('Student added successfully!');
+        // Create FormData for file + text fields
+        const formData = new FormData();
+        Object.keys(values).forEach((key) => {
+          formData.append(key, values[key]);
+        });
+
+        await axios.post("http://localhost:3000/api/student/send", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        toast.success("Student added successfully!");
         resetForm();
         setIsModalOpen(false);
-        setFlag(prev => !prev);
+        setFlag((prev) => !prev);
       } catch (error) {
-        console.log(error)
-        toast.error(error.response?.data?.message || 'Error adding student');
+        console.log(error);
+        toast.error(error.response?.data?.message || "Error adding student");
       } finally {
         setIsLoading(false);
       }
@@ -492,85 +514,109 @@ const StudentManagement = () => {
                 </button>
               </div>
 
-              {activeTab === 'manual' ? (
-                <form onSubmit={formik.handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {[
-                      { name: 'registrationNo', label: 'Registration No', placeholder: 'REG2025001' },
-                      { name: 'rollNo', label: 'Roll No', placeholder: 'R001' },
-                      { name: 'name', label: 'Full Name', placeholder: 'Lagan Mehta' },
-                      { name: 'email', label: 'Email', placeholder: 'lagan@example.com', type: 'email' },
-                      { name: 'phone', label: 'Phone', placeholder: '9876543210' },
-                      { name: 'field', label: 'Field', placeholder: 'Web Developer' },
-                      { name: 'batchYear', label: 'Batch Year', placeholder: '2025' },
-                      { name: 'profilePic', label: 'Profile Picture URL', placeholder: 'https://example.com/profile.jpg' },
-                      { name: 'address', label: 'Address', placeholder: 'Yamunanagar, Haryana' },
-                    ].map(({ name, label, placeholder, type = 'text' }) => (
-                      <div key={name}>
-                        <label className="block text-sm font-medium text-gray-700">{label}</label>
-                        <input
-                          type={type}
-                          name={name}
-                          value={formik.values[name]}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                          placeholder={placeholder}
-                        />
-                        {formik.touched[name] && formik.errors[name] && (
-                          <p className="text-sm text-red-500">{formik.errors[name]}</p>
-                        )}
-                      </div>
-                    ))}
+             
+  {activeTab === 'manual' ? (
+    <form onSubmit={formik.handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {[
+          { name: 'registrationNo', label: 'Registration No', placeholder: 'REG2025001' },
+          { name: 'rollNo', label: 'Roll No', placeholder: 'R001' },
+          { name: 'name', label: 'Full Name', placeholder: 'Lagan Mehta' },
+          { name: 'email', label: 'Email', placeholder: 'lagan@example.com', type: 'email' },
+          { name: 'clas', label: 'Class', placeholder: 'MCA,MBA,BCA,BBA' },
+          { name: 'description', label: 'Description', placeholder: 'Description' },
+          { name: 'phone', label: 'Phone', placeholder: '9876543210' },
+          { name: 'field', label: 'Field', placeholder: 'Web Developer' },
+          { name: 'batchYear', label: 'Batch Year', placeholder: '2025' },
+          { name: 'address', label: 'Address', placeholder: 'Yamunanagar, Haryana' },
+        ].map(({ name, label, placeholder, type = 'text' }) => (
+          <div key={name}>
+            <label className="block text-sm font-medium text-gray-700">{label}</label>
+            <input
+              type={type}
+              name={name}
+              value={formik.values[name]}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+              placeholder={placeholder}
+            />
+            {formik.touched[name] && formik.errors[name] && (
+              <p className="text-sm text-red-500">{formik.errors[name]}</p>
+            )}
+          </div>
+        ))}
 
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="verify"
-                        checked={formik.values.verify}
-                        onChange={formik.handleChange}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <label className="ml-2 block text-sm text-gray-700">Verified Student</label>
-                    </div>
-                  </div>
+        {/* Profile Picture File Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+          <input
+            type="file"
+            name="profilePic"
+            accept="image/*"
+            onChange={(event) => {
+              formik.setFieldValue('profilePic', event.currentTarget.files[0]);
+            }}
+            onBlur={formik.handleBlur}
+            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+          />
+          {formik.touched.profilePic && formik.errors.profilePic && (
+            <p className="text-sm text-red-500">{formik.errors.profilePic}</p>
+          )}
+        </div>
 
-                  <div className="flex justify-end space-x-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setIsModalOpen(false)}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                      disabled={isLoading}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center min-w-[100px]"
-                      disabled={isLoading}
-                      onClick={(e)=>{setFlag(!flag)}}
-                    >
-                      {isLoading ? <BeatLoader size={8} color="#fff" /> : 'Add Student'}
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="mt-4 text-center">
-                  <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
-                  <h4 className="mt-2 text-sm font-medium text-gray-700">Upload Excel File</h4>
-                  <p className="mt-1 text-xs text-gray-500">Supports .xlsx, .xls, or .csv file formats</p>
-                  <div className="mt-4">
-                    <label className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                      <input type="file" onChange={handleFileUpload} className="sr-only" />
-                      Select File
-                    </label>
-                  </div>
-                  <div className="mt-4 text-sm text-gray-500 flex items-center justify-center">
-                    <FiDownload className="mr-2" />
-                    <a href="#" className="text-blue-600 hover:text-blue-500">Download sample Excel template</a>
-                  </div>
-                </div>
-              )}
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            name="verify"
+            checked={formik.values.verify}
+            onChange={formik.handleChange}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label className="ml-2 block text-sm text-gray-700">Verified Student</label>
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(false)}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          disabled={isLoading}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center min-w-[100px]"
+          disabled={isLoading}
+          onClick={() => {
+            setFlag(!flag);
+          }}
+        >
+          {isLoading ? <BeatLoader size={8} color="#fff" /> : 'Add Student'}
+        </button>
+      </div>
+    </form>
+  ) : (
+    <div className="mt-4 text-center">
+      <FiUpload className="mx-auto h-12 w-12 text-gray-400" />
+      <h4 className="mt-2 text-sm font-medium text-gray-700">Upload Excel File</h4>
+      <p className="mt-1 text-xs text-gray-500">Supports .xlsx, .xls, or .csv file formats</p>
+      <div className="mt-4">
+        <label className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <input type="file" onChange={handleFileUpload} className="sr-only" />
+          Select File
+        </label>
+      </div>
+      <div className="mt-4 text-sm text-gray-500 flex items-center justify-center">
+        <FiDownload className="mr-2" />
+        <a href="#" className="text-blue-600 hover:text-blue-500">
+          Download sample Excel template
+        </a>
+      </div>
+    </div>
+  )}
             </div>
           </div>
         </div>

@@ -19,7 +19,7 @@ const studentSchema = new Schema({
     required: true,
     trim: true
   },
-  discription:{
+  description:{
     type: String,
     required: true,
     trim: true
